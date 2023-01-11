@@ -1,0 +1,1 @@
+﻿FantaRPG.Game1.Instance.Run();
