@@ -45,9 +45,8 @@ namespace FantaRPG
             if (movementVector != Vector2.Zero)
             {
                 movementVector.Normalize();
-                movementVector.X *= 500;
+                movementVector.X *= 5000;
                 movementVector.X *= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
             }
             if (MovementInput.KeyJustDown(Input["Jump"]))
             {
@@ -57,7 +56,6 @@ namespace FantaRPG
             {
                 Vector2 playerCenter = new Vector2(Position.X + (HitboxSize.X / 2), Position.Y + (HitboxSize.Y / 2));
                 Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
-
                 
                 Debug.WriteLine(cursorPos.X.ToString("0.0") + ";" + cursorPos.Y.ToString("0.0") + " cursorpos, " + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + " playerpos");
                 Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
@@ -92,7 +90,7 @@ namespace FantaRPG
                 }
             }
             Position += (Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds));
-            Velocity *= 0.99f;
+            Velocity.X *= 0.98f;
             if (Math.Abs(Velocity.X) < 0.001)
             {
                 Velocity.X = 0;

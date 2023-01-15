@@ -61,10 +61,17 @@ namespace FantaRPG
         }
         internal void DrawEntities(SpriteBatch spriteBatch, Matrix matrix)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred,transformMatrix: matrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred,blendState: BlendState.AlphaBlend,transformMatrix: matrix);
             foreach (var item in entities)
             {
-                item.Draw(spriteBatch);
+                if (item is Spell)
+                {
+                    (item as Spell).Draw(spriteBatch);
+                }
+                else
+                {
+                    item.Draw(spriteBatch);
+                }
             }
             player.Draw(spriteBatch);
             spriteBatch.End();
