@@ -8,26 +8,31 @@ using System.Threading.Tasks;
 
 namespace FantaRPG
 {
-    internal class Entity
+    internal class Entity : BasicCollision
     {
-        public Vector2 Position;
-        private Texture2D texture;
+        protected Texture2D Texture;
         public Entity(Texture2D texture)
         {
-            this.texture = texture;
+            this.Texture = texture;
             Position = Vector2.Zero;
+            HitboxSize = new Vector2(20, 20);
         }
-        public Entity(Texture2D texture, int x, int y)
+        public Entity(Texture2D texture, int x, int y, int w, int h)
         {
-            this.texture = texture;
+            this.Texture = texture;
             Position = new Vector2(x, y);
+            HitboxSize = new Vector2(w, h);
+        }
+        public void Update(GameTime gameTime)
+        {
+
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, Position,new Rectangle((int)Position.X,(int)Position.Y,20,20), Color.White);
-            if (Game1.Instance.debugFont!=null)
+            spriteBatch.Draw(Texture, Position, new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y), Color.White);
+            if (Game1.Instance.debugFont != null)
             {
-                spriteBatch.DrawString(Game1.Instance.debugFont, "{" + Position.X + ";" + Position.Y + "}", Position, Color.Black);
+                spriteBatch.DrawString(Game1.Instance.debugFont, "{" + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + "}", Position, Color.Black);
             }
             //g.DrawString(Position.ToString("0.0"), SystemFonts.DefaultFont, Brushes.Black, Position.X - 10, Position.Y - 15);
         }
