@@ -63,10 +63,10 @@ namespace FantaRPG.src
                 spellVel = Vector2.Multiply(spellVel, 1000);
                 Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
             }
-            if (MovementInput.MouseRightJustUp())
-            {
+            //if (MovementInput.MouseRightJustUp())
+            //{
 
-            }
+            //}
 
             Acceleration += movementVector;
             if (movementVector.X != 0)

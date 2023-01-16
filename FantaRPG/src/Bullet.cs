@@ -13,6 +13,7 @@ using MonoGame.Extended.Particles.Modifiers.Interpolators;
 using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.TextureAtlases;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace FantaRPG.src
 {
@@ -20,8 +21,6 @@ namespace FantaRPG.src
     {
         bool gravityAffected = true;
         private ParticleEmitter emitter;
-        bool triggered = false;
-        public bool Finished = false;
         List<Action> OnCollideAction = new List<Action>();
         public void AddOnCollisionAction(Action action)
         {
@@ -31,41 +30,42 @@ namespace FantaRPG.src
         {
             Velocity = velocity;
             TextureRegion2D textureRegion = new TextureRegion2D(texture);
-            emitter = new ParticleEmitter(textureRegion, 50, TimeSpan.FromSeconds(.5), Profile.Circle(10, Profile.CircleRadiation.Out))
+            emitter = new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(.5), Profile.Circle(20, Profile.CircleRadiation.Out))
             {
                 AutoTrigger = false,
-                //AutoTrigger=false,
-                //AutoTriggerFrequency=0,
                 Parameters = new ParticleReleaseParameters
                 {
-                    Speed = new Range<float>(100f, 300f),
+                    Speed = new Range<float>(0f, 500f),
                     Scale = new Range<float>(w),
                     Quantity = 50,
                 },
                 Modifiers =
+                {
+                    new AgeModifier
                     {
-                        new AgeModifier
+                        Interpolators =
                         {
-                            Interpolators =
+                            new ColorInterpolator
                             {
-                                new ColorInterpolator
-                                {
-                                    StartValue=new HslColor(0.0f,1.0f,0.5f),
-                                    EndValue=new HslColor(180.0f,1.0f,0.5f)
-                                },
-                                new ScaleInterpolator()
-                                {
-                                    StartValue=new Vector2(w,w),
-                                    EndValue=Vector2.Zero,
-                                }
+                                StartValue=new HslColor(0.0f,1.0f,0.5f),
+                                EndValue=new HslColor(180.0f,1.0f,0.5f)
+                            },
+                            new ScaleInterpolator()
+                            {
+                                StartValue=new Vector2(w,w),
+                                EndValue=Vector2.Zero,
                             }
                         }
                     }
-                };
+                }
+            };
             AddOnCollisionAction(() =>
             {
                 Game1.Instance.CurrentRoom.AddEmitter(emitter);
                 emitter.Trigger(Position);
+                FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
+                int val = random.GetFieldValue<int>("_state");
+                Debug.WriteLine(val);
             });
         }
         public new void Update(GameTime gameTime)
@@ -103,23 +103,12 @@ namespace FantaRPG.src
                 {
                     Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
                 }
-            }
-            else
-            {
-                if (!triggered)
+                else
                 {
-                    //emitter.Trigger(Position + Vector2.Multiply(HitboxSize, 0.5f));
-                    //emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-                    triggered = true;
                     foreach (var item in OnCollideAction)
                     {
                         item.Invoke();
                     }
-                }
-                else
-                {
-                    //Debug.WriteLine(emitter.ActiveParticles + " + " + emitter.Emitters[0].AutoTrigger);
-                    //Finished = !emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                 }
             }
         }

@@ -97,10 +97,10 @@ namespace FantaRPG.src
             {
                 if (item is Bullet)
                 {
-                    Bullet spell = item as Bullet;
-                    if (spell.Finished)
+                    Bullet bullet = item as Bullet;
+                    if (!bullet.Alive)
                     {
-                        entities.Remove(spell);
+                        entities.Remove(bullet);
                         continue;
                     }
                     (item as Bullet).Update(gameTime);

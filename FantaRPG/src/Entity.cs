@@ -13,6 +13,7 @@ namespace FantaRPG.src
         protected Texture2D Texture;
         public Stats Stats;
         protected bool alive = true;
+        public bool Alive { get { return alive; } }
         public Entity(Texture2D texture, int x, int y, int w, int h)
         {
             Texture = texture;
