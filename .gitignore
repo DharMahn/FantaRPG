@@ -44,6 +44,9 @@ _ReSharper*/
 #Subversion files
 .svn
 
+# Visual Studio 2015 cache/options directory
+.vs/
+
 # Office Temp Files
 ~$*
 
