@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class BasicCollision
     {

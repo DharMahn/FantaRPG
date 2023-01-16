@@ -1,14 +1,16 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FantaRPG.src.Movement;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class Player : Entity
     {
@@ -45,7 +47,7 @@ namespace FantaRPG
             if (movementVector != Vector2.Zero)
             {
                 movementVector.Normalize();
-                movementVector.X *= 5000;
+                movementVector.X *= Stats.MoveSpeed * 1000f;
                 movementVector.X *= (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (MovementInput.KeyJustDown(Input["Jump"]))
@@ -54,18 +56,29 @@ namespace FantaRPG
             }
             if (MovementInput.MouseLeftJustDown())
             {
-                Vector2 playerCenter = new Vector2(Position.X + (HitboxSize.X / 2), Position.Y + (HitboxSize.Y / 2));
+                Vector2 playerCenter = new Vector2(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
                 Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
-                
+
                 Debug.WriteLine(cursorPos.X.ToString("0.0") + ";" + cursorPos.Y.ToString("0.0") + " cursorpos, " + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + " playerpos");
                 Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 1000);
-                Game1.Instance.CurrentRoom.AddEntity(new Spell(Game1.Instance.pixel, (int)(playerCenter.X-(spellSize/2)), (int)(playerCenter.Y-(spellSize/2)), spellSize, spellSize, spellVel));
+                Game1.Instance.CurrentRoom.AddEntity(new Spell(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
             }
 
             Acceleration += movementVector;
-            Velocity += Acceleration;
+            if (movementVector.X != 0)
+            {
+                if (Math.Sign(Acceleration.X) == Math.Sign(Velocity.X))
+                {
+                    Velocity.X += Acceleration.X;
+                }
+                else
+                {
+                    Velocity.X = Acceleration.X;
+                }
+            }
+            Velocity.Y += Acceleration.Y;
             foreach (var item in Game1.Instance.CurrentRoom.Platforms)
             {
                 if (IsTouchingLeft(item, gameTime))
@@ -89,8 +102,25 @@ namespace FantaRPG
                     Velocity.Y = 0;
                 }
             }
-            Position += (Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds));
-            Velocity.X *= 0.98f;
+            if (Math.Sign(movementVector.X) == 0)
+            {
+                float drag = 20f * (float)gameTime.TotalGameTime.TotalSeconds;
+                if (Velocity.X - drag >= 0)
+                {
+                    Velocity.X -= drag;
+                }
+                else if (Velocity.X + drag <= 0)
+                {
+                    Velocity.X += drag;
+                }
+                else
+                {
+                    Velocity.X = 0;
+                }
+                Debug.WriteLine(Velocity.X);
+                Debug.WriteLine("hello");
+            }
+            Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
             if (Math.Abs(Velocity.X) < 0.001)
             {
                 Velocity.X = 0;

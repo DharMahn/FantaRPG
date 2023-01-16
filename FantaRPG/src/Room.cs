@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class Room
     {
@@ -94,7 +94,6 @@ namespace FantaRPG
 
         internal void Update(GameTime gameTime)
         {
-            Debug.WriteLine(entities.Count);
             foreach (var item in entities.ToList())
             {
                 if (item is Spell)

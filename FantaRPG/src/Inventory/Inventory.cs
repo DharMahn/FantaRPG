@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FantaRPG
+namespace FantaRPG.src.Inventory
 {
-    internal enum Movement
+    internal class Inventory
     {
-        None = 0, Left = 1, Right = 2, Down = 4, Jump = 8, Up = 16, Interact = 32,
+        List<Slot> slots = new List<Slot>();
     }
 }

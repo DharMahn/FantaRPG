@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class Platform : Entity
     {
         public Platform(Texture2D texture, int x, int y, int w, int h) : base(texture)
         {
-            Position=new Vector2(x, y);
-            HitboxSize= new Vector2(w, h);
+            Position = new Vector2(x, y);
+            HitboxSize = new Vector2(w, h);
         }
     }
 }

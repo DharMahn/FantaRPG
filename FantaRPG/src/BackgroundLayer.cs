@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class BackgroundLayer
     {
         public Texture2D Texture;
         public int LayerID;
-        public BackgroundLayer(Texture2D texture,int layerid)
+        public BackgroundLayer(Texture2D texture, int layerid)
         {
             Texture = texture;
             LayerID = layerid;

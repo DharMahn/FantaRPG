@@ -6,22 +6,31 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class Entity : BasicCollision
     {
         protected Texture2D Texture;
+        public Stats Stats;
         public Entity(Texture2D texture)
         {
-            this.Texture = texture;
+            Texture = texture;
             Position = Vector2.Zero;
             HitboxSize = new Vector2(20, 20);
+            Stats = new Stats(); 
+            ProcessStats();
         }
         public Entity(Texture2D texture, int x, int y, int w, int h)
         {
-            this.Texture = texture;
+            Texture = texture;
             Position = new Vector2(x, y);
             HitboxSize = new Vector2(w, h);
+            Stats = new Stats();
+            ProcessStats();
+        }
+        public void ProcessStats()
+        {
+            Stats.MoveSpeed = 4;
         }
         public void Update(GameTime gameTime)
         {

@@ -1,11 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FantaRPG.src.Movement;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class Game1 : Game
     {

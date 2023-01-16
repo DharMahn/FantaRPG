@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace FantaRPG
+namespace FantaRPG.src.Movement
 {
     public static class MovementInput
     {

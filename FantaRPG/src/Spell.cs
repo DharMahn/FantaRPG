@@ -14,7 +14,7 @@ using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.TextureAtlases;
 using System.Diagnostics;
 
-namespace FantaRPG
+namespace FantaRPG.src
 {
     internal class Spell : Entity
     {
@@ -26,7 +26,7 @@ namespace FantaRPG
         public Spell(Texture2D texture, int x, int y, int w, int h, Vector2 velocity) : base(texture, x, y, w, h)
         {
             Velocity = velocity;
-            TextureRegion2D textureRegion=new TextureRegion2D(texture);
+            TextureRegion2D textureRegion = new TextureRegion2D(texture);
             emitter = new ParticleEffect(autoTrigger: false)
             {
                 Position = Vector2.Zero,
@@ -110,8 +110,8 @@ namespace FantaRPG
             {
                 if (!triggered)
                 {
-                    emitter.Position= Position + Vector2.Multiply(HitboxSize, 0.5f);
-                    emitter.Trigger(Position+Vector2.Multiply(HitboxSize,0.5f));
+                    emitter.Position = Position + Vector2.Multiply(HitboxSize, 0.5f);
+                    emitter.Trigger(Position + Vector2.Multiply(HitboxSize, 0.5f));
                     emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                     triggered = true;
                 }
