@@ -30,7 +30,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:kis_fuvek.png
+/build:kis_fuvek.png;bg4.png
 
 #begin kis_kovek.png
 /importer:TextureImporter
@@ -42,7 +42,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:kis_kovek.png
+/build:kis_kovek.png;bg5.png
 
 #begin kozepes_kovek.png
 /importer:TextureImporter
@@ -54,7 +54,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:kozepes_kovek.png
+/build:kozepes_kovek.png;bg3.png
 
 #begin nagy_fuvek.png
 /importer:TextureImporter
@@ -66,7 +66,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:nagy_fuvek.png
+/build:nagy_fuvek.png;bg2.png
 
 #begin nagy_kovek.png
 /importer:TextureImporter
@@ -78,7 +78,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:nagy_kovek.png
+/build:nagy_kovek.png;bg1.png
 
 #begin pixel.png
 /importer:TextureImporter

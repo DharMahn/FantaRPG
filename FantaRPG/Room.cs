@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,8 +40,8 @@ namespace FantaRPG
         {
             backgrounds = bgs;
             this.platforms = platforms;
-            this.entities= entities;
-            Player=player;
+            this.entities = entities;
+            Player = player;
         }
         private Player player;
 
@@ -50,18 +51,18 @@ namespace FantaRPG
             private set { player = value; }
         }
 
-        internal void DrawBackground(SpriteBatch spriteBatch, Camera cam)
+        internal void DrawBackground(SpriteBatch spriteBatch, Matrix transform)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap);
             foreach (var item in Backgrounds)
             {
-                item.Draw(spriteBatch, cam);
+                item.Draw(spriteBatch, transform);
             }
             spriteBatch.End();
         }
         internal void DrawEntities(SpriteBatch spriteBatch, Matrix matrix)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred,blendState: BlendState.AlphaBlend,transformMatrix: matrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, transformMatrix: matrix);
             foreach (var item in entities)
             {
                 if (item is Spell)
@@ -78,7 +79,7 @@ namespace FantaRPG
         }
         internal void DrawPlatforms(SpriteBatch spriteBatch, Matrix transform)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred,transformMatrix: transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, transformMatrix: transform);
             foreach (var item in platforms)
             {
                 item.Draw(spriteBatch);
@@ -93,10 +94,17 @@ namespace FantaRPG
 
         internal void Update(GameTime gameTime)
         {
-            foreach (var item in entities)
+            Debug.WriteLine(entities.Count);
+            foreach (var item in entities.ToList())
             {
                 if (item is Spell)
                 {
+                    Spell spell = item as Spell;
+                    if (spell.Finished)
+                    {
+                        entities.Remove(spell);
+                        continue;
+                    }
                     (item as Spell).Update(gameTime);
                 }
             }

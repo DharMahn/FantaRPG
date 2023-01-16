@@ -21,24 +21,27 @@ namespace FantaRPG
         bool gravityAffected = true;
         private ParticleEffect emitter;
         bool alive = true;
-        bool triggered=false;
+        bool triggered = false;
+        public bool Finished = false;
         public Spell(Texture2D texture, int x, int y, int w, int h, Vector2 velocity) : base(texture, x, y, w, h)
         {
             Velocity = velocity;
             TextureRegion2D textureRegion=new TextureRegion2D(texture);
-            emitter = new ParticleEffect(autoTrigger:false)
+            emitter = new ParticleEffect(autoTrigger: false)
             {
                 Position = Vector2.Zero,
                 Emitters = new List<ParticleEmitter>
                 {
-                    new ParticleEmitter(textureRegion, 100, TimeSpan.FromSeconds(2.5), Profile.Circle(100, Profile.CircleRadiation.Out))
+                    new ParticleEmitter(textureRegion, 50, TimeSpan.FromSeconds(.5), Profile.Circle(10, Profile.CircleRadiation.Out))
                     {
+                        AutoTrigger=false,
                         //AutoTrigger=false,
                         //AutoTriggerFrequency=0,
                         Parameters=new ParticleReleaseParameters
                         {
-                            Speed=new Range<float>(15f),
-                            Scale=new Range<float>(5f),
+                            Speed=new Range<float>(100f,300f),
+                            Scale=new Range<float>(w),
+                            Quantity=50,
                         },
                         Modifiers =
                         {
@@ -48,8 +51,13 @@ namespace FantaRPG
                                 {
                                     new ColorInterpolator
                                     {
-                                        StartValue=new HslColor(0.33f,0.5f,0.5f),
-                                        EndValue=new HslColor(0.5f,0.9f,1.0f)
+                                        StartValue=new HslColor(0.0f,1.0f,0.5f),
+                                        EndValue=new HslColor(180.0f,1.0f,0.5f)
+                                    },
+                                    new ScaleInterpolator()
+                                    {
+                                        StartValue=new Vector2(w,w),
+                                        EndValue=Vector2.Zero,
                                     }
                                 }
                             }
@@ -93,7 +101,10 @@ namespace FantaRPG
                         alive = false;
                     }
                 }
-                Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
+                if (alive)
+                {
+                    Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
+                }
             }
             else
             {
@@ -106,8 +117,8 @@ namespace FantaRPG
                 }
                 else
                 {
-                    Debug.WriteLine(emitter.ActiveParticles + " + " + emitter.Emitters[0].AutoTrigger);
-                    emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                    //Debug.WriteLine(emitter.ActiveParticles + " + " + emitter.Emitters[0].AutoTrigger);
+                    Finished = !emitter.Emitters[0].Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                 }
             }
         }
