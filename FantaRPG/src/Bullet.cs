@@ -16,55 +16,57 @@ using System.Diagnostics;
 
 namespace FantaRPG.src
 {
-    internal class Spell : Entity
+    internal class Bullet : Entity
     {
         bool gravityAffected = true;
-        private ParticleEffect emitter;
-        bool alive = true;
+        private ParticleEmitter emitter;
         bool triggered = false;
         public bool Finished = false;
-        public Spell(Texture2D texture, int x, int y, int w, int h, Vector2 velocity) : base(texture, x, y, w, h)
+        List<Action> OnCollideAction = new List<Action>();
+        public void AddOnCollisionAction(Action action)
+        {
+            OnCollideAction.Add(action);
+        }
+        public Bullet(Texture2D texture, int x, int y, int w, int h, Vector2 velocity) : base(texture, x, y, w, h)
         {
             Velocity = velocity;
             TextureRegion2D textureRegion = new TextureRegion2D(texture);
-            emitter = new ParticleEffect(autoTrigger: false)
+            emitter = new ParticleEmitter(textureRegion, 50, TimeSpan.FromSeconds(.5), Profile.Circle(10, Profile.CircleRadiation.Out))
             {
-                Position = Vector2.Zero,
-                Emitters = new List<ParticleEmitter>
+                AutoTrigger = false,
+                //AutoTrigger=false,
+                //AutoTriggerFrequency=0,
+                Parameters = new ParticleReleaseParameters
                 {
-                    new ParticleEmitter(textureRegion, 50, TimeSpan.FromSeconds(.5), Profile.Circle(10, Profile.CircleRadiation.Out))
+                    Speed = new Range<float>(100f, 300f),
+                    Scale = new Range<float>(w),
+                    Quantity = 50,
+                },
+                Modifiers =
                     {
-                        AutoTrigger=false,
-                        //AutoTrigger=false,
-                        //AutoTriggerFrequency=0,
-                        Parameters=new ParticleReleaseParameters
+                        new AgeModifier
                         {
-                            Speed=new Range<float>(100f,300f),
-                            Scale=new Range<float>(w),
-                            Quantity=50,
-                        },
-                        Modifiers =
-                        {
-                            new AgeModifier
+                            Interpolators =
                             {
-                                Interpolators =
+                                new ColorInterpolator
                                 {
-                                    new ColorInterpolator
-                                    {
-                                        StartValue=new HslColor(0.0f,1.0f,0.5f),
-                                        EndValue=new HslColor(180.0f,1.0f,0.5f)
-                                    },
-                                    new ScaleInterpolator()
-                                    {
-                                        StartValue=new Vector2(w,w),
-                                        EndValue=Vector2.Zero,
-                                    }
+                                    StartValue=new HslColor(0.0f,1.0f,0.5f),
+                                    EndValue=new HslColor(180.0f,1.0f,0.5f)
+                                },
+                                new ScaleInterpolator()
+                                {
+                                    StartValue=new Vector2(w,w),
+                                    EndValue=Vector2.Zero,
                                 }
                             }
                         }
                     }
-                }
-            };
+                };
+            AddOnCollisionAction(() =>
+            {
+                Game1.Instance.CurrentRoom.AddEmitter(emitter);
+                emitter.Trigger(Position);
+            });
         }
         public new void Update(GameTime gameTime)
         {
@@ -79,25 +81,21 @@ namespace FantaRPG.src
                     if (IsTouchingLeft(item, gameTime))
                     {
                         Position.X = item.Position.X - HitboxSize.X;
-                        Velocity.X *= -1;
                         alive = false;
                     }
                     else if (IsTouchingRight(item, gameTime))
                     {
                         Position.X = item.Position.X + item.HitboxSize.X;
-                        Velocity.X *= -1;
                         alive = false;
                     }
                     if (IsTouchingTop(item, gameTime))
                     {
                         Position.Y = item.Position.Y - HitboxSize.Y;
-                        Velocity.Y *= -1;
                         alive = false;
                     }
                     else if (IsTouchingBottom(item, gameTime))
                     {
                         Position.Y = item.Position.Y + item.HitboxSize.Y;
-                        Velocity.Y *= -1;
                         alive = false;
                     }
                 }
@@ -110,25 +108,24 @@ namespace FantaRPG.src
             {
                 if (!triggered)
                 {
-                    emitter.Position = Position + Vector2.Multiply(HitboxSize, 0.5f);
-                    emitter.Trigger(Position + Vector2.Multiply(HitboxSize, 0.5f));
-                    emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                    //emitter.Trigger(Position + Vector2.Multiply(HitboxSize, 0.5f));
+                    //emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                     triggered = true;
+                    foreach (var item in OnCollideAction)
+                    {
+                        item.Invoke();
+                    }
                 }
                 else
                 {
                     //Debug.WriteLine(emitter.ActiveParticles + " + " + emitter.Emitters[0].AutoTrigger);
-                    Finished = !emitter.Emitters[0].Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                    //Finished = !emitter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                 }
             }
         }
         public new void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(emitter);
-            if (alive)
-            {
-                base.Draw(spriteBatch);
-            }
+            
         }
     }
 }

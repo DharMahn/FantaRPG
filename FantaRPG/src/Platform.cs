@@ -10,10 +10,9 @@ namespace FantaRPG.src
 {
     internal class Platform : Entity
     {
-        public Platform(Texture2D texture, int x, int y, int w, int h) : base(texture)
+        public Platform(Texture2D texture, int x, int y, int w, int h) : base(texture, x, y, w, h)
         {
-            Position = new Vector2(x, y);
-            HitboxSize = new Vector2(w, h);
+
         }
     }
 }

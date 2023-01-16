@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.Particles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,21 +27,25 @@ namespace FantaRPG.src
         {
             get { return entities; }
         }
+        ParticleEffect particles;
+        public void AddEmitter(ParticleEmitter effect)
+        {
+            particles.Emitters.Add(effect);
+        }
         public bool AddEntity(Entity entity)
         {
             entities.Add(entity);
             return true;
-        }
-        public Room(List<BackgroundLayer> bgs)
-        {
-            backgrounds = bgs;
-            platforms = new List<Platform>();
         }
         public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, Player player)
         {
             backgrounds = bgs;
             this.platforms = platforms;
             this.entities = entities;
+            particles = new ParticleEffect(autoTrigger: false)
+            {
+                Position = Vector2.Zero
+            };
             Player = player;
         }
         private Player player;
@@ -65,15 +70,9 @@ namespace FantaRPG.src
             spriteBatch.Begin(SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, transformMatrix: matrix);
             foreach (var item in entities)
             {
-                if (item is Spell)
-                {
-                    (item as Spell).Draw(spriteBatch);
-                }
-                else
-                {
-                    item.Draw(spriteBatch);
-                }
+                item.Draw(spriteBatch);
             }
+            spriteBatch.Draw(particles);
             player.Draw(spriteBatch);
             spriteBatch.End();
         }
@@ -96,15 +95,23 @@ namespace FantaRPG.src
         {
             foreach (var item in entities.ToList())
             {
-                if (item is Spell)
+                if (item is Bullet)
                 {
-                    Spell spell = item as Spell;
+                    Bullet spell = item as Bullet;
                     if (spell.Finished)
                     {
                         entities.Remove(spell);
                         continue;
                     }
-                    (item as Spell).Update(gameTime);
+                    (item as Bullet).Update(gameTime);
+                }
+            }
+            foreach (var item in particles.Emitters.ToList())
+            {
+                Console.WriteLine("asd");
+                if (!item.Update((float)gameTime.ElapsedGameTime.TotalSeconds))
+                {
+                    particles.Emitters.Remove(item);
                 }
             }
             player.Update(gameTime);

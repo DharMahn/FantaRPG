@@ -18,11 +18,9 @@ namespace FantaRPG.src
         private Vector2 Acceleration;
         int spellSize = 10;
 
-        public Player(Texture2D texture, Dictionary<string, Keys> input) : base(texture)
+        public Player(Texture2D texture, Dictionary<string, Keys> input, int x, int y, int w, int h) : base(texture, x, y, w, h)
         {
             Input = input;
-            Velocity = new Vector2();
-            Position = new Vector2(-400, -400);
         }
         public new void Update(GameTime gameTime)
         {
@@ -63,7 +61,11 @@ namespace FantaRPG.src
                 Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 1000);
-                Game1.Instance.CurrentRoom.AddEntity(new Spell(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
+                Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
+            }
+            if (MovementInput.MouseRightJustUp())
+            {
+
             }
 
             Acceleration += movementVector;
@@ -117,8 +119,6 @@ namespace FantaRPG.src
                 {
                     Velocity.X = 0;
                 }
-                Debug.WriteLine(Velocity.X);
-                Debug.WriteLine("hello");
             }
             Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
             if (Math.Abs(Velocity.X) < 0.001)

@@ -60,7 +60,7 @@ namespace FantaRPG.src
                 { "Right", Keys.D },
                 { "Jump", Keys.Space }
             };
-            player = new Player(pixel, input);
+            player = new Player(pixel, input, -400, -400, 20, 20);
 
             CurrentRoom = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), entities, player);
             CurrentRoom.AddPlatform(new Platform(pixel, -200, -1000, 400, 800));

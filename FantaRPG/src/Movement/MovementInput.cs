@@ -44,6 +44,22 @@ namespace FantaRPG.src.Movement
         {
             return Mouse.GetState().Position;
         }
+        public static bool MouseRightDown()
+        {
+            return Mouse.GetState().RightButton == ButtonState.Pressed;
+        }
+        public static bool MouseRightUp()
+        {
+            return Mouse.GetState().RightButton == ButtonState.Released;
+        }
+        public static bool MouseRightJustDown()
+        {
+            return Mouse.GetState().RightButton == ButtonState.Pressed && lastMouseState.RightButton == ButtonState.Released;
+        }
+        public static bool MouseRightJustUp()
+        {
+            return Mouse.GetState().RightButton == ButtonState.Released && lastMouseState.RightButton == ButtonState.Pressed;
+        }
         public static void Update()
         {
             lastKeyboardState = Keyboard.GetState();

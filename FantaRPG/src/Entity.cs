@@ -12,14 +12,7 @@ namespace FantaRPG.src
     {
         protected Texture2D Texture;
         public Stats Stats;
-        public Entity(Texture2D texture)
-        {
-            Texture = texture;
-            Position = Vector2.Zero;
-            HitboxSize = new Vector2(20, 20);
-            Stats = new Stats(); 
-            ProcessStats();
-        }
+        protected bool alive = true;
         public Entity(Texture2D texture, int x, int y, int w, int h)
         {
             Texture = texture;
@@ -34,11 +27,14 @@ namespace FantaRPG.src
         }
         public void Update(GameTime gameTime)
         {
-
+            Position += Velocity;
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, Position, new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y), Color.White);
+            if (alive)
+            {
+                spriteBatch.Draw(Texture, Position, new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y), Color.White);
+            }
             if (Game1.Instance.debugFont != null)
             {
                 spriteBatch.DrawString(Game1.Instance.debugFont, "{" + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + "}", Position, Color.Black);
