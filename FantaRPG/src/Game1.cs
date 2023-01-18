@@ -62,7 +62,7 @@ namespace FantaRPG.src
             };
             player = new Player(pixel, input, -400, -400, 20, 20);
 
-            CurrentRoom = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), entities, player);
+            CurrentRoom = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), entities, player,new Rectangle(0,0,1920,1080));
             CurrentRoom.AddPlatform(new Platform(pixel, -200, -1000, 400, 800));
             CurrentRoom.AddPlatform(new Platform(pixel, -20000, 0, 40000, 20));
             SetResolution(1600, 900);

@@ -32,12 +32,13 @@ namespace FantaRPG.src
         {
             particles.Emitters.Add(effect);
         }
+        public Rectangle Bounds { get; protected set; }
         public bool AddEntity(Entity entity)
         {
             entities.Add(entity);
             return true;
         }
-        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, Player player)
+        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, Player player, Rectangle bounds = new Rectangle())
         {
             backgrounds = bgs;
             this.platforms = platforms;
@@ -47,6 +48,7 @@ namespace FantaRPG.src
                 Position = Vector2.Zero
             };
             Player = player;
+            Bounds = bounds;
         }
         private Player player;
 

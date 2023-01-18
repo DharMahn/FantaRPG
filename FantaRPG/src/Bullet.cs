@@ -19,6 +19,9 @@ namespace FantaRPG.src
 {
     internal class Bullet : Entity
     {
+        private static FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+
         bool gravityAffected = true;
         private ParticleEmitter emitter;
         List<Action> OnCollideAction = new List<Action>();
@@ -62,10 +65,13 @@ namespace FantaRPG.src
             AddOnCollisionAction(() =>
             {
                 Game1.Instance.CurrentRoom.AddEmitter(emitter);
+
+                //FastRandom random = (FastRandom)ParticleEmitterInfo.GetValue(emitter);
+                //FastRandomInfo.SetValue(random, RNG.Get(100000));
                 emitter.Trigger(Position);
-                FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
-                int val = random.GetFieldValue<int>("_state");
-                Debug.WriteLine(val);
+                //FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
+                //int val = random.GetFieldValue<int>("_state");
+                //Debug.WriteLine(val);
             });
         }
         public new void Update(GameTime gameTime)
