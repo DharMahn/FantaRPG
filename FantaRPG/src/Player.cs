@@ -17,6 +17,11 @@ namespace FantaRPG.src
         private Dictionary<string, Keys> Input;
         private Vector2 Acceleration;
         int spellSize = 10;
+        bool onGround = false;
+        bool canJump = false;
+        int jumpCount = 2;
+        int jumpCountMax = 2;
+        bool onWall = false;
 
         public Player(Texture2D texture, Dictionary<string, Keys> input, int x, int y, int w, int h) : base(texture, x, y, w, h)
         {
@@ -42,15 +47,28 @@ namespace FantaRPG.src
             {
                 movementVector += Vector2.UnitX;
             }
+            Vector2 actualMovementVector = Vector2.Zero;
             if (movementVector != Vector2.Zero)
             {
-                movementVector.Normalize();
-                movementVector.X *= Stats.MoveSpeed * 1000f;
-                movementVector.X *= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                actualMovementVector = Vector2.Normalize(movementVector);
+                actualMovementVector.X *= Stats.MoveSpeed * 1000f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (MovementInput.KeyJustDown(Input["Jump"]))
             {
-                Velocity.Y = -1000;
+                if (onWall)
+                {
+                    Velocity.X = (-movementVector.X) * 500f;
+                    Velocity.Y = -1000;
+                }
+                else
+                {
+                    if (jumpCount > 0)
+                    {
+                        jumpCount--;
+                        Velocity.Y = -1000;
+                        onGround = false;
+                    }
+                }
             }
             if (MovementInput.MouseLeftJustDown())
             {
@@ -63,40 +81,31 @@ namespace FantaRPG.src
                 spellVel = Vector2.Multiply(spellVel, 1000);
                 Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
             }
-            //if (MovementInput.MouseRightJustUp())
-            //{
-
-            //}
-
-            Acceleration += movementVector;
-            if (movementVector.X != 0)
-            {
-                if (Math.Sign(Acceleration.X) == Math.Sign(Velocity.X))
-                {
-                    Velocity.X += Acceleration.X;
-                }
-                else
-                {
-                    Velocity.X = Acceleration.X;
-                }
-            }
+            Acceleration += actualMovementVector;
+            Velocity.X += Acceleration.X;
+            Velocity.X = Math.Clamp(Velocity.X, -Stats.MoveSpeed * 500, Stats.MoveSpeed * 500);
             Velocity.Y += Acceleration.Y;
+            bool tempOnWall = false;
             foreach (var item in Game1.Instance.CurrentRoom.Platforms)
             {
                 if (IsTouchingLeft(item, gameTime))
                 {
                     Position.X = item.Position.X - HitboxSize.X;
                     Velocity.X = 0;
+                    tempOnWall = true;
                 }
                 else if (IsTouchingRight(item, gameTime))
                 {
                     Position.X = item.Position.X + item.HitboxSize.X;
                     Velocity.X = 0;
+                    tempOnWall = true;
                 }
                 if (IsTouchingTop(item, gameTime))
                 {
                     Position.Y = item.Position.Y - HitboxSize.Y;
                     Velocity.Y = 0;
+                    onGround = true;
+                    jumpCount = jumpCountMax;
                 }
                 else if (IsTouchingBottom(item, gameTime))
                 {
@@ -104,9 +113,9 @@ namespace FantaRPG.src
                     Velocity.Y = 0;
                 }
             }
-            if (Math.Sign(movementVector.X) == 0)
+            if (Math.Sign(actualMovementVector.X) == 0 && onGround)
             {
-                float drag = 20f * (float)gameTime.TotalGameTime.TotalSeconds;
+                float drag = 15f * (float)gameTime.TotalGameTime.TotalSeconds;
                 if (Velocity.X - drag >= 0)
                 {
                     Velocity.X -= drag;
@@ -130,6 +139,12 @@ namespace FantaRPG.src
                 Velocity.Y = 0;
             }
             Acceleration = Vector2.Zero;
+            onWall = tempOnWall;
+        }
+        public new void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround, Position + new Vector2(0, 20), Color.Black);
         }
     }
 }
