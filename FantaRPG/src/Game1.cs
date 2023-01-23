@@ -85,9 +85,10 @@ namespace FantaRPG.src
             base.Update(gameTime);
             MovementInput.Update();
         }
+        static Color bgColor = new Color(16, 0, 32);
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(bgColor);
             //Background
             CurrentRoom.DrawBackground(spriteBatch, cam.Transform);
             CurrentRoom.DrawPlatforms(spriteBatch, cam.Transform);

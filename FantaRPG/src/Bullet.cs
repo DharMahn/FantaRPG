@@ -66,8 +66,8 @@ namespace FantaRPG.src
             {
                 Game1.Instance.CurrentRoom.AddEmitter(emitter);
 
-                //FastRandom random = (FastRandom)ParticleEmitterInfo.GetValue(emitter);
-                //FastRandomInfo.SetValue(random, RNG.Get(100000));
+                FastRandom random = (FastRandom)ParticleEmitterInfo.GetValue(emitter);
+                FastRandomInfo.SetValue(random, RNG.Get(100000));
                 emitter.Trigger(Position);
                 //FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
                 //int val = random.GetFieldValue<int>("_state");
