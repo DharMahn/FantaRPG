@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended.Collisions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace FantaRPG.src
         }
         public void Update(GameTime gameTime)
         {
-            Position += Velocity;
+            Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public void Draw(SpriteBatch spriteBatch)
         {

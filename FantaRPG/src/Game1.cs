@@ -1,7 +1,11 @@
-﻿using FantaRPG.src.Movement;
+﻿using FantaRPG.src.Animations;
+using FantaRPG.src.Interfaces;
+using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +23,7 @@ namespace FantaRPG.src
         public SpriteFont debugFont;
         public Texture2D pixel;
         public float Ratio;
+        CollisionComponent collisionComponent;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -32,8 +37,10 @@ namespace FantaRPG.src
             base.Initialize();
         }
         Player player;
+        IAnimation fade;
         protected override void LoadContent()
         {
+            
             debugFont = Content.Load<SpriteFont>("DebugFont");
             pixel = Content.Load<Texture2D>("pixel");
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -45,7 +52,7 @@ namespace FantaRPG.src
                 new BackgroundLayer(Content.Load<Texture2D>("bg2"), 11),
                 new BackgroundLayer(Content.Load<Texture2D>("bg1"), 13)
             };
-            List<Entity> entities = new();
+            List<IEntity> entities = new();
             /*for (int i = 0; i < 200; i++)
             {
                 entities.Add(new Entity(pixel, r.Next(-20000, 20001), 20, 20, 20));
@@ -60,12 +67,13 @@ namespace FantaRPG.src
                 { "Right", Keys.D },
                 { "Jump", Keys.Space }
             };
-            player = new Player(pixel, input, -400, -400, 20, 20);
+            player = new Player(pixel, input, new RectangleF(-400, -400, 20, 20));
 
-            CurrentRoom = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), entities, player,new Rectangle(0,0,1920,1080));
-            CurrentRoom.AddPlatform(new Platform(pixel, -200, -1000, 400, 800));
-            CurrentRoom.AddPlatform(new Platform(pixel, -20000, 0, 40000, 20));
+            ChangeRoom(new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), entities, player,new Rectangle(0,0,1920,1080)));
+            CurrentRoom.AddEntity(new Platform(pixel, new RectangleF(-200, -1000, 400, 800)));
+            CurrentRoom.AddEntity(new Platform(pixel, new RectangleF(-20000, 0, 40000, 20)));
             SetResolution(1600, 900);
+            fade = new FadeToBlack();
         }
         public void SetResolution(int x, int y)
         {
@@ -74,14 +82,25 @@ namespace FantaRPG.src
             _graphics.ApplyChanges();
             Ratio = (float)_graphics.PreferredBackBufferHeight / CurrentRoom.Backgrounds.First().Texture.Height;
         }
-
+        public void ChangeRoom(Room room)
+        {
+            Instance.CurrentRoom = room;
+            collisionComponent = new CollisionComponent(room.Bounds);
+            foreach (var item in CurrentRoom.Entities)
+            {
+                collisionComponent.Insert(item);
+            }
+            collisionComponent.Insert(player);
+            //collisionComponent.Insert();
+        }
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            fade.Update(gameTime);
             CurrentRoom.Update(gameTime);
             cam.Follow(player);
+            collisionComponent.Update(gameTime);
             base.Update(gameTime);
             MovementInput.Update();
         }
@@ -90,14 +109,10 @@ namespace FantaRPG.src
         {
             GraphicsDevice.Clear(bgColor);
             //Background
-            CurrentRoom.DrawBackground(spriteBatch, cam.Transform);
-            CurrentRoom.DrawPlatforms(spriteBatch, cam.Transform);
-            CurrentRoom.DrawEntities(spriteBatch, cam.Transform);
-            spriteBatch.Begin();
-            //spriteBatch.Draw(pixel, new Rectangle(Mouse.GetState().Position.X - 10 + (int)cam.Offset.X, Mouse.GetState().Position.Y - 10 + (int)cam.Offset.Y, 20, 20), Color.Red);
-            //spriteBatch.DrawString(Instance.debugFont, "{" + Mouse.GetState().Position.X+cam.Center.X.ToString("0.0") + ";" + Mouse.GetState().Position.Y+cam.Center.Y.ToString("0.0") + "}", Mouse.GetState().Position.ToVector2(), Color.Black);
-
-            spriteBatch.End();
+            CurrentRoom.DrawBackground(spriteBatch, cam);
+            //foreground stuff
+            CurrentRoom.DrawEntities(spriteBatch, cam);
+            //fade.Draw(spriteBatch, cam);
             base.Draw(gameTime);
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FantaRPG.src.Interfaces;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Particles;
 using System;
@@ -17,13 +18,8 @@ namespace FantaRPG.src
         {
             get { return backgrounds; }
         }
-        private List<Platform> platforms;
-        public List<Platform> Platforms
-        {
-            get { return platforms; }
-        }
-        private List<Entity> entities;
-        public List<Entity> Entities
+        private List<IEntity> entities;
+        public List<IEntity> Entities
         {
             get { return entities; }
         }
@@ -33,15 +29,14 @@ namespace FantaRPG.src
             particles.Emitters.Add(effect);
         }
         public Rectangle Bounds { get; protected set; }
-        public bool AddEntity(Entity entity)
+        public bool AddEntity(IEntity entity)
         {
             entities.Add(entity);
             return true;
         }
-        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, Player player, Rectangle bounds = new Rectangle())
+        public Room(List<BackgroundLayer> bgs, List<IEntity> entities, Player player, Rectangle bounds = new Rectangle())
         {
             backgrounds = bgs;
-            this.platforms = platforms;
             this.entities = entities;
             particles = new ParticleEffect(autoTrigger: false)
             {
@@ -58,18 +53,18 @@ namespace FantaRPG.src
             private set { player = value; }
         }
 
-        internal void DrawBackground(SpriteBatch spriteBatch, Matrix transform)
+        internal void DrawBackground(SpriteBatch spriteBatch, Camera cam)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap);
             foreach (var item in Backgrounds)
             {
-                item.Draw(spriteBatch, transform);
+                item.Draw(spriteBatch, cam);
             }
             spriteBatch.End();
         }
-        internal void DrawEntities(SpriteBatch spriteBatch, Matrix matrix)
+        internal void DrawEntities(SpriteBatch spriteBatch, Camera cam)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, transformMatrix: matrix);
+            spriteBatch.Begin(SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, transformMatrix: cam.Transform);
             foreach (var item in entities)
             {
                 item.Draw(spriteBatch);
@@ -77,20 +72,6 @@ namespace FantaRPG.src
             spriteBatch.Draw(particles);
             player.Draw(spriteBatch);
             spriteBatch.End();
-        }
-        internal void DrawPlatforms(SpriteBatch spriteBatch, Matrix transform)
-        {
-            spriteBatch.Begin(SpriteSortMode.Deferred, transformMatrix: transform);
-            foreach (var item in platforms)
-            {
-                item.Draw(spriteBatch);
-            }
-            spriteBatch.End();
-        }
-        public bool AddPlatform(Platform platform)
-        {
-            platforms.Add(platform);
-            return true;
         }
 
         internal void Update(GameTime gameTime)

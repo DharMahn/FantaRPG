@@ -14,13 +14,25 @@ using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.TextureAtlases;
 using System.Diagnostics;
 using System.Reflection;
+using MonoGame.Extended.Collisions;
+using FantaRPG.src.Interfaces;
 
 namespace FantaRPG.src
 {
-    internal class Bullet : Entity
+    internal class Bullet : IEntity
     {
+        public IShapeF Bounds { get; }
+        private Texture2D Texture;
+        public Vector2 Velocity;
         private static FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
         private static FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+        private bool alive;
+
+        public bool Alive
+        {
+            get { return alive; }
+            set { alive = value; }
+        }
 
         bool gravityAffected = true;
         private ParticleEmitter emitter;
@@ -29,7 +41,7 @@ namespace FantaRPG.src
         {
             OnCollideAction.Add(action);
         }
-        public Bullet(Texture2D texture, int x, int y, int w, int h, Vector2 velocity) : base(texture, x, y, w, h)
+        public Bullet(Texture2D texture, IShapeF shape, Vector2 velocity)
         {
             Velocity = velocity;
             TextureRegion2D textureRegion = new TextureRegion2D(texture);
@@ -39,7 +51,7 @@ namespace FantaRPG.src
                 Parameters = new ParticleReleaseParameters
                 {
                     Speed = new Range<float>(0f, 500f),
-                    Scale = new Range<float>(w),
+                    Scale = new Range<float>(0, 10),
                     Quantity = 50,
                 },
                 Modifiers =
@@ -50,77 +62,40 @@ namespace FantaRPG.src
                         {
                             new ColorInterpolator
                             {
-                                StartValue=new HslColor(0.0f,1.0f,0.5f),
-                                EndValue=new HslColor(180.0f,1.0f,0.5f)
+                                StartValue = new HslColor(0.0f,1.0f,0.5f),
+                                EndValue = new HslColor(180.0f,1.0f,0.5f)
                             },
                             new ScaleInterpolator()
                             {
-                                StartValue=new Vector2(w,w),
-                                EndValue=Vector2.Zero,
+                                StartValue = new Vector2(10,10),
+                                EndValue = Vector2.Zero,
                             }
                         }
                     }
                 }
             };
-            AddOnCollisionAction(() =>
-            {
-                Game1.Instance.CurrentRoom.AddEmitter(emitter);
+        }
+        public void OnCollision(CollisionEventArgs collisionInfo)
+        {
+            Game1.Instance.CurrentRoom.AddEmitter(emitter);
 
-                FastRandom random = (FastRandom)ParticleEmitterInfo.GetValue(emitter);
-                FastRandomInfo.SetValue(random, RNG.Get(100000));
-                emitter.Trigger(Position);
-                //FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
-                //int val = random.GetFieldValue<int>("_state");
-                //Debug.WriteLine(val);
-            });
+            FastRandom random = (FastRandom)ParticleEmitterInfo.GetValue(emitter);
+            FastRandomInfo.SetValue(random, RNG.Get(100000));
+            emitter.Trigger(Bounds.Position);
         }
-        public new void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
-            if (alive)
+            if (gravityAffected)
             {
-                if (gravityAffected)
-                {
-                    Velocity.Y += 1000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                }
-                foreach (var item in Game1.Instance.CurrentRoom.Platforms)
-                {
-                    if (IsTouchingLeft(item, gameTime))
-                    {
-                        Position.X = item.Position.X - HitboxSize.X;
-                        alive = false;
-                    }
-                    else if (IsTouchingRight(item, gameTime))
-                    {
-                        Position.X = item.Position.X + item.HitboxSize.X;
-                        alive = false;
-                    }
-                    if (IsTouchingTop(item, gameTime))
-                    {
-                        Position.Y = item.Position.Y - HitboxSize.Y;
-                        alive = false;
-                    }
-                    else if (IsTouchingBottom(item, gameTime))
-                    {
-                        Position.Y = item.Position.Y + item.HitboxSize.Y;
-                        alive = false;
-                    }
-                }
-                if (alive)
-                {
-                    Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
-                }
-                else
-                {
-                    foreach (var item in OnCollideAction)
-                    {
-                        item.Invoke();
-                    }
-                }
+                Velocity.Y += 1000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
+            Bounds.Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
         }
-        public new void Draw(SpriteBatch spriteBatch)
+
+        public void Draw(SpriteBatch spriteBatch)
         {
-            
+            RectangleF rectangle = (RectangleF)Bounds;
+            spriteBatch.Draw(Texture, Bounds.Position, new Rectangle((int)rectangle.X,(int)rectangle.Y,(int)rectangle.Width,(int)rectangle.Height), Color.White);
         }
     }
 }

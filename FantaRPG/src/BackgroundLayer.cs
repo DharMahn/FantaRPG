@@ -17,7 +17,7 @@ namespace FantaRPG.src
             Texture = texture;
             LayerID = layerid;
         }
-        public void Draw(SpriteBatch spriteBatch, Matrix transform)
+        public void Draw(SpriteBatch spriteBatch, Camera cam)
         {
 
             spriteBatch.Draw(Texture,
@@ -26,7 +26,7 @@ namespace FantaRPG.src
                     0,
                     (int)(Texture.Width * Game1.Instance.Ratio),
                     (int)(Texture.Height * Game1.Instance.Ratio)),
-                    new Rectangle(-(int)transform.Translation.X / LayerID, 0, Texture.Width, Texture.Height),
+                    new Rectangle(-(int)cam.Transform.Translation.X / LayerID, 0, Texture.Width, Texture.Height),
                     Color.White);
         }
     }

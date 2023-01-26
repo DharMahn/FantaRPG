@@ -1,7 +1,10 @@
-﻿using FantaRPG.src.Movement;
+﻿using FantaRPG.src.Interfaces;
+using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,9 +15,12 @@ using System.Threading.Tasks;
 
 namespace FantaRPG.src
 {
-    internal class Player : Entity
+    internal class Player : IEntity
     {
         private Dictionary<string, Keys> Input;
+        public IShapeF Bounds { get; }
+        private Texture2D Texture;
+        public Vector2 Velocity;
         private Vector2 Acceleration;
         int spellSize = 10;
         bool onGround = false;
@@ -22,12 +28,13 @@ namespace FantaRPG.src
         int jumpCount = 1;
         int jumpCountMax = 1;
         bool onWall = false;
-
-        public Player(Texture2D texture, Dictionary<string, Keys> input, int x, int y, int w, int h) : base(texture, x, y, w, h)
+        private Stats Stats = new Stats();
+        public Player(Texture2D texture, Dictionary<string, Keys> input, IShapeF shape)
         {
             Input = input;
+            Bounds = shape;
         }
-        public new void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             Vector2 movementVector = Vector2.Zero;
             Acceleration.Y += 2000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -71,7 +78,7 @@ namespace FantaRPG.src
                     }
                 }
             }
-            if (MovementInput.MouseLeftJustDown())
+            /*if (MovementInput.MouseLeftJustDown())
             {
                 Vector2 playerCenter = new Vector2(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
                 Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
@@ -81,13 +88,13 @@ namespace FantaRPG.src
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 5000);
                 Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
-            }
+            }*/
             Acceleration += actualMovementVector;
             Velocity.X += Acceleration.X;
             Velocity.X = Math.Clamp(Velocity.X, -Stats.MoveSpeed * 500, Stats.MoveSpeed * 500);
             Velocity.Y += Acceleration.Y;
-            bool tempOnWall = false;
-            foreach (var item in Game1.Instance.CurrentRoom.Platforms.Where(x=>x.IsCollidable))
+            /*bool tempOnWall = false;
+            foreach (var item in Game1.Instance.CurrentRoom.Platforms.Where(x => x.IsCollidable))
             {
                 if (item.IsDoor)
                 {
@@ -96,7 +103,7 @@ namespace FantaRPG.src
                         IsTouchingTop(item, gameTime) ||
                         IsTouchingBottom(item, gameTime))
                     {
-                        item.ChangeRoom();
+                        Game1.Instance.ChangeRoom(item.targetRoom);
                     }
                 }
                 else
@@ -129,7 +136,7 @@ namespace FantaRPG.src
                         Velocity.Y = 0;
                     }
                 }
-            }
+            }*/
             if (Math.Sign(actualMovementVector.X) == 0 && onGround)
             {
                 float drag = 1000f * (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -146,7 +153,7 @@ namespace FantaRPG.src
                     Velocity.X = 0;
                 }
             }
-            Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
+            Bounds.Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
             if (Math.Abs(Velocity.X) < 0.001)
             {
                 Velocity.X = 0;
@@ -156,12 +163,17 @@ namespace FantaRPG.src
                 Velocity.Y = 0;
             }
             Acceleration = Vector2.Zero;
-            onWall = tempOnWall;
+            Debug.WriteLine(Bounds.Position.ToString());
+            //onWall = tempOnWall;
         }
-        public new void Draw(SpriteBatch spriteBatch)
+        public void OnCollision(CollisionEventArgs collisionInfo)
         {
-            base.Draw(spriteBatch);
-            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 20), Color.Red);
+            Bounds.Position -= collisionInfo.PenetrationVector;
+            Velocity.Y = 0;
+        }
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Bounds.Position + new Vector2(0, 20), Color.Red);
         }
     }
 }
