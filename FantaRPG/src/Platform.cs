@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using FantaRPG.src.Interfaces;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended;
+using MonoGame.Extended.Gui.Controls;
 
 namespace FantaRPG.src
 {
@@ -24,17 +25,22 @@ namespace FantaRPG.src
             targetRoom = target;
             IsDoor = true;
         }
-        public Platform(Texture2D texture, IShapeF shape)
+        public Platform(Texture2D texture, RectangleF shape)
         {
             IsDoor = false;
+            Texture = texture;
+            Bounds = shape;
         }
-        public Platform(Texture2D texture, IShapeF shape, Room target)
+        public Platform(Texture2D texture, RectangleF shape, Room target) : this(texture, shape)
         {
             SetAsDoor(target);
         }
         public void OnCollision(CollisionEventArgs collisionInfo)
         {
-            Game1.Instance.ChangeRoom(targetRoom);
+            if (IsDoor)
+            {
+                Game1.Instance.ChangeRoom(targetRoom);
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -44,7 +50,8 @@ namespace FantaRPG.src
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            throw new NotImplementedException();
+            RectangleF hitbox = (RectangleF)Bounds;
+            spriteBatch.Draw(Texture, Bounds.Position, new Rectangle((int)hitbox.X, (int)hitbox.Y, (int)hitbox.Width, (int)hitbox.Height), Color.White);
         }
     }
 }

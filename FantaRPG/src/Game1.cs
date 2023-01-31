@@ -67,11 +67,11 @@ namespace FantaRPG.src
                 { "Right", Keys.D },
                 { "Jump", Keys.Space }
             };
-            player = new Player(pixel, input, new RectangleF(-400, -400, 20, 20));
-
-            ChangeRoom(new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), entities, player,new Rectangle(0,0,1920,1080)));
+            player = new Player(pixel, input, new RectangleF(-400, -100, 20, 20));
+            CurrentRoom = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), entities, player, new Rectangle(0, 0, 1920, 1080));
             CurrentRoom.AddEntity(new Platform(pixel, new RectangleF(-200, -1000, 400, 800)));
             CurrentRoom.AddEntity(new Platform(pixel, new RectangleF(-20000, 0, 40000, 20)));
+            ChangeRoom(CurrentRoom);
             SetResolution(1600, 900);
             fade = new FadeToBlack();
         }
@@ -85,7 +85,7 @@ namespace FantaRPG.src
         public void ChangeRoom(Room room)
         {
             Instance.CurrentRoom = room;
-            collisionComponent = new CollisionComponent(room.Bounds);
+            collisionComponent = new CollisionComponent(new Rectangle(-10000,-10000,20000,20000));
             foreach (var item in CurrentRoom.Entities)
             {
                 collisionComponent.Insert(item);

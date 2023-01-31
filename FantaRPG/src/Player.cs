@@ -29,8 +29,12 @@ namespace FantaRPG.src
         int jumpCountMax = 1;
         bool onWall = false;
         private Stats Stats = new Stats();
+
+        protected bool alive = true;
+        public bool Alive { get { return alive; } }
         public Player(Texture2D texture, Dictionary<string, Keys> input, IShapeF shape)
         {
+            Texture= texture;
             Input = input;
             Bounds = shape;
         }
@@ -173,7 +177,15 @@ namespace FantaRPG.src
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Bounds.Position + new Vector2(0, 20), Color.Red);
+            RectangleF hitbox = (RectangleF)Bounds;
+            if (alive)
+            {
+                spriteBatch.Draw(Texture, Bounds.Position, new Rectangle((int)hitbox.X, (int)hitbox.Y, (int)hitbox.Width, (int)hitbox.Height), Color.White);
+            }
+            if (Game1.Instance.debugFont != null)
+            {
+                spriteBatch.DrawString(Game1.Instance.debugFont, "{" + hitbox.X.ToString("0.0") + ";" + hitbox.Y.ToString("0.0") + "}", Bounds.Position, Color.Black);
+            }
         }
     }
 }
