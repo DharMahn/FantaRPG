@@ -23,6 +23,9 @@ namespace FantaRPG.src
             get { return platforms; }
         }
         private List<Entity> entities;
+
+        public float Gravity { get; private set; }
+
         public List<Entity> Entities
         {
             get { return entities; }
@@ -38,11 +41,12 @@ namespace FantaRPG.src
             entities.Add(entity);
             return true;
         }
-        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, Player player, Rectangle bounds = new Rectangle())
+        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, Player player, Rectangle bounds = new Rectangle(), float gravity = 1f)
         {
             backgrounds = bgs;
             this.platforms = platforms;
             this.entities = entities;
+            this.Gravity = gravity;
             particles = new ParticleEffect(autoTrigger: false)
             {
                 Position = Vector2.Zero

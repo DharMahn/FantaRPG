@@ -74,13 +74,13 @@ namespace FantaRPG.src
                 //Debug.WriteLine(val);
             });
         }
-        public new void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             if (alive)
             {
                 if (gravityAffected)
                 {
-                    Velocity.Y += 1000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    Velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                 }
                 foreach (var item in Game1.Instance.CurrentRoom.Platforms)
                 {
@@ -117,10 +117,6 @@ namespace FantaRPG.src
                     }
                 }
             }
-        }
-        public new void Draw(SpriteBatch spriteBatch)
-        {
-            
         }
     }
 }

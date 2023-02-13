@@ -14,6 +14,7 @@ namespace FantaRPG.src
         public bool IsCollidable = true;
         public bool IsDoor { get; private set; }
         private Room targetRoom = null;
+        private bool isTriggered = false;
         public void SetAsDoor(Room target)
         {
             targetRoom = target;
@@ -22,7 +23,9 @@ namespace FantaRPG.src
 
         public void ChangeRoom()
         {
-            Game1.Instance.CurrentRoom = targetRoom;
+            if (isTriggered) return;
+            Game1.Instance.TransitionToRoom(targetRoom);
+            isTriggered = true;
         }
 
         public Platform(Texture2D texture, int x, int y, int w, int h) : base(texture, x, y, w, h)

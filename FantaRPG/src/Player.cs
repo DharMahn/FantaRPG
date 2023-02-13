@@ -27,7 +27,7 @@ namespace FantaRPG.src
         {
             Input = input;
         }
-        public new void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             Vector2 movementVector = Vector2.Zero;
             Acceleration.Y += 2000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -158,7 +158,7 @@ namespace FantaRPG.src
             Acceleration = Vector2.Zero;
             onWall = tempOnWall;
         }
-        public new void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
             spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 20), Color.Red);

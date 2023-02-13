@@ -26,11 +26,11 @@ namespace FantaRPG.src
         {
             Stats.MoveSpeed = 4;
         }
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             Position += Velocity;
         }
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             if (alive)
             {

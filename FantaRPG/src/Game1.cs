@@ -1,7 +1,10 @@
-﻿using FantaRPG.src.Movement;
+﻿using FantaRPG.src.Animations;
+using FantaRPG.src.Interfaces;
+using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +22,7 @@ namespace FantaRPG.src
         public SpriteFont debugFont;
         public Texture2D pixel;
         public float Ratio;
+        public Room Room1, Room2;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -32,6 +36,7 @@ namespace FantaRPG.src
             base.Initialize();
         }
         Player player;
+        bool isChangingRoom = false;
         protected override void LoadContent()
         {
             debugFont = Content.Load<SpriteFont>("DebugFont");
@@ -45,7 +50,6 @@ namespace FantaRPG.src
                 new BackgroundLayer(Content.Load<Texture2D>("bg2"), 11),
                 new BackgroundLayer(Content.Load<Texture2D>("bg1"), 13)
             };
-            List<Entity> entities = new();
             /*for (int i = 0; i < 200; i++)
             {
                 entities.Add(new Entity(pixel, r.Next(-20000, 20001), 20, 20, 20));
@@ -62,9 +66,16 @@ namespace FantaRPG.src
             };
             player = new Player(pixel, input, -400, -400, 20, 20);
 
-            CurrentRoom = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), entities, player,new Rectangle(0,0,1920,1080));
-            CurrentRoom.AddPlatform(new Platform(pixel, -200, -1000, 400, 800));
-            CurrentRoom.AddPlatform(new Platform(pixel, -20000, 0, 40000, 20));
+            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), new List<Entity>(), player, new Rectangle(0, 0, 1920, 1080));
+            Room1.AddPlatform(new Platform(pixel, -200, -1000, 400, 800));
+            Room1.AddPlatform(new Platform(pixel, -20000, 0, 40000, 20));
+            Room1.AddPlatform(new Platform(pixel, 300, -100, 100, 100));
+            //Room1.AddPlatform(new Platform(pixel,))
+            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), new List<Entity>(), player, new Rectangle(0, 0, 1920, 1080));
+            Room2.AddPlatform(new Platform(pixel, -200, -400, 50, 50));
+            Room2.AddPlatform(new Platform(pixel, -20000, 0, 40000, 50));
+            Room1.Platforms.Last().SetAsDoor(Room2);
+            ChangeRoom(Room1);
             SetResolution(1600, 900);
         }
         public void SetResolution(int x, int y)
@@ -74,31 +85,68 @@ namespace FantaRPG.src
             _graphics.ApplyChanges();
             Ratio = (float)_graphics.PreferredBackBufferHeight / CurrentRoom.Backgrounds.First().Texture.Height;
         }
-
+        FadeToBlack fadeToBlack;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            if (isChangingRoom)
+            {
+                
+                if (!fadeToBlack.IsFinished)
+                {
+                    fadeToBlack.Update(gameTime);
+                }
+                else
+                {
+                    if (!fadeToBlack.IsReverse)
+                    {
+                        fadeToBlack = new FadeToBlack(true);
+                        CurrentRoom = nextRoom;
+                        nextRoom = null;
+                    }
+                    else
+                    {
+                        isChangingRoom = false;
+                    }
+                }
+            }
+            
             CurrentRoom.Update(gameTime);
             cam.Follow(player);
             base.Update(gameTime);
             MovementInput.Update();
         }
+        private Room nextRoom;
+        private void ChangeRoom(Room targetRoom)
+        {
+            CurrentRoom = targetRoom;
+        }
+        internal void TransitionToRoom(Room targetRoom)
+        {
+            isChangingRoom = true;
+            nextRoom = targetRoom;
+            fadeToBlack = new FadeToBlack();
+        }
         static Color bgColor = new Color(16, 0, 32);
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(bgColor);
-            //Background
             CurrentRoom.DrawBackground(spriteBatch, cam.Transform);
+
             CurrentRoom.DrawPlatforms(spriteBatch, cam.Transform);
             CurrentRoom.DrawEntities(spriteBatch, cam.Transform);
-            spriteBatch.Begin();
+            if (isChangingRoom)
+            {
+                fadeToBlack.Draw(spriteBatch, cam);
+            }
+            //spriteBatch.Begin();
             //spriteBatch.Draw(pixel, new Rectangle(Mouse.GetState().Position.X - 10 + (int)cam.Offset.X, Mouse.GetState().Position.Y - 10 + (int)cam.Offset.Y, 20, 20), Color.Red);
             //spriteBatch.DrawString(Instance.debugFont, "{" + Mouse.GetState().Position.X+cam.Center.X.ToString("0.0") + ";" + Mouse.GetState().Position.Y+cam.Center.Y.ToString("0.0") + "}", Mouse.GetState().Position.ToVector2(), Color.Black);
 
-            spriteBatch.End();
+            //spriteBatch.End();
             base.Draw(gameTime);
         }
+
     }
 }
