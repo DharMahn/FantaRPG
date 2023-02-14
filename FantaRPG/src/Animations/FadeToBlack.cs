@@ -21,12 +21,14 @@ namespace FantaRPG.src.Animations
             get { return alpha; }
             set { alpha = value; }
         }
-        private Tweener tweener = new Tweener();
-        private Tween tween;
+        //private Tweener tweener = new Tweener();
+        //private Tween tween;
         public bool IsReverse { get; }
-        public FadeToBlack(bool reverse = false)
+        float interval;
+        public FadeToBlack(float interval, bool reverse = false)
         {
             IsReverse = reverse;
+            this.interval = interval;
             if (reverse)
             {
                 alpha = 255;
@@ -37,12 +39,6 @@ namespace FantaRPG.src.Animations
                 alpha = 0;
                 alphaEnd = 255;
             }
-            tween = tweener.TweenTo(target: this,
-                            expression: fade => Alpha,
-                            toValue: alphaEnd,
-                            duration: 5f,
-                            delay: 0)
-                   .Easing(EasingFunctions.Linear);
         }
         public void Draw(SpriteBatch spriteBatch, Camera cam)
         {
@@ -50,12 +46,30 @@ namespace FantaRPG.src.Animations
             spriteBatch.Draw(Game1.Instance.pixel, new Rectangle(0, 0, cam.Bounds.Width, cam.Bounds.Height), col);
             spriteBatch.End();
         }
-        public bool IsFinished => tween.IsComplete;
+        public bool IsFinished { get; private set; }
         public void Update(GameTime gameTime)
         {
-            tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            float next;
+            if (IsReverse)
+            {
+                next = alpha + (1f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
+            }
+            else
+            {
+                next = alpha - (1f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
+            }
+            if (next >= 255)
+            {
+                next = 255;
+                IsFinished = true;
+            }
+            else if (next <= 0)
+            {
+                next = 0;
+                IsFinished = true;
+            }
+            //tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             col.A = (byte)alpha;
-
         }
     }
 }

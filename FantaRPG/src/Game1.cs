@@ -101,7 +101,7 @@ namespace FantaRPG.src
                 {
                     if (!fadeToBlack.IsReverse)
                     {
-                        fadeToBlack = new FadeToBlack(true);
+                        fadeToBlack = new FadeToBlack(0.5f,true);
                         CurrentRoom = nextRoom;
                         nextRoom = null;
                     }
@@ -126,7 +126,7 @@ namespace FantaRPG.src
         {
             isChangingRoom = true;
             nextRoom = targetRoom;
-            fadeToBlack = new FadeToBlack();
+            fadeToBlack = new FadeToBlack(0.5f);
         }
         static Color bgColor = new Color(16, 0, 32);
         protected override void Draw(GameTime gameTime)
