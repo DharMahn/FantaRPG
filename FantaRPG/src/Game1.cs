@@ -83,7 +83,7 @@ namespace FantaRPG.src
             _graphics.PreferredBackBufferWidth = x;
             _graphics.PreferredBackBufferHeight = y;
             _graphics.ApplyChanges();
-            Ratio = (float)_graphics.PreferredBackBufferHeight / CurrentRoom.Backgrounds.First().Texture.Height;
+            Ratio = (float)_graphics.PreferredBackBufferHeight / CurrentRoom.x0Backgrounds.First().Texture.Height;
         }
         FadeToBlack fadeToBlack;
         protected override void Update(GameTime gameTime)
@@ -101,7 +101,7 @@ namespace FantaRPG.src
                 {
                     if (!fadeToBlack.IsReverse)
                     {
-                        fadeToBlack = new FadeToBlack(0.5f,true);
+                        fadeToBlack = new FadeToBlack(true);
                         CurrentRoom = nextRoom;
                         nextRoom = null;
                     }
@@ -126,7 +126,7 @@ namespace FantaRPG.src
         {
             isChangingRoom = true;
             nextRoom = targetRoom;
-            fadeToBlack = new FadeToBlack(0.5f);
+            fadeToBlack = new FadeToBlack();
         }
         static Color bgColor = new Color(16, 0, 32);
         protected override void Draw(GameTime gameTime)

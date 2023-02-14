@@ -15,7 +15,6 @@ namespace FantaRPG.src.Animations
     {
         private Color col = Color.Black;
         private float alpha;
-        private float alphaEnd;
         public float Alpha
         {
             get { return alpha; }
@@ -25,20 +24,19 @@ namespace FantaRPG.src.Animations
         //private Tween tween;
         public bool IsReverse { get; }
         float interval;
-        public FadeToBlack(float interval, bool reverse = false)
+        public FadeToBlack(bool reverse = false, float interval = .07f)
         {
             IsReverse = reverse;
             this.interval = interval;
             if (reverse)
             {
                 alpha = 255;
-                alphaEnd = 0;
             }
             else
             {
                 alpha = 0;
-                alphaEnd = 255;
             }
+            col.A = (byte)alpha;
         }
         public void Draw(SpriteBatch spriteBatch, Camera cam)
         {
@@ -52,11 +50,11 @@ namespace FantaRPG.src.Animations
             float next;
             if (IsReverse)
             {
-                next = alpha + (1f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
+                next = alpha - (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
             }
             else
             {
-                next = alpha - (1f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
+                next = alpha + (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
             }
             if (next >= 255)
             {
@@ -68,6 +66,7 @@ namespace FantaRPG.src.Animations
                 next = 0;
                 IsFinished = true;
             }
+            alpha = next;
             //tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
             col.A = (byte)alpha;
         }
