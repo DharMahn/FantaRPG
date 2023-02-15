@@ -4,9 +4,10 @@ namespace FantaRPG.src
 {
     internal class BasicCollision
     {
-        public Vector2 Position;
-        public Vector2 Velocity;
-        public Vector2 HitboxSize;
+        protected Vector2 position,velocity,hitboxSize;
+        public Vector2 Position { get { return position; } protected set { position = value; } }
+        public Vector2 Velocity { get { return velocity; } protected set { velocity = value; } }
+        public Vector2 HitboxSize { get { return hitboxSize; } protected set { hitboxSize = value; } }
 
         public bool IsTouchingLeft(Entity sprite, GameTime gameTime)
         {

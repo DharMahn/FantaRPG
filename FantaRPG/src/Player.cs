@@ -57,8 +57,8 @@ namespace FantaRPG.src
             {
                 if (onWall && canJump)
                 {
-                    Velocity.X = (-movementVector.X) * 500f;
-                    Velocity.Y = -1000;
+                    velocity.X = (-movementVector.X) * 500f;
+                    velocity.Y = -1000;
                     canJump = false;
                 }
                 else
@@ -66,7 +66,7 @@ namespace FantaRPG.src
                     if (jumpCount > 0)
                     {
                         jumpCount--;
-                        Velocity.Y = -1000;
+                        velocity.Y = -1000;
                         onGround = false;
                     }
                 }
@@ -83,9 +83,9 @@ namespace FantaRPG.src
                 Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
             }
             Acceleration += actualMovementVector;
-            Velocity.X += Acceleration.X;
-            Velocity.X = Math.Clamp(Velocity.X, -Stats.GetStat("MoveSpeed") * 500, Stats.GetStat("MoveSpeed") * 500);
-            Velocity.Y += Acceleration.Y;
+            velocity.X += Acceleration.X;
+            velocity.X = Math.Clamp(velocity.X, -Stats.GetStat("MoveSpeed") * 500, Stats.GetStat("MoveSpeed") * 500);
+            velocity.Y += Acceleration.Y;
             bool tempOnWall = false;
             foreach (var item in Game1.Instance.CurrentRoom.Platforms.Where(x=>x.IsCollidable))
             {
@@ -103,30 +103,30 @@ namespace FantaRPG.src
                 {
                     if (IsTouchingLeft(item, gameTime))
                     {
-                        Position.X = item.Position.X - HitboxSize.X;
-                        Velocity.X = 0;
+                        position.X = item.Position.X - HitboxSize.X;
+                        velocity.X = 0;
                         tempOnWall = true;
                         canJump = true;
                     }
                     else if (IsTouchingRight(item, gameTime))
                     {
-                        Position.X = item.Position.X + item.HitboxSize.X;
-                        Velocity.X = 0;
+                        position.X = item.Position.X + item.HitboxSize.X;
+                        velocity.X = 0;
                         tempOnWall = true;
                         canJump = true;
                     }
                     if (IsTouchingTop(item, gameTime))
                     {
-                        Position.Y = item.Position.Y - HitboxSize.Y;
-                        Velocity.Y = 0;
+                        position.Y = item.Position.Y - HitboxSize.Y;
+                        velocity.Y = 0;
                         onGround = true;
                         canJump = true;
                         jumpCount = jumpCountMax;
                     }
                     else if (IsTouchingBottom(item, gameTime))
                     {
-                        Position.Y = item.Position.Y + item.HitboxSize.Y;
-                        Velocity.Y = 0;
+                        position.Y = item.Position.Y + item.HitboxSize.Y;
+                        velocity.Y = 0;
                     }
                 }
             }
@@ -135,25 +135,25 @@ namespace FantaRPG.src
                 float drag = 1000f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (Velocity.X - drag >= 0)
                 {
-                    Velocity.X -= drag;
+                    velocity.X -= drag;
                 }
                 else if (Velocity.X + drag <= 0)
                 {
-                    Velocity.X += drag;
+                    velocity.X += drag;
                 }
                 else
                 {
-                    Velocity.X = 0;
+                    velocity.X = 0;
                 }
             }
             Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
             if (Math.Abs(Velocity.X) < 0.001)
             {
-                Velocity.X = 0;
+                velocity.X = 0;
             }
             if (Math.Abs(Velocity.Y) < 0.001)
             {
-                Velocity.Y = 0;
+                velocity.Y = 0;
             }
             Acceleration = Vector2.Zero;
             onWall = tempOnWall;
