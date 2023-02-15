@@ -51,7 +51,7 @@ namespace FantaRPG.src
             if (movementVector != Vector2.Zero)
             {
                 actualMovementVector = Vector2.Normalize(movementVector);
-                actualMovementVector.X *= Stats.MoveSpeed * 1000f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                actualMovementVector.X *= Stats.GetStat("MoveSpeed") * 1000f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (MovementInput.KeyJustDown(Input["Jump"]))
             {
@@ -84,7 +84,7 @@ namespace FantaRPG.src
             }
             Acceleration += actualMovementVector;
             Velocity.X += Acceleration.X;
-            Velocity.X = Math.Clamp(Velocity.X, -Stats.MoveSpeed * 500, Stats.MoveSpeed * 500);
+            Velocity.X = Math.Clamp(Velocity.X, -Stats.GetStat("MoveSpeed") * 500, Stats.GetStat("MoveSpeed") * 500);
             Velocity.Y += Acceleration.Y;
             bool tempOnWall = false;
             foreach (var item in Game1.Instance.CurrentRoom.Platforms.Where(x=>x.IsCollidable))

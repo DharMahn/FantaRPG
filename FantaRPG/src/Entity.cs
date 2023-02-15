@@ -24,7 +24,7 @@ namespace FantaRPG.src
         }
         public void ProcessStats()
         {
-            Stats.MoveSpeed = 4;
+            Stats.AddStat("MoveSpeed", 4);
         }
         public virtual void Update(GameTime gameTime)
         {

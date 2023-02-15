@@ -74,7 +74,11 @@ namespace FantaRPG.src
             Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), new List<Entity>(), player, new Rectangle(0, 0, 1920, 1080));
             Room2.AddPlatform(new Platform(pixel, -200, -400, 50, 50));
             Room2.AddPlatform(new Platform(pixel, -20000, 0, 40000, 50));
-            Room1.Platforms.Last().SetAsDoor(Room2);
+            Room2.AddPlatform(new Platform(pixel, -600, -100, 100, 100));
+
+            Room1.Platforms.Last().SetAsPortal(Room2);
+            Room2.Platforms.Last().SetAsPortal(Room1);
+
             ChangeRoom(Room1);
             SetResolution(1600, 900);
         }
@@ -83,7 +87,7 @@ namespace FantaRPG.src
             _graphics.PreferredBackBufferWidth = x;
             _graphics.PreferredBackBufferHeight = y;
             _graphics.ApplyChanges();
-            Ratio = (float)_graphics.PreferredBackBufferHeight / CurrentRoom.x0Backgrounds.First().Texture.Height;
+            Ratio = (float)_graphics.PreferredBackBufferHeight / CurrentRoom.Backgrounds.First().Texture.Height;
         }
         FadeToBlack fadeToBlack;
         protected override void Update(GameTime gameTime)
@@ -103,6 +107,10 @@ namespace FantaRPG.src
                     {
                         fadeToBlack = new FadeToBlack(true);
                         CurrentRoom = nextRoom;
+                        foreach (var item in CurrentRoom.Platforms)
+                        {
+                            item.Reset();
+                        }
                         nextRoom = null;
                     }
                     else
