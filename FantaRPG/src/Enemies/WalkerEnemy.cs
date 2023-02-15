@@ -7,17 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FantaRPG
+namespace FantaRPG.src.Enemies
 {
-    internal class Enemy : Entity
+    internal class WalkerEnemy : Entity
     {
-        public Enemy(Texture2D texture, int x, int y, int w, int h) : base(texture, x, y, w, h)
+        public WalkerEnemy(Texture2D texture, int x, int y, int w, int h) : base(texture, x, y, w, h)
         {
             Stats = new Stats();
         }
         public override void Update(GameTime gameTime)
         {
-
+            //Game1.Instance.CurrentRoom.Player.Position;
             //base.Update(gameTime);
         }
         public override void Draw(SpriteBatch spriteBatch)
