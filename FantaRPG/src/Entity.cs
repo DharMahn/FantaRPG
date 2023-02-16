@@ -10,6 +10,7 @@ namespace FantaRPG.src
 {
     internal class Entity : BasicCollision
     {
+        public bool IsCollidable { get; protected set; }
         protected Texture2D Texture;
         public Stats Stats;
         protected bool alive = true;
@@ -24,7 +25,8 @@ namespace FantaRPG.src
         }
         public void ProcessStats()
         {
-            Stats.AddStat("MoveSpeed", 4);
+            Stats.SetStat(Stat.MoveSpeed, 40);
+            Stats.SetStat(Stat.JumpStrength, 20);
         }
         public virtual void Update(GameTime gameTime)
         {
@@ -38,7 +40,7 @@ namespace FantaRPG.src
             }
             if (Game1.Instance.debugFont != null)
             {
-                spriteBatch.DrawString(Game1.Instance.debugFont, "{" + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + "}", Position, Color.Black);
+                spriteBatch.DrawString(Game1.Instance.debugFont, "{" + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + "}\n"+ "{" + Velocity.X.ToString("0.0") + ";" + Velocity.Y.ToString("0.0") + "}", Position, Color.Red);
             }
             //g.DrawString(Position.ToString("0.0"), SystemFonts.DefaultFont, Brushes.Black, Position.X - 10, Position.Y - 15);
         }

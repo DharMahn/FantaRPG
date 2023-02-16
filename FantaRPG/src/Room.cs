@@ -17,20 +17,18 @@ namespace FantaRPG.src
         {
             get { return backgrounds; }
         }
-        private List<Platform> platforms;
-        public List<Platform> Platforms
+        private List<Entity> objects;
+        public List<Entity> Objects
         {
-            get { return platforms; }
+            get { return objects; }
         }
         private List<Entity> entities;
-
-        public float Gravity { get; private set; }
-
         public List<Entity> Entities
         {
             get { return entities; }
         }
         ParticleEffect particles;
+        public float Gravity { get; private set; }
         public void AddEmitter(ParticleEmitter effect)
         {
             particles.Emitters.Add(effect);
@@ -41,10 +39,10 @@ namespace FantaRPG.src
             entities.Add(entity);
             return true;
         }
-        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, Player player, Rectangle bounds = new Rectangle(), float gravity = 1f)
+        public Room(List<BackgroundLayer> bgs, List<Entity> platforms, List<Entity> entities, Player player, Rectangle bounds = new Rectangle(), float gravity = 1f)
         {
             backgrounds = bgs;
-            this.platforms = platforms;
+            this.objects = platforms;
             this.entities = entities;
             this.Gravity = gravity;
             particles = new ParticleEffect(autoTrigger: false)
@@ -85,15 +83,15 @@ namespace FantaRPG.src
         internal void DrawPlatforms(SpriteBatch spriteBatch, Matrix transform)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, transformMatrix: transform);
-            foreach (var item in platforms)
+            foreach (var item in objects)
             {
                 item.Draw(spriteBatch);
             }
             spriteBatch.End();
         }
-        public bool AddPlatform(Platform platform)
+        public bool AddObject(Entity entity)
         {
-            platforms.Add(platform);
+            objects.Add(entity);
             return true;
         }
 

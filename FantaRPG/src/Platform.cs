@@ -11,33 +11,13 @@ namespace FantaRPG.src
 {
     internal class Platform : Entity
     {
-        public bool IsCollidable = true;
-        public bool IsDoor { get; private set; }
-        private Room targetRoom = null;
-        private bool isTriggered = false;
-        public void SetAsPortal(Room target)
+        public Platform(Texture2D texture, int x, int y, int w, int h, bool collidable = true) : base(texture, x, y, w, h)
         {
-            targetRoom = target;
-            IsDoor = true;
+            IsCollidable = collidable;
         }
+        public virtual void Trigger()
+        {
 
-        public void ChangeRoom()
-        {
-            if (isTriggered) return;
-            Game1.Instance.TransitionToRoom(targetRoom);
-            isTriggered = true;
-        }
-        public void Reset()
-        {
-            isTriggered = false;
-        }
-        public Platform(Texture2D texture, int x, int y, int w, int h) : base(texture, x, y, w, h)
-        {
-            IsDoor = false;
-        }
-        public Platform(Texture2D texture, int x, int y, int w, int h, Room target) : base(texture, x, y, w, h)
-        {
-            SetAsPortal(target);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FantaRPG.src.Animations;
 using FantaRPG.src.Interfaces;
+using FantaRPG.src.Items;
 using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -66,18 +67,18 @@ namespace FantaRPG.src
             };
             player = new Player(pixel, input, -400, -400, 20, 20);
 
-            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), new List<Entity>(), player, new Rectangle(0, 0, 1920, 1080));
-            Room1.AddPlatform(new Platform(pixel, -200, -1000, 400, 800));
-            Room1.AddPlatform(new Platform(pixel, -20000, 0, 40000, 20));
-            Room1.AddPlatform(new Platform(pixel, 300, -100, 100, 100));
+            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Rectangle(0, -540, 1920, 1620));
+            Room1.AddObject(new Platform(pixel, -200, -1000, 400, 800));
+            Room1.AddObject(new Platform(pixel, -20000, 0, 40000, 20));
+            Room1.AddObject(new Portal(pixel, 300, -100, 100, 100));
             //Room1.AddPlatform(new Platform(pixel,))
-            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Platform>(), new List<Entity>(), player, new Rectangle(0, 0, 1920, 1080));
-            Room2.AddPlatform(new Platform(pixel, -200, -400, 50, 50));
-            Room2.AddPlatform(new Platform(pixel, -20000, 0, 40000, 50));
-            Room2.AddPlatform(new Platform(pixel, -600, -100, 100, 100));
+            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Rectangle(0, 0, 1920, 1080));
+            Room2.AddObject(new Platform(pixel, -200, -400, 50, 50));
+            Room2.AddObject(new Platform(pixel, -20000, 0, 40000, 50));
+            Room2.AddObject(new Portal(pixel, -600, -100, 100, 100));
 
-            Room1.Platforms.Last().SetAsPortal(Room2);
-            Room2.Platforms.Last().SetAsPortal(Room1);
+            ((Portal)Room1.Objects.Last()).SetAsPortal(Room2);
+            ((Portal)Room2.Objects.Last()).SetAsPortal(Room1);
 
             ChangeRoom(Room1);
             SetResolution(1600, 900);
@@ -96,7 +97,6 @@ namespace FantaRPG.src
                 Exit();
             if (isChangingRoom)
             {
-                
                 if (!fadeToBlack.IsFinished)
                 {
                     fadeToBlack.Update(gameTime);
@@ -107,7 +107,7 @@ namespace FantaRPG.src
                     {
                         fadeToBlack = new FadeToBlack(true);
                         CurrentRoom = nextRoom;
-                        foreach (var item in CurrentRoom.Platforms)
+                        foreach (Portal item in CurrentRoom.Objects.Where(x=>x is Portal))
                         {
                             item.Reset();
                         }

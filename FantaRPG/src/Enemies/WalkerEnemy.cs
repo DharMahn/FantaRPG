@@ -13,7 +13,7 @@ namespace FantaRPG.src.Enemies
     {
         public WalkerEnemy(Texture2D texture, int x, int y, int w, int h) : base(texture, x, y, w, h)
         {
-            Stats = new Stats();
+
         }
         public override void Update(GameTime gameTime)
         {

@@ -22,7 +22,7 @@ namespace FantaRPG.src
         private static FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
         private static FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        bool gravityAffected = true;
+        bool gravityAffected = false;
         private ParticleEmitter emitter;
         List<Action> OnCollideAction = new List<Action>();
         public void AddOnCollisionAction(Action action)
@@ -80,28 +80,28 @@ namespace FantaRPG.src
             {
                 if (gravityAffected)
                 {
-                    Velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                    velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                 }
-                foreach (var item in Game1.Instance.CurrentRoom.Platforms)
+                foreach (var item in Game1.Instance.CurrentRoom.Objects)
                 {
                     if (IsTouchingLeft(item, gameTime))
                     {
-                        Position.X = item.Position.X - HitboxSize.X;
+                        position.X = item.Position.X - HitboxSize.X;
                         alive = false;
                     }
                     else if (IsTouchingRight(item, gameTime))
                     {
-                        Position.X = item.Position.X + item.HitboxSize.X;
+                        position.X = item.Position.X + item.HitboxSize.X;
                         alive = false;
                     }
                     if (IsTouchingTop(item, gameTime))
                     {
-                        Position.Y = item.Position.Y - HitboxSize.Y;
+                        position.Y = item.Position.Y - HitboxSize.Y;
                         alive = false;
                     }
                     else if (IsTouchingBottom(item, gameTime))
                     {
-                        Position.Y = item.Position.Y + item.HitboxSize.Y;
+                        position.Y = item.Position.Y + item.HitboxSize.Y;
                         alive = false;
                     }
                 }

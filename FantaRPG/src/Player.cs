@@ -51,14 +51,14 @@ namespace FantaRPG.src
             if (movementVector != Vector2.Zero)
             {
                 actualMovementVector = Vector2.Normalize(movementVector);
-                actualMovementVector.X *= Stats.GetStat("MoveSpeed") * 1000f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                actualMovementVector.X *= Stats.GetStat(Stat.MoveSpeed) * 100f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (MovementInput.KeyJustDown(Input["Jump"]))
             {
                 if (onWall && canJump)
                 {
                     velocity.X = (-movementVector.X) * 500f;
-                    velocity.Y = -1000;
+                    velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
                     canJump = false;
                 }
                 else
@@ -66,7 +66,7 @@ namespace FantaRPG.src
                     if (jumpCount > 0)
                     {
                         jumpCount--;
-                        velocity.Y = -1000;
+                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
                         onGround = false;
                     }
                 }
@@ -79,27 +79,18 @@ namespace FantaRPG.src
                 //Debug.WriteLine(cursorPos.X.ToString("0.0") + ";" + cursorPos.Y.ToString("0.0") + " cursorpos, " + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + " playerpos");
                 Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
-                spellVel = Vector2.Multiply(spellVel, 5000);
+                spellVel = Vector2.Multiply(spellVel, 1000);
                 Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
             }
             Acceleration += actualMovementVector;
             velocity.X += Acceleration.X;
-            velocity.X = Math.Clamp(velocity.X, -Stats.GetStat("MoveSpeed") * 500, Stats.GetStat("MoveSpeed") * 500);
+            //velocity.X = Math.Sign(velocity.X) == Math.Sign(Acceleration.X) ? Velocity.X + Acceleration.X : (Velocity.X / 2) + Acceleration.X;
+            velocity.X = Math.Clamp(velocity.X, -Stats.GetStat(Stat.MoveSpeed) * 10, Stats.GetStat(Stat.MoveSpeed) * 10);
             velocity.Y += Acceleration.Y;
             bool tempOnWall = false;
-            foreach (var item in Game1.Instance.CurrentRoom.Platforms.Where(x=>x.IsCollidable))
+            foreach (var item in Game1.Instance.CurrentRoom.Objects)
             {
-                if (item.IsDoor)
-                {
-                    if (IsTouchingLeft(item, gameTime) ||
-                        IsTouchingRight(item, gameTime) ||
-                        IsTouchingTop(item, gameTime) ||
-                        IsTouchingBottom(item, gameTime))
-                    {
-                        item.ChangeRoom();
-                    }
-                }
-                else
+                if (item.IsCollidable)
                 {
                     if (IsTouchingLeft(item, gameTime))
                     {
@@ -127,6 +118,19 @@ namespace FantaRPG.src
                     {
                         position.Y = item.Position.Y + item.HitboxSize.Y;
                         velocity.Y = 0;
+                    }
+                }
+                else
+                {
+                    if (item is Portal)
+                    {
+                        if (IsTouchingLeft(item, gameTime) ||
+                            IsTouchingRight(item, gameTime) ||
+                            IsTouchingTop(item, gameTime) ||
+                            IsTouchingBottom(item, gameTime))
+                        {
+                            ((Portal)item).ChangeRoom();
+                        }
                     }
                 }
             }
@@ -157,11 +161,12 @@ namespace FantaRPG.src
             }
             Acceleration = Vector2.Zero;
             onWall = tempOnWall;
+
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 20), Color.Red);
+            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace FantaRPG.src
         }
         public new void Update(GameTime gameTime)
         {
-            foreach (var item in Game1.Instance.CurrentRoom.Platforms)
+            foreach (var item in Game1.Instance.CurrentRoom.Objects)
             {
                 if (IsTouchingLeft(item, gameTime) || IsTouchingRight(item, gameTime) || IsTouchingTop(item, gameTime) || IsTouchingBottom(item, gameTime))
                 {

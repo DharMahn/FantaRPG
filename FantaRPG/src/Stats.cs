@@ -6,36 +6,43 @@ using System.Threading.Tasks;
 
 namespace FantaRPG.src
 {
+    public enum Stat
+    {
+        MoveSpeed, JumpStrength, Armor, Damage
+    }
     internal class Stats
     {
-        private static HashSet<string> availableStats = new HashSet<string>()
+        public Dictionary<Stat,float> GetAllStats()
         {
-            "MoveSpeed",
-        };
-        private Dictionary<string, float> stats;
+            return stats;
+        }
+        private Dictionary<Stat, float> stats;
         public Stats()
         {
-            stats = new Dictionary<string, float>();
+            stats = new Dictionary<Stat, float>();
         }
-        public Stats(Dictionary<string, float> stats)
+        public Stats(Dictionary<Stat, float> stats)
         {
             this.stats = stats;
         }
-        public float GetStat(string name)
+        public float GetStat(Stat stat)
         {
-            if (availableStats.Contains(name))
-            {
-                float value;
-                return stats.TryGetValue(name, out value) ? value : default;
-            }
-            throw new Exception($"{name} does not exist as a stat");
+            float value;
+            return stats.TryGetValue(stat, out value) ? value : 0;
         }
-        public void AddStat(string name, float value)
+        public void SetStat(Stat name, float value)
         {
-            if (availableStats.Contains(name))
+            stats[name] = value;
+        }
+
+        internal void IncrementStat(Stat stat, float value)
+        {
+            if (stats.ContainsKey(stat))
             {
-                stats[name] = value;
+                stats[stat] += value;
+                return;
             }
+            stats[stat] = value;
         }
     }
 }
