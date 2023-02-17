@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FantaRPG.src.Items
 {
-    internal class ModularItem
+    internal class ModularItem : Item
     {
         List<Modifier> modifiers = new List<Modifier>();
         public void AddModifier(Modifier modifier)

@@ -33,11 +33,11 @@ namespace FantaRPG.src
             Acceleration.Y += 2000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (MovementInput.KeyDown(Input["Up"]))
             {
-                movementVector -= Vector2.UnitY;
+                //movementVector -= Vector2.UnitY;
             }
             if (MovementInput.KeyDown(Input["Down"]))
             {
-                movementVector += Vector2.UnitY;
+                //movementVector += Vector2.UnitY;
             }
             if (MovementInput.KeyDown(Input["Left"]))
             {
@@ -58,7 +58,9 @@ namespace FantaRPG.src
                 if (onWall && canJump)
                 {
                     velocity.X = (-movementVector.X) * 500f;
-                    velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
+                    velocity.Y = -1000;
+                    //velocity.X = (-movementVector.X) * 500f;
+                    //velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
                     canJump = false;
                 }
                 else
@@ -82,11 +84,14 @@ namespace FantaRPG.src
                 spellVel = Vector2.Multiply(spellVel, 1000);
                 Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
             }
-            Acceleration += actualMovementVector;
-            velocity.X += Acceleration.X;
-            //velocity.X = Math.Sign(velocity.X) == Math.Sign(Acceleration.X) ? Velocity.X + Acceleration.X : (Velocity.X / 2) + Acceleration.X;
-            velocity.X = Math.Clamp(velocity.X, -Stats.GetStat(Stat.MoveSpeed) * 10, Stats.GetStat(Stat.MoveSpeed) * 10);
-            velocity.Y += Acceleration.Y;
+            if (/*onGround*/true)
+            {
+                Acceleration += actualMovementVector;
+                velocity.X += Acceleration.X;
+                //velocity.X = Math.Sign(velocity.X) == Math.Sign(Acceleration.X) ? Velocity.X + Acceleration.X : (Velocity.X / 2) + Acceleration.X;
+                velocity.X = Math.Clamp(velocity.X, -Stats.GetStat(Stat.MoveSpeed) * 10, Stats.GetStat(Stat.MoveSpeed) * 10);
+                velocity.Y += Acceleration.Y;
+            }
             bool tempOnWall = false;
             foreach (var item in Game1.Instance.CurrentRoom.Objects)
             {
