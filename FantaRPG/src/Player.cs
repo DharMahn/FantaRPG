@@ -22,7 +22,8 @@ namespace FantaRPG.src
         int jumpCount = 1;
         int jumpCountMax = 1;
         bool onWall = false;
-
+        bool onLeftWall;
+        bool onRightWall;
         public Player(Texture2D texture, Dictionary<string, Keys> input, int x, int y, int w, int h) : base(texture, x, y, w, h)
         {
             Input = input;
@@ -42,10 +43,18 @@ namespace FantaRPG.src
             if (MovementInput.KeyDown(Input["Left"]))
             {
                 movementVector -= Vector2.UnitX;
+                if (onWall && onLeftWall)
+                {
+                    onWall = false;
+                }
             }
             if (MovementInput.KeyDown(Input["Right"]))
             {
                 movementVector += Vector2.UnitX;
+                if (onWall && onRightWall)
+                {
+                    onWall = false;
+                }
             }
             Vector2 actualMovementVector = Vector2.Zero;
             if (movementVector != Vector2.Zero)
@@ -57,10 +66,24 @@ namespace FantaRPG.src
             {
                 if (onWall && canJump)
                 {
-                    velocity.X = (-movementVector.X) * 500f;
-                    velocity.Y = -1000;
-                    //velocity.X = (-movementVector.X) * 500f;
-                    //velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
+                    if (onLeftWall)
+                    {
+                        velocity.X = -500f; 
+                        velocity.Y = -1250;
+                        onLeftWall = false;
+                        onWall = false;
+                    }
+                    else if (onRightWall)
+                    {
+                        velocity.X = 500f; 
+                        velocity.Y = -1250;
+                        onRightWall = false;
+                        onWall = false; 
+                    }
+                    else
+                    {
+                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
+                    }
                     canJump = false;
                 }
                 else
@@ -92,25 +115,11 @@ namespace FantaRPG.src
                 velocity.X = Math.Clamp(velocity.X, -Stats.GetStat(Stat.MoveSpeed) * 10, Stats.GetStat(Stat.MoveSpeed) * 10);
                 velocity.Y += Acceleration.Y;
             }
-            bool tempOnWall = false;
+            onGround = false;
             foreach (var item in Game1.Instance.CurrentRoom.Objects)
             {
                 if (item.IsCollidable)
                 {
-                    if (IsTouchingLeft(item, gameTime))
-                    {
-                        position.X = item.Position.X - HitboxSize.X;
-                        velocity.X = 0;
-                        tempOnWall = true;
-                        canJump = true;
-                    }
-                    else if (IsTouchingRight(item, gameTime))
-                    {
-                        position.X = item.Position.X + item.HitboxSize.X;
-                        velocity.X = 0;
-                        tempOnWall = true;
-                        canJump = true;
-                    }
                     if (IsTouchingTop(item, gameTime))
                     {
                         position.Y = item.Position.Y - HitboxSize.Y;
@@ -118,11 +127,31 @@ namespace FantaRPG.src
                         onGround = true;
                         canJump = true;
                         jumpCount = jumpCountMax;
+                        onLeftWall = false;
+                        onRightWall = false;
                     }
                     else if (IsTouchingBottom(item, gameTime))
                     {
                         position.Y = item.Position.Y + item.HitboxSize.Y;
                         velocity.Y = 0;
+                    }
+                    if (IsTouchingLeft(item, gameTime))
+                    {
+                        position.X = item.Position.X - HitboxSize.X;
+                        velocity.X = 0;
+                        onWall = true;
+                        onLeftWall = true;
+                        onRightWall = false;
+                        canJump = true;
+                    }
+                    else if (IsTouchingRight(item, gameTime))
+                    {
+                        position.X = item.Position.X + item.HitboxSize.X;
+                        velocity.X = 0;
+                        onWall = true;
+                        onRightWall = true;
+                        onLeftWall = false;
+                        canJump = true;
                     }
                 }
                 else
@@ -165,13 +194,11 @@ namespace FantaRPG.src
                 velocity.Y = 0;
             }
             Acceleration = Vector2.Zero;
-            onWall = tempOnWall;
-
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
+            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall +"\nonLeftWall: "+ onLeftWall + "\nRightWall:" + onRightWall+ "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
         }
     }
 }
