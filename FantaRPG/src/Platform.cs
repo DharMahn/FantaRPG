@@ -11,7 +11,7 @@ namespace FantaRPG.src
 {
     internal class Platform : Entity
     {
-        public Platform(Texture2D texture, int x, int y, int w, int h, bool collidable = true) : base(texture, x, y, w, h)
+        public Platform(Texture2D texture, float x, float y, float w, float h, bool collidable = true) : base(texture, x, y, w, h)
         {
             IsCollidable = collidable;
         }

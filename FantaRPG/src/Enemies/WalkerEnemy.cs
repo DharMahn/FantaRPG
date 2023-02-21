@@ -11,7 +11,7 @@ namespace FantaRPG.src.Enemies
 {
     internal class WalkerEnemy : Entity
     {
-        public WalkerEnemy(Texture2D texture, int x, int y, int w, int h) : base(texture, x, y, w, h)
+        public WalkerEnemy(Texture2D texture, float x, float y, float w, float h) : base(texture, x, y, w, h)
         {
 
         }

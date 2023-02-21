@@ -12,6 +12,18 @@ namespace FantaRPG.src
     }
     internal class Stats
     {
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in stats)
+            {
+                sb.Append(item.Key);
+                sb.Append(": ");
+                sb.Append(item.Value);
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
         public Dictionary<Stat,float> GetAllStats()
         {
             return stats;

@@ -24,10 +24,11 @@ namespace FantaRPG.src
         bool onWall = false;
         bool onLeftWall;
         bool onRightWall;
-        public Player(Texture2D texture, Dictionary<string, Keys> input, int x, int y, int w, int h) : base(texture, x, y, w, h)
+        public Player(Texture2D texture, Dictionary<string, Keys> input, float x, float y, float w, float h) : base(texture, x, y, w, h)
         {
             Input = input;
         }
+        float onWallPosition=0;
         public override void Update(GameTime gameTime)
         {
             Vector2 movementVector = Vector2.Zero;
@@ -46,6 +47,7 @@ namespace FantaRPG.src
                 if (onWall && onLeftWall)
                 {
                     onWall = false;
+                    onLeftWall = false;
                 }
             }
             if (MovementInput.KeyDown(Input["Right"]))
@@ -54,6 +56,7 @@ namespace FantaRPG.src
                 if (onWall && onRightWall)
                 {
                     onWall = false;
+                    onRightWall = false;
                 }
             }
             Vector2 actualMovementVector = Vector2.Zero;
@@ -68,17 +71,17 @@ namespace FantaRPG.src
                 {
                     if (onLeftWall)
                     {
-                        velocity.X = -500f; 
+                        velocity.X = -500f;
                         velocity.Y = -1250;
                         onLeftWall = false;
                         onWall = false;
                     }
                     else if (onRightWall)
                     {
-                        velocity.X = 500f; 
+                        velocity.X = 500f;
                         velocity.Y = -1250;
                         onRightWall = false;
-                        onWall = false; 
+                        onWall = false;
                     }
                     else
                     {
@@ -105,7 +108,7 @@ namespace FantaRPG.src
                 Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 1000);
-                Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel));
+                Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel,Stats.GetStat(Stat.Damage)));
             }
             if (/*onGround*/true)
             {
@@ -143,6 +146,7 @@ namespace FantaRPG.src
                         onLeftWall = true;
                         onRightWall = false;
                         canJump = true;
+                        onWallPosition = position.X;
                     }
                     else if (IsTouchingRight(item, gameTime))
                     {
@@ -152,6 +156,7 @@ namespace FantaRPG.src
                         onRightWall = true;
                         onLeftWall = false;
                         canJump = true;
+                        onWallPosition = position.X;
                     }
                 }
                 else
@@ -170,7 +175,7 @@ namespace FantaRPG.src
             }
             if (Math.Sign(actualMovementVector.X) == 0 && onGround)
             {
-                float drag = 1000f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                float drag = 50 * Stats.GetStat(Stat.MoveSpeed) * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (Velocity.X - drag >= 0)
                 {
                     velocity.X -= drag;
@@ -194,11 +199,17 @@ namespace FantaRPG.src
                 velocity.Y = 0;
             }
             Acceleration = Vector2.Zero;
+            if (onWallPosition!=position.X)
+            {
+                onWall = false;
+                onLeftWall = false;
+                onRightWall = false;
+            }
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall +"\nonLeftWall: "+ onLeftWall + "\nRightWall:" + onRightWall+ "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
+            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonLeftWall: " + onLeftWall + "\nRightWall:" + onRightWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
         }
     }
 }

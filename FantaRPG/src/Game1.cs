@@ -5,9 +5,11 @@ using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using MonoGame.Extended.Tweening;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace FantaRPG.src
@@ -24,11 +26,18 @@ namespace FantaRPG.src
         public Texture2D pixel;
         public float Ratio;
         public Room Room1, Room2;
+        private static FastRandom _random = null;
+        public static FastRandom Random { get { return _random ??= new FastRandom(); } }
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            for (int i = 0; i < 100; i++)
+            {
+                Modifier modifier = Modifier.GenerateModifier(Random.Next(50, 500));
+                Debug.WriteLine(modifier.ToString());
+            }
         }
 
         protected override void Initialize()
@@ -107,7 +116,7 @@ namespace FantaRPG.src
                     {
                         fadeToBlack = new FadeToBlack(true);
                         CurrentRoom = nextRoom;
-                        foreach (Portal item in CurrentRoom.Objects.Where(x=>x is Portal))
+                        foreach (Portal item in CurrentRoom.Objects.Where(x => x is Portal))
                         {
                             item.Reset();
                         }
@@ -119,7 +128,7 @@ namespace FantaRPG.src
                     }
                 }
             }
-            
+
             CurrentRoom.Update(gameTime);
             cam.Follow(player);
             base.Update(gameTime);

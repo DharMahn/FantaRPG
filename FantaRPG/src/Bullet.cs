@@ -14,6 +14,7 @@ using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.TextureAtlases;
 using System.Diagnostics;
 using System.Reflection;
+using FantaRPG.src.Events;
 
 namespace FantaRPG.src
 {
@@ -22,25 +23,23 @@ namespace FantaRPG.src
         private static FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
         private static FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        bool gravityAffected = false;
+        bool gravityAffected = true;
         private ParticleEmitter emitter;
-        List<Action> OnCollideAction = new List<Action>();
-        public void AddOnCollisionAction(Action action)
+        public event EventHandler OnCollision;
+        private float damage;
+        public Bullet(Texture2D texture, float x, float y, float w, float h, Vector2 velocity, float dmg) : base(texture, x, y, w, h)
         {
-            OnCollideAction.Add(action);
-        }
-        public Bullet(Texture2D texture, int x, int y, int w, int h, Vector2 velocity) : base(texture, x, y, w, h)
-        {
+            damage = dmg;
             Velocity = velocity;
             TextureRegion2D textureRegion = new TextureRegion2D(texture);
-            emitter = new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(.5), Profile.Circle(20, Profile.CircleRadiation.Out))
+            emitter = new ParticleEmitter(textureRegion, 20, TimeSpan.FromSeconds(.5), Profile.Circle(20, Profile.CircleRadiation.Out))
             {
                 AutoTrigger = false,
                 Parameters = new ParticleReleaseParameters
                 {
                     Speed = new Range<float>(0f, 500f),
-                    Scale = new Range<float>(w),
-                    Quantity = 50,
+                    //Scale = new Range<float>(0, w),
+                    Quantity = 20,
                 },
                 Modifiers =
                 {
@@ -50,19 +49,19 @@ namespace FantaRPG.src
                         {
                             new ColorInterpolator
                             {
-                                StartValue=new HslColor(0.0f,1.0f,0.5f),
-                                EndValue=new HslColor(180.0f,1.0f,0.5f)
+                                StartValue = new HslColor(0.0f,1.0f,0.5f),
+                                EndValue = new HslColor(180.0f,1.0f,0.5f)
                             },
                             new ScaleInterpolator()
                             {
-                                StartValue=new Vector2(w,w),
-                                EndValue=Vector2.Zero,
+                                StartValue = new Vector2(w,w),
+                                EndValue = Vector2.Zero,
                             }
                         }
                     }
                 }
             };
-            AddOnCollisionAction(() =>
+            OnCollision += delegate
             {
                 Game1.Instance.CurrentRoom.AddEmitter(emitter);
 
@@ -72,7 +71,11 @@ namespace FantaRPG.src
                 //FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
                 //int val = random.GetFieldValue<int>("_state");
                 //Debug.WriteLine(val);
-            });
+            };
+            //OnCollision += delegate
+            //{
+            //    Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, position.X, position.Y, hitboxSize.X, hitboxSize.Y, velocity * -1, 10));
+            //};
         }
         public override void Update(GameTime gameTime)
         {
@@ -111,10 +114,7 @@ namespace FantaRPG.src
                 }
                 else
                 {
-                    foreach (var item in OnCollideAction)
-                    {
-                        item.Invoke();
-                    }
+                    OnCollision(this,null);
                 }
             }
         }
