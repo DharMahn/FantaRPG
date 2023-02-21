@@ -132,6 +132,7 @@ namespace FantaRPG.src
                         jumpCount = jumpCountMax;
                         onLeftWall = false;
                         onRightWall = false;
+                        onWall = false;
                     }
                     else if (IsTouchingBottom(item, gameTime))
                     {
@@ -209,7 +210,7 @@ namespace FantaRPG.src
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonLeftWall: " + onLeftWall + "\nRightWall:" + onRightWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
+            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonLeftWall: " + onLeftWall + "\nRightWall: " + onRightWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
         }
     }
 }
