@@ -1,4 +1,5 @@
-﻿using FantaRPG.src.Movement;
+﻿using FantaRPG.src.Items;
+using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -24,7 +25,9 @@ namespace FantaRPG.src
         bool onWall = false;
         bool onLeftWall;
         bool onRightWall;
-        public Player(Texture2D texture, Dictionary<string, Keys> input, float x, float y, float w, float h) : base(texture, x, y, w, h)
+        List<Modifier> modifiers = new List<Modifier>();
+        public List<Modifier> Modifiers { get { return modifiers; } }
+        public Player(Dictionary<string, Keys> input, float x, float y, float w, float h, Texture2D texture = null) : base(x, y, w, h, texture)
         {
             Input = input;
         }
@@ -101,6 +104,7 @@ namespace FantaRPG.src
             }
             if (MovementInput.MouseLeftJustDown())
             {
+                Debug.WriteLine("clicked");
                 Vector2 playerCenter = new Vector2(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
                 Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
 
@@ -108,7 +112,7 @@ namespace FantaRPG.src
                 Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 1000);
-                Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, (int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel,Stats.GetStat(Stat.Damage)));
+                Game1.Instance.CurrentRoom.AddEntity(new Bullet((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel,Stats.GetStat(Stat.Damage)));
             }
             if (/*onGround*/true)
             {
@@ -205,6 +209,27 @@ namespace FantaRPG.src
                 onWall = false;
                 onLeftWall = false;
                 onRightWall = false;
+            }
+        }
+        public void AddModifier(Modifier modifier)
+        {
+            modifiers.Add(modifier);
+        }
+        public void RemoveModifier(Modifier modifier)
+        {
+            modifiers.Remove(modifier);
+        }
+        public override void ProcessStats()
+        {
+            base.ProcessStats();
+            Stats.SetStat(Stat.MoveSpeed, 40);
+            Stats.SetStat(Stat.JumpStrength, 20);
+            foreach (var modifier in Modifiers)
+            {
+                foreach (var stat in modifier.Stats.GetAllStats())
+                {
+                    Stats.IncrementStat(stat.Key, stat.Value);
+                }
             }
         }
         public override void Draw(SpriteBatch spriteBatch)

@@ -30,28 +30,16 @@ namespace FantaRPG.src
             bounds.Y = (int)(target.Position.Y - offsetY);
             bounds.Width = Game1.Instance._graphics.PreferredBackBufferWidth;
             bounds.Height = Game1.Instance._graphics.PreferredBackBufferHeight;
-            if (targetX < Game1.Instance.CurrentRoom.Bounds.X)
-            {
-                targetX = Game1.Instance.CurrentRoom.Bounds.X;
-            }
-            if (targetY < Game1.Instance.CurrentRoom.Bounds.Y)
-            {
-                targetY = Game1.Instance.CurrentRoom.Bounds.Y;
-            }
-            if (targetX > Game1.Instance.CurrentRoom.Bounds.Width - offsetX)
-            {
-                targetX = Game1.Instance.CurrentRoom.Bounds.Width - offsetX;
-            }
-            if (targetY > Game1.Instance.CurrentRoom.Bounds.Height - offsetY)
-            {
-                targetY = Game1.Instance.CurrentRoom.Bounds.Height - offsetY;
-            }
+            targetX = MathHelper.Clamp(
+                targetX, 
+                -(Game1.Instance.CurrentRoom.Bounds.X - (Game1.Instance._graphics.PreferredBackBufferWidth / 2)), 
+                -Game1.Instance._graphics.PreferredBackBufferWidth  / 2);
+
             var position = Matrix.CreateTranslation(
                 targetX,
                 targetY, 0);
             var offset = Matrix.CreateTranslation(offsetX, offsetY, 0);
             Transform = position * offset;
-            //Debug.WriteLine("X: " + targetX + " Y: " + targetY);
         }
     }
 }

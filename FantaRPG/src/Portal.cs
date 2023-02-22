@@ -12,11 +12,11 @@ namespace FantaRPG.src
     {
         private Room targetRoom = null;
         private bool isTriggered = false;
-        public Portal(Texture2D texture, float x, float y, float w, float h) : base(texture, x, y, w, h)
+        public Portal(float x, float y, float w, float h) : base(x, y, w, h)
         {
             IsCollidable = false;
         }
-        public Portal(Texture2D texture, float x, float y, float w, float h, Room room) : base(texture, x, y, w, h)
+        public Portal(float x, float y, float w, float h, Room room) : base(x, y, w, h)
         {
             SetAsPortal(room);
             IsCollidable = false;

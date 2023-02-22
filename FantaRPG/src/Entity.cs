@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FantaRPG.src.Items;
 
 namespace FantaRPG.src
 {
@@ -15,18 +16,21 @@ namespace FantaRPG.src
         public Stats Stats;
         protected bool alive = true;
         public bool Alive { get { return alive; } }
-        public Entity(Texture2D texture, float x, float y, float w, float h)
+
+        public Entity(float x, float y, float w, float h, Texture2D texture = null)
         {
-            Texture = texture;
+            if (texture==null)
+            {
+                Texture = Game1.Instance.pixel;
+            }
             Position = new Vector2(x, y);
             HitboxSize = new Vector2(w, h);
             Stats = new Stats();
             ProcessStats();
         }
-        public void ProcessStats()
+        public virtual void ProcessStats()
         {
-            Stats.SetStat(Stat.MoveSpeed, 40);
-            Stats.SetStat(Stat.JumpStrength, 20);
+
         }
         public virtual void Update(GameTime gameTime)
         {

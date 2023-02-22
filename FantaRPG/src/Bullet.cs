@@ -27,11 +27,11 @@ namespace FantaRPG.src
         private ParticleEmitter emitter;
         public event EventHandler OnCollision;
         private float damage;
-        public Bullet(Texture2D texture, float x, float y, float w, float h, Vector2 velocity, float dmg) : base(texture, x, y, w, h)
+        public Bullet(float x, float y, float w, float h, Vector2 velocity, float dmg, Texture2D texture = null) : base(x, y, w, h, texture)
         {
             damage = dmg;
             Velocity = velocity;
-            TextureRegion2D textureRegion = new TextureRegion2D(texture);
+            TextureRegion2D textureRegion = new TextureRegion2D(Game1.Instance.pixel);
             emitter = new ParticleEmitter(textureRegion, 20, TimeSpan.FromSeconds(.5), Profile.Circle(20, Profile.CircleRadiation.Out))
             {
                 AutoTrigger = false,

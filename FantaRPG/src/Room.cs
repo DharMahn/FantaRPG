@@ -33,13 +33,13 @@ namespace FantaRPG.src
         {
             particles.Emitters.Add(effect);
         }
-        public Rectangle Bounds { get; protected set; }
+        public Point Bounds { get; protected set; }
         public bool AddEntity(Entity entity)
         {
             entities.Add(entity);
             return true;
         }
-        public Room(List<BackgroundLayer> bgs, List<Entity> platforms, List<Entity> entities, Player player, Rectangle bounds = new Rectangle(), float gravity = 1f)
+        public Room(List<BackgroundLayer> bgs, List<Entity> platforms, List<Entity> entities, Player player, Point bounds = new Point(), float gravity = 1f)
         {
             backgrounds = bgs;
             this.objects = platforms;

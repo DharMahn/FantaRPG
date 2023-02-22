@@ -74,17 +74,22 @@ namespace FantaRPG.src
                 { "Right", Keys.D },
                 { "Jump", Keys.Space }
             };
-            player = new Player(pixel, input, -400, -400, 20, 20);
+            player = new Player(input, 100, -400, 20, 20);
 
-            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Rectangle(0, -540, 1920, 1620));
-            Room1.AddObject(new Platform(pixel, -200, -1000, 400, 800));
-            Room1.AddObject(new Platform(pixel, -20000, 0, 40000, 20));
-            Room1.AddObject(new Portal(pixel, 300, -100, 100, 100));
+            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), 
+                             new List<Entity>(), 
+                             new List<Entity>(), 
+                             player, 
+                             new Point(3840, 2560));
+            Room1.AddObject(new Platform(200, -1000, 400, 800));
+            Room1.AddObject(new Platform(-20000, 0, 40000, 20)); 
+            Room1.AddObject(new Platform(-20, -2540, 40, 2540));
+            Room1.AddObject(new Portal(1400, 500, 100, 100));
             //Room1.AddPlatform(new Platform(pixel,))
-            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Rectangle(0, 0, 1920, 1080));
-            Room2.AddObject(new Platform(pixel, -200, -400, 50, 50));
-            Room2.AddObject(new Platform(pixel, -20000, 0, 40000, 50));
-            Room2.AddObject(new Portal(pixel, -600, -100, 100, 100));
+            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Point(1920, 1080));
+            Room2.AddObject(new Platform(200, 400, 50, 50));
+            Room2.AddObject(new Platform(-20000, 0, 40000, 50));
+            Room2.AddObject(new Portal(300, 500, 100, 100));
 
             ((Portal)Room1.Objects.Last()).SetAsPortal(Room2);
             ((Portal)Room2.Objects.Last()).SetAsPortal(Room1);
