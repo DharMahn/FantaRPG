@@ -15,14 +15,5 @@ namespace FantaRPG.src.Enemies
         {
 
         }
-        public override void Update(GameTime gameTime)
-        {
-            //Game1.Instance.CurrentRoom.Player.Position;
-            //base.Update(gameTime);
-        }
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            base.Draw(spriteBatch);
-        }
     }
 }
