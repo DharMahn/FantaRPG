@@ -15,6 +15,8 @@ namespace FantaRPG.src
         protected Texture2D Texture;
         public Stats Stats;
         protected bool alive = true;
+        private Vector2 lastPos;
+        public Vector2 LastPosition { get { return lastPos; } }
         public bool Alive { get { return alive; } }
 
         public Entity(float x, float y, float w, float h, Texture2D texture = null)
@@ -23,7 +25,13 @@ namespace FantaRPG.src
             {
                 Texture = Game1.Instance.pixel;
             }
+            else
+            {
+                Texture = texture;
+            }
+            
             Position = new Vector2(x, y);
+            lastPos = new Vector2(x, y);
             HitboxSize = new Vector2(w, h);
             Stats = new Stats();
             ProcessStats();
@@ -34,7 +42,8 @@ namespace FantaRPG.src
         }
         public virtual void Update(GameTime gameTime)
         {
-            Position += Velocity;
+            lastPos = position;
+            Position += Velocity*(float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public virtual void Draw(SpriteBatch spriteBatch)
         {

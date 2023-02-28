@@ -72,10 +72,6 @@ namespace FantaRPG.src
                 //int val = random.GetFieldValue<int>("_state");
                 //Debug.WriteLine(val);
             };
-            //OnCollision += delegate
-            //{
-            //    Game1.Instance.CurrentRoom.AddEntity(new Bullet(Game1.Instance.pixel, position.X, position.Y, hitboxSize.X, hitboxSize.Y, velocity * -1, 10));
-            //};
         }
         public override void Update(GameTime gameTime)
         {
@@ -108,12 +104,15 @@ namespace FantaRPG.src
                         alive = false;
                     }
                 }
+                //base.Update(gameTime);
                 if (alive)
                 {
-                    Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    base.Update(gameTime);
+                    //Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
                 }
                 else
                 {
+
                     OnCollision(this,null);
                 }
             }

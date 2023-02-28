@@ -1,8 +1,10 @@
-﻿using FantaRPG.src.Items;
+﻿using FantaRPG.src.Interfaces;
+using FantaRPG.src.Items;
 using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -104,15 +106,20 @@ namespace FantaRPG.src
             }
             if (MovementInput.MouseLeftJustDown())
             {
-                Debug.WriteLine("clicked");
+                //Debug.WriteLine("clicked");
                 Vector2 playerCenter = new Vector2(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
                 Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
 
                 //Debug.WriteLine(cursorPos.X.ToString("0.0") + ";" + cursorPos.Y.ToString("0.0") + " cursorpos, " + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + " playerpos");
                 Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
-                spellVel = Vector2.Multiply(spellVel, 1000);
-                Game1.Instance.CurrentRoom.AddEntity(new Bullet((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel,Stats.GetStat(Stat.Damage)));
+                spellVel = Vector2.Multiply(spellVel, 2500);
+                Bullet bullet = new Bullet((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel, Stats.GetStat(Stat.Damage));
+                bullet.OnCollision += delegate
+                {
+                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, bullet.HitboxSize.X, bullet.HitboxSize.Y, Vector2.Normalize(bullet.LastPosition-bullet.Position)*bullet.Velocity.Length(), 10, Game1.Instance.pixel));
+                };
+                Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
             if (/*onGround*/true)
             {

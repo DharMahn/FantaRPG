@@ -42,7 +42,7 @@ namespace FantaRPG.src
 
         protected override void Initialize()
         {
-            IsFixedTimeStep = false;
+            IsFixedTimeStep = true;
             base.Initialize();
         }
         Player player;
