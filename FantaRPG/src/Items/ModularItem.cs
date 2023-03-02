@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,11 @@ namespace FantaRPG.src.Items
     internal class ModularItem : Item
     {
         List<Modifier> modifiers = new List<Modifier>();
+
+        public ModularItem(string name, Texture2D texture = null) : base(name, texture)
+        {
+        }
+
         public void AddModifier(Modifier modifier)
         {
             modifiers.Add(modifier);

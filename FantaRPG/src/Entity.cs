@@ -19,7 +19,7 @@ namespace FantaRPG.src
         public Vector2 LastPosition { get { return lastPos; } }
         public bool Alive { get { return alive; } }
 
-        public Entity(float x, float y, float w, float h, Texture2D texture = null)
+        public Entity(float x, float y, Vector2 size, Texture2D texture = null)
         {
             if (texture==null)
             {
@@ -32,7 +32,7 @@ namespace FantaRPG.src
             
             Position = new Vector2(x, y);
             lastPos = new Vector2(x, y);
-            HitboxSize = new Vector2(w, h);
+            HitboxSize = size;
             Stats = new Stats();
             ProcessStats();
         }

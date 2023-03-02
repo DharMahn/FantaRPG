@@ -12,7 +12,7 @@ namespace FantaRPG.src.Items
         public int ItemLevel { get; private set; }
         public static Modifier GenerateModifier(int ItemLevel)
         {
-            Modifier modifier = new Modifier(ItemLevel);
+            Modifier modifier = new(ItemLevel);
             GenerateStats(ref modifier, ItemLevel);
             return modifier;
         }

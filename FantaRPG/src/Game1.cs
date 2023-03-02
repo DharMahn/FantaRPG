@@ -33,11 +33,11 @@ namespace FantaRPG.src
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            for (int i = 0; i < 100; i++)
-            {
-                Modifier modifier = Modifier.GenerateModifier(Random.Next(50, 500));
-                Debug.WriteLine(modifier.ToString());
-            }
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    Modifier modifier = Modifier.GenerateModifier(Random.Next(50, 500));
+            //    Debug.WriteLine(modifier.ToString());
+            //}
         }
 
         protected override void Initialize()
@@ -74,22 +74,24 @@ namespace FantaRPG.src
                 { "Right", Keys.D },
                 { "Jump", Keys.Space }
             };
-            player = new Player(input, 100, -400, 20, 20);
-
+            player = new Player(input, 100, -400, EntityConstants.PlayerSize);
+            
             Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), 
                              new List<Entity>(), 
                              new List<Entity>(), 
                              player, 
                              new Point(3840, 2560));
-            Room1.AddObject(new Platform(200, -1000, 400, 800));
-            Room1.AddObject(new Platform(-20000, 0, 40000, 20)); 
-            Room1.AddObject(new Platform(-20, -2540, 40, 2540));
-            Room1.AddObject(new Portal(1400, 500, 100, 100));
-            //Room1.AddPlatform(new Platform(pixel,))
+            Room1.AddObject(new Platform(200, -1000, new Vector2(400, 800)));
+            Room1.AddObject(new Platform(-20000, 0, new Vector2(40000, 20))); 
+            Room1.AddObject(new Platform(-20, -2540, new Vector2(40, 2540)));
+            Room1.AddObject(new Portal(1400, 500, EntityConstants.PortalSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
             Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Point(1920, 1080));
-            Room2.AddObject(new Platform(200, 400, 50, 50));
-            Room2.AddObject(new Platform(-20000, 0, 40000, 50));
-            Room2.AddObject(new Portal(300, 500, 100, 100));
+            Room2.AddObject(new Platform(200, 400, new Vector2(50, 50)));
+            Room2.AddObject(new Platform(-20000, 0, new Vector2(40000, 50)));
+            Room2.AddObject(new Portal(300, 500, EntityConstants.PortalSize));
 
             ((Portal)Room1.Objects.Last()).SetAsPortal(Room2);
             ((Portal)Room2.Objects.Last()).SetAsPortal(Room1);

@@ -11,13 +11,8 @@ namespace FantaRPG.src
 {
     internal class Platform : Entity
     {
-        public Platform(float x, float y, float w, float h, Texture2D texture = null, bool collidable = true) : base(x, y, w, h, texture)
+        public Platform(float x, float y, Vector2 size, Texture2D texture = null, bool collidable = true) : base(x, y, size, texture)
         {
-            if (texture == null)
-            {
-                texture = Game1.Instance.pixel;
-            }
-            
             IsCollidable = collidable;
         }
         public virtual void Trigger()

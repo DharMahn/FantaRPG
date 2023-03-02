@@ -8,7 +8,7 @@ namespace FantaRPG.src
 {
     public enum Stat
     {
-        MoveSpeed, JumpStrength, Armor, Damage
+        MoveSpeed, JumpStrength, Armor, Damage, Health, Mana, Stamina
     }
     internal class Stats
     {

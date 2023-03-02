@@ -27,11 +27,22 @@ namespace FantaRPG.src
         bool onWall = false;
         bool onLeftWall;
         bool onRightWall;
-        List<Modifier> modifiers = new List<Modifier>();
+        List<Modifier> modifiers = new();
         public List<Modifier> Modifiers { get { return modifiers; } }
-        public Player(Dictionary<string, Keys> input, float x, float y, float w, float h, Texture2D texture = null) : base(x, y, w, h, texture)
+        public Inventory.Inventory Inventory;
+        public List<Item> GetInventory()
+        {
+            return Inventory.GetItems();
+        }
+        public bool AddItem(Item item)
+        {
+            Inventory.AddItem(item);
+            return true;
+        }
+        public Player(Dictionary<string, Keys> input, float x, float y, Vector2 size, Texture2D texture = null) : base(x, y, size, texture)
         {
             Input = input;
+            Inventory = new Inventory.Inventory();
         }
         float onWallPosition=0;
         public override void Update(GameTime gameTime)
@@ -93,6 +104,7 @@ namespace FantaRPG.src
                         velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
                     }
                     canJump = false;
+                    jumpCount = 0;
                 }
                 else
                 {
@@ -107,17 +119,17 @@ namespace FantaRPG.src
             if (MovementInput.MouseLeftJustDown())
             {
                 //Debug.WriteLine("clicked");
-                Vector2 playerCenter = new Vector2(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
-                Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
+                Vector2 playerCenter = new(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
+                Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
 
                 //Debug.WriteLine(cursorPos.X.ToString("0.0") + ";" + cursorPos.Y.ToString("0.0") + " cursorpos, " + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + " playerpos");
-                Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
+                Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 2500);
-                Bullet bullet = new Bullet((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), spellSize, spellSize, spellVel, Stats.GetStat(Stat.Damage));
+                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage));
                 bullet.OnCollision += delegate
                 {
-                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, bullet.HitboxSize.X, bullet.HitboxSize.Y, Vector2.Normalize(bullet.LastPosition-bullet.Position)*bullet.Velocity.Length(), 10, Game1.Instance.pixel));
+                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), Vector2.Normalize(bullet.LastPosition-bullet.Position)*bullet.Velocity.Length(), 10, Game1.Instance.pixel));
                 };
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
@@ -173,14 +185,14 @@ namespace FantaRPG.src
                 }
                 else
                 {
-                    if (item is Portal)
+                    if (item is Portal portal)
                     {
                         if (IsTouchingLeft(item, gameTime) ||
                             IsTouchingRight(item, gameTime) ||
                             IsTouchingTop(item, gameTime) ||
                             IsTouchingBottom(item, gameTime))
                         {
-                            ((Portal)item).ChangeRoom();
+                            portal.ChangeRoom();
                         }
                     }
                 }

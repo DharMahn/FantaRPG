@@ -20,18 +20,18 @@ namespace FantaRPG.src
 {
     internal class Bullet : Entity
     {
-        private static FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 
         bool gravityAffected = true;
         private ParticleEmitter emitter;
         public event EventHandler OnCollision;
         private float damage;
-        public Bullet(float x, float y, float w, float h, Vector2 velocity, float dmg, Texture2D texture = null) : base(x, y, w, h, texture)
+        public Bullet(float x, float y, Vector2 size, Vector2 velocity, float dmg, Texture2D texture = null) : base(x, y, size, texture)
         {
             damage = dmg;
             Velocity = velocity;
-            TextureRegion2D textureRegion = new TextureRegion2D(Game1.Instance.pixel);
+            TextureRegion2D textureRegion = new(Game1.Instance.pixel);
             emitter = new ParticleEmitter(textureRegion, 20, TimeSpan.FromSeconds(.5), Profile.Circle(20, Profile.CircleRadiation.Out))
             {
                 AutoTrigger = false,
@@ -54,7 +54,7 @@ namespace FantaRPG.src
                             },
                             new ScaleInterpolator()
                             {
-                                StartValue = new Vector2(w,w),
+                                StartValue = new Vector2(hitboxSize.X,hitboxSize.Y),
                                 EndValue = Vector2.Zero,
                             }
                         }
@@ -113,7 +113,7 @@ namespace FantaRPG.src
                 else
                 {
 
-                    OnCollision(this,null);
+                    OnCollision(this, null);
                 }
             }
         }
