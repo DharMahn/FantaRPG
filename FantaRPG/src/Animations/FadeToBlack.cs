@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FantaRPG.src.Interfaces;
+using MonoGame.Extended;
 
 namespace FantaRPG.src.Animations
 {
@@ -50,11 +51,11 @@ namespace FantaRPG.src.Animations
             float next;
             if (IsReverse)
             {
-                next = alpha - (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
+                next = alpha - (255f * ((float)gameTime.GetElapsedSeconds() / interval));
             }
             else
             {
-                next = alpha + (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
+                next = alpha + (255f * ((float)gameTime.GetElapsedSeconds() / interval));
             }
             if (next >= 255)
             {
@@ -67,7 +68,7 @@ namespace FantaRPG.src.Animations
                 IsFinished = true;
             }
             alpha = next;
-            //tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            //tweener.Update((float)gameTime.GetElapsedSeconds());
             col.A = (byte)alpha;
         }
     }

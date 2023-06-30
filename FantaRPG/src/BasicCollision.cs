@@ -1,44 +1,28 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 
 namespace FantaRPG.src
 {
-    internal class BasicCollision
+    internal class BasicCollision : ICollisionActor
     {
         protected Vector2 position, velocity, hitboxSize;
-        public Vector2 Position { get { return position; } protected set { position = value; } }
         public Vector2 Velocity { get { return velocity; } protected set { velocity = value; } }
-        public Vector2 HitboxSize { get { return hitboxSize; } protected set { hitboxSize = value; } }
+        public Vector2 HitboxSize => ((RectangleF)Bounds).Size;
 
-        public bool IsTouchingLeft(Entity sprite, GameTime gameTime)
-        {
-            return Position.X + HitboxSize.X + Velocity.X * gameTime.ElapsedGameTime.TotalSeconds > sprite.Position.X &&
-                   Position.X < sprite.Position.X &&
-                   Position.Y + HitboxSize.Y > sprite.Position.Y &&
-                   Position.Y < sprite.Position.Y + sprite.HitboxSize.Y;
-        }
+        public IShapeF Bounds { get; protected set; }
 
-        public bool IsTouchingRight(Entity sprite, GameTime gameTime)
+        public virtual void OnCollision(CollisionEventArgs collisionInfo)
         {
-            return Position.X + Velocity.X * gameTime.ElapsedGameTime.TotalSeconds < sprite.Position.X + sprite.HitboxSize.X &&
-                   Position.X + HitboxSize.X > sprite.Position.X + sprite.HitboxSize.X &&
-                   Position.Y + HitboxSize.Y > sprite.Position.Y &&
-                   Position.Y < sprite.Position.Y + sprite.HitboxSize.Y;
-        }
-
-        public bool IsTouchingTop(Entity sprite, GameTime gameTime)
-        {
-            return Position.Y + HitboxSize.Y + Velocity.Y * gameTime.ElapsedGameTime.TotalSeconds > sprite.Position.Y &&
-                   Position.Y < sprite.Position.Y &&
-                   Position.X + HitboxSize.X > sprite.Position.X &&
-                   Position.X < sprite.Position.X + sprite.HitboxSize.X;
-        }
-
-        public bool IsTouchingBottom(Entity sprite, GameTime gameTime)
-        {
-            return Position.Y + Velocity.Y * gameTime.ElapsedGameTime.TotalSeconds < sprite.Position.Y + sprite.HitboxSize.Y &&
-                   Position.Y + HitboxSize.Y > sprite.Position.Y + sprite.HitboxSize.Y &&
-                   Position.X + HitboxSize.X > sprite.Position.X &&
-                   Position.X < sprite.Position.X + sprite.HitboxSize.X;
+            Bounds.Position -= collisionInfo.PenetrationVector;
+            if (collisionInfo.PenetrationVector.X != 0)
+            {
+                velocity.X = 0;
+            }
+            if (collisionInfo.PenetrationVector.Y != 0)
+            {
+                velocity.Y = 0;
+            }
         }
     }
 }

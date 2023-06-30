@@ -22,12 +22,12 @@ namespace FantaRPG.src
         internal void Follow(Entity target)
         {
             float targetX, targetY, offsetX, offsetY;
-            targetX = -target.Position.X - target.HitboxSize.X / 2f;
-            targetY = -target.Position.Y - target.HitboxSize.Y / 2f + Game1.Instance._graphics.PreferredBackBufferHeight * 0.2f;
+            targetX = -target.Bounds.Position.X - target.HitboxSize.X / 2f;
+            targetY = -target.Bounds.Position.Y - target.HitboxSize.Y / 2f + Game1.Instance._graphics.PreferredBackBufferHeight * 0.2f;
             offsetX = Game1.Instance._graphics.PreferredBackBufferWidth / 2f;
             offsetY = Game1.Instance._graphics.PreferredBackBufferHeight - Game1.Instance._graphics.PreferredBackBufferHeight / 2.5f;
-            bounds.X = (int)(target.Position.X - offsetX);
-            bounds.Y = (int)(target.Position.Y - offsetY);
+            bounds.X = (int)(target.Bounds.Position.X - offsetX);
+            bounds.Y = (int)(target.Bounds.Position.Y - offsetY);
             bounds.Width = Game1.Instance._graphics.PreferredBackBufferWidth;
             bounds.Height = Game1.Instance._graphics.PreferredBackBufferHeight;
             targetX = MathHelper.Clamp(

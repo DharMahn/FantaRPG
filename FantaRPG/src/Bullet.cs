@@ -67,12 +67,13 @@ namespace FantaRPG.src
 
                 FastRandom random = (FastRandom)ParticleEmitterInfo.GetValue(emitter);
                 FastRandomInfo.SetValue(random, RNG.Get(100000));
-                emitter.Trigger(Position);
+                emitter.Trigger(Bounds.Position);
                 //FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
                 //int val = random.GetFieldValue<int>("_state");
                 //Debug.WriteLine(val);
             };
         }
+        Entity collidedEntity = null;
         public override void Update(GameTime gameTime)
         {
             if (alive)
@@ -83,36 +84,52 @@ namespace FantaRPG.src
                 }
                 foreach (var item in Game1.Instance.CurrentRoom.Objects)
                 {
-                    if (IsTouchingLeft(item, gameTime))
-                    {
-                        position.X = item.Position.X - HitboxSize.X;
-                        alive = false;
-                    }
-                    else if (IsTouchingRight(item, gameTime))
-                    {
-                        position.X = item.Position.X + item.HitboxSize.X;
-                        alive = false;
-                    }
-                    if (IsTouchingTop(item, gameTime))
-                    {
-                        position.Y = item.Position.Y - HitboxSize.Y;
-                        alive = false;
-                    }
-                    else if (IsTouchingBottom(item, gameTime))
-                    {
-                        position.Y = item.Position.Y + item.HitboxSize.Y;
-                        alive = false;
-                    }
+                    //if (IsTouchingLeft(item, gameTime))
+                    //{
+                    //    float tempPosX = position.X;
+                    //    position.X = item.Bounds.Position.X - HitboxSize.X;
+                    //    float ratio = Math.Abs(position.X - tempPosX) / velocity.X;
+                    //    position.Y += (velocity.Y * ratio);
+                    //    alive = false;
+                    //    collidedEntity = item;
+                    //}
+                    //else if (IsTouchingRight(item, gameTime))
+                    //{
+                    //    float tempPosX = position.X;
+                    //    position.X = item.Bounds.Position.X + item.HitboxSize.X;
+                    //    float ratio = Math.Abs(position.X - tempPosX) / velocity.X;
+                    //    position.Y -= (velocity.Y * ratio);
+                    //    alive = false;
+                    //    collidedEntity = item;
+                    //}
+                    //if (IsTouchingTop(item, gameTime))
+                    //{
+                    //    float tempPosY = position.Y;
+                    //    position.Y = item.Bounds.Position.Y - HitboxSize.Y;
+                    //    float ratio = Math.Abs(position.Y - tempPosY) / velocity.Y;
+                    //    position.X += (velocity.X * ratio);
+                    //    alive = false;
+                    //    collidedEntity = item;
+                    //}
+                    //else if (IsTouchingBottom(item, gameTime))
+                    //{
+                    //    float tempPosY = position.Y;
+                    //    position.Y = item.Bounds.Position.Y + item.HitboxSize.Y;
+                    //    float ratio = Math.Abs(position.Y - tempPosY) / velocity.Y;
+                    //    position.X -= (velocity.X * ratio);
+                    //    alive = false;
+                    //    collidedEntity = item;
+                    //}
                 }
                 //base.Update(gameTime);
                 if (alive)
                 {
                     base.Update(gameTime);
-                    //Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    //Position += Vector2.Multiply(Velocity, (float)gameTime.GetElapsedSeconds());
                 }
                 else
                 {
-
+                    collidedEntity?.Damage(damage);
                     OnCollision(this, null);
                 }
             }

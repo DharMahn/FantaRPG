@@ -14,7 +14,7 @@ namespace FantaRPG.src
     {
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             foreach (var item in stats)
             {
                 sb.Append(item.Key);
@@ -39,8 +39,7 @@ namespace FantaRPG.src
         }
         public float GetStat(Stat stat)
         {
-            float value;
-            return stats.TryGetValue(stat, out value) ? value : 0;
+            return stats.TryGetValue(stat, out float value) ? value : 0;
         }
         public void SetStat(Stat name, float value)
         {
