@@ -10,24 +10,32 @@ namespace FantaRPG.src
 {
     internal class Portal : Platform
     {
+        private Room parentRoom=null;
         private Room targetRoom = null;
         private bool isTriggered = false;
-        public Portal(float x, float y, Vector2 size) : base(x, y, size)
+        public Room TargetRoom { get { return targetRoom; } }
+        public Room ParentRoom { get { return parentRoom; } }
+
+        public Portal(Room parent, float x, float y, Vector2 size) : base(x, y, size)
         {
             IsCollidable = false;
+            parentRoom = parent;
         }
-        public Portal(float x, float y, Vector2 size, Room room) : base(x, y, size)
+        public Portal(Room parent, float x, float y, Vector2 size, Room targetRoom) : this(parent, x, y, size)
         {
-            SetAsPortal(room);
-            IsCollidable = false;
+            SetPortalTo(targetRoom);
         }
-        public void SetAsPortal(Room target)
+        public void SetPortalTo(Room target)
         {
             targetRoom = target;
         }
         public void ChangeRoom()
         {
             if (isTriggered) return;
+            if (!targetRoom.HasPortalTo(parentRoom))
+            {
+                targetRoom.SetRandomPortalTo(parentRoom);
+            }
             Game1.Instance.TransitionToRoom(targetRoom);
             isTriggered = true;
         }

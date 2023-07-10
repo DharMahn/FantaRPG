@@ -142,5 +142,18 @@ namespace FantaRPG.src
             }
             return PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).First();
         }
+
+        internal bool HasPortalTo(Room room)
+        {
+            return objects.Any(x => x is Portal p && p.TargetRoom == room);
+        }
+
+        internal void SetRandomPortalTo(Room room)
+        {
+            List<Portal> portals = objects.Where(x => x is Portal p && p.TargetRoom == null).Cast<Portal>().ToList();
+            if (portals.Count == 0) 
+                throw new Exception("There are no empty portals left!");
+            portals[RNG.Get(portals.Count)].SetPortalTo(room);
+        }
     }
 }

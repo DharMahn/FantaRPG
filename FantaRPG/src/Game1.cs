@@ -84,17 +84,16 @@ namespace FantaRPG.src
             Room1.AddObject(new Platform(200, -1000, new Vector2(400, 800)));
             Room1.AddObject(new Platform(-20000, 0, new Vector2(40000, 20))); 
             Room1.AddObject(new Platform(-20, -2540, new Vector2(40, 2540)));
-            Room1.AddObject(new Portal(1400, 500, EntityConstants.PortalSize));
+            Room1.AddObject(new Portal(Room1, 800, -200, EntityConstants.PortalSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
             Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Point(1920, 1080));
             Room2.AddObject(new Platform(200, 400, new Vector2(50, 50)));
             Room2.AddObject(new Platform(-20000, 0, new Vector2(40000, 50)));
-            Room2.AddObject(new Portal(300, 500, EntityConstants.PortalSize));
+            Room2.AddObject(new Portal(Room2, 300, -200, EntityConstants.PortalSize));
 
-            ((Portal)Room1.Objects.Last()).SetAsPortal(Room2);
-            ((Portal)Room2.Objects.Last()).SetAsPortal(Room1);
+            ((Portal)Room1.Objects.Last()).SetPortalTo(Room2);
 
             ChangeRoom(Room1);
             SetResolution(1600, 900);
