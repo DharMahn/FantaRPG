@@ -125,11 +125,11 @@ namespace FantaRPG.src
                 //Debug.WriteLine(cursorPos.X.ToString("0.0") + ";" + cursorPos.Y.ToString("0.0") + " cursorpos, " + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + " playerpos");
                 Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
-                spellVel = Vector2.Multiply(spellVel, 2500);
+                spellVel = Vector2.Multiply(spellVel, 500);
                 Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage));
                 bullet.OnCollision += delegate
                 {
-                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), Vector2.Normalize(bullet.LastPosition-bullet.Position)*bullet.Velocity.Length(), 10, Game1.Instance.pixel));
+                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), bullet.Velocity, 10, Game1.Instance.pixel));
                 };
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
@@ -142,7 +142,7 @@ namespace FantaRPG.src
                 velocity.Y += Acceleration.Y;
             }
             onGround = false;
-            foreach (var item in Game1.Instance.CurrentRoom.Objects)
+            foreach (var item in Game1.Instance.CurrentRoom.Platforms)
             {
                 if (item.IsCollidable)
                 {

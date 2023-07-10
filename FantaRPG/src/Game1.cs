@@ -75,25 +75,29 @@ namespace FantaRPG.src
                 { "Jump", Keys.Space }
             };
             player = new Player(input, 100, -400, EntityConstants.PlayerSize);
-            
-            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), 
-                             new List<Entity>(), 
-                             new List<Entity>(), 
-                             player, 
+
+            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(),
+                             new List<Entity>(),
+                             new List<Entity>(),
+                             player,
                              new Point(3840, 2560));
             Room1.AddObject(new Platform(200, -1000, new Vector2(400, 800)));
-            Room1.AddObject(new Platform(-20000, 0, new Vector2(40000, 20))); 
+            Room1.AddObject(new Platform(-20000, 0, new Vector2(40000, 20)));
             Room1.AddObject(new Platform(-20, -2540, new Vector2(40, 2540)));
             Room1.AddObject(new Portal(Room1, 800, -200, EntityConstants.PortalSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
-            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Point(1920, 1080));
+            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), 
+                             new List<Entity>(), 
+                             new List<Entity>(), 
+                             player, 
+                             new Point(1920, 1080));
             Room2.AddObject(new Platform(200, 400, new Vector2(50, 50)));
             Room2.AddObject(new Platform(-20000, 0, new Vector2(40000, 50)));
             Room2.AddObject(new Portal(Room2, 300, -200, EntityConstants.PortalSize));
 
-            ((Portal)Room1.Objects.Last()).SetPortalTo(Room2);
+            ((Portal)Room1.Platforms.Last()).SetPortalTo(Room2);
 
             ChangeRoom(Room1);
             SetResolution(1600, 900);
@@ -120,13 +124,17 @@ namespace FantaRPG.src
                 {
                     if (!fadeToBlack.IsReverse)
                     {
-                        fadeToBlack = new FadeToBlack(true);
+                        fadeToBlack = new FadeToBlack(reverse: true);
                         CurrentRoom = nextRoom;
-                        foreach (Portal item in CurrentRoom.Objects.Where(x => x is Portal))
+                        foreach (Portal item in CurrentRoom.Platforms.Where(x => x is Portal p && p != lastPortal))
                         {
                             item.Reset();
                         }
                         nextRoom = null;
+                        if (lastPortal != null)
+                        {
+                            player.Center = lastPortal.Center - (lastPortal.TargetPortal.Center-player.Center);
+                        }
                     }
                     else
                     {
@@ -171,5 +179,11 @@ namespace FantaRPG.src
             base.Draw(gameTime);
         }
 
+        Portal lastPortal = null;
+        internal void UsePortal(Portal portal)
+        {
+            TransitionToRoom(portal.TargetPortal.ContainingRoom);
+            lastPortal = portal.TargetPortal;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,42 +11,67 @@ namespace FantaRPG.src
 {
     internal class Portal : Platform
     {
-        private Room parentRoom=null;
-        private Room targetRoom = null;
-        private bool isTriggered = false;
-        public Room TargetRoom { get { return targetRoom; } }
-        public Room ParentRoom { get { return parentRoom; } }
-
+        private Room containingRoom = null;
+        private Portal targetPortal = null;
+        private bool isWorking = true;
+        public Portal TargetPortal { get { return targetPortal; } }
+        public Room ContainingRoom { get { return containingRoom; } }
+        static double maxDisableTime = 1;
+        double disableTime = maxDisableTime;
         public Portal(Room parent, float x, float y, Vector2 size) : base(x, y, size)
         {
             IsCollidable = false;
-            parentRoom = parent;
+            containingRoom = parent;
+            isWorking = true;
         }
-        public Portal(Room parent, float x, float y, Vector2 size, Room targetRoom) : this(parent, x, y, size)
+        public Portal(Room parent, float x, float y, Vector2 size, Portal targetPortal) : this(parent, x, y, size)
         {
-            SetPortalTo(targetRoom);
+            SetPortalTo(targetPortal);
         }
-        public void SetPortalTo(Room target)
+        public void SetPortalTo(Portal target)
         {
-            targetRoom = target;
+            targetPortal = target;
+            isWorking = false;
+        }
+        public void SetPortalTo(Room room)
+        {
+            if (!room.HasPortalTo(containingRoom))
+            {
+                targetPortal = room.SetRandomPortalTo(this);
+                isWorking = false;
+            }
         }
         public void ChangeRoom()
         {
-            if (isTriggered) return;
-            if (!targetRoom.HasPortalTo(parentRoom))
+            if (!isWorking) return;
+            if (!targetPortal.containingRoom.HasPortalTo(this))
             {
-                targetRoom.SetRandomPortalTo(parentRoom);
+                targetPortal.containingRoom.SetRandomPortalTo(this);
             }
-            Game1.Instance.TransitionToRoom(targetRoom);
-            isTriggered = true;
+            Game1.Instance.UsePortal(this);
+            isWorking = false;
+        }
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+            if (!isWorking)
+            {
+                disableTime -= gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (disableTime < 0)
+            {
+                disableTime = maxDisableTime;
+                isWorking = true;
+            }
         }
         public void Reset()
         {
-            isTriggered = false;
+            isWorking = true;
+            disableTime = maxDisableTime;
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, Position, new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y), Color.Purple);
+            spriteBatch.Draw(Texture, Position, new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y), isWorking ? Color.Purple : Color.Red);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace FantaRPG.src
         private static readonly FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
 
-        bool gravityAffected = true;
+        bool gravityAffected = false;
         private ParticleEmitter emitter;
         public event EventHandler OnCollision;
         private float damage;
@@ -81,27 +81,34 @@ namespace FantaRPG.src
                 {
                     velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                 }
-                foreach (var item in Game1.Instance.CurrentRoom.Objects)
+                foreach (var item in Game1.Instance.CurrentRoom.Platforms)
                 {
-                    if (IsTouchingLeft(item, gameTime))
+                    if (item.IsCollidable)
                     {
-                        position.X = item.Position.X - HitboxSize.X;
-                        alive = false;
-                    }
-                    else if (IsTouchingRight(item, gameTime))
-                    {
-                        position.X = item.Position.X + item.HitboxSize.X;
-                        alive = false;
-                    }
-                    if (IsTouchingTop(item, gameTime))
-                    {
-                        position.Y = item.Position.Y - HitboxSize.Y;
-                        alive = false;
-                    }
-                    else if (IsTouchingBottom(item, gameTime))
-                    {
-                        position.Y = item.Position.Y + item.HitboxSize.Y;
-                        alive = false;
+                        if (IsTouchingLeft(item, gameTime))
+                        {
+                            position.X = item.Position.X - HitboxSize.X;
+                            velocity.X *= -1;
+                            alive = false;
+                        }
+                        else if (IsTouchingRight(item, gameTime))
+                        {
+                            position.X = item.Position.X + item.HitboxSize.X;
+                            velocity.X *= -1;
+                            alive = false;
+                        }
+                        if (IsTouchingTop(item, gameTime))
+                        {
+                            position.Y = item.Position.Y - HitboxSize.Y;
+                            velocity.Y *= -1;
+                            alive = false;
+                        }
+                        else if (IsTouchingBottom(item, gameTime))
+                        {
+                            position.Y = item.Position.Y + item.HitboxSize.Y;
+                            alive = false;
+                            velocity.Y *= -1;
+                        }
                     }
                 }
                 //base.Update(gameTime);

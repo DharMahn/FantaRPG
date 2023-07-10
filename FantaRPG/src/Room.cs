@@ -18,10 +18,10 @@ namespace FantaRPG.src
         {
             get { return backgrounds; }
         }
-        private List<Entity> objects;
-        public List<Entity> Objects
+        private List<Entity> platforms;
+        public List<Entity> Platforms
         {
-            get { return objects; }
+            get { return platforms; }
         }
         private List<Entity> entities;
         public List<Entity> Entities
@@ -43,7 +43,7 @@ namespace FantaRPG.src
         public Room(List<BackgroundLayer> bgs, List<Entity> platforms, List<Entity> entities, Player player, Point bounds = new Point(), float gravity = 1f)
         {
             backgrounds = bgs;
-            this.objects = platforms;
+            this.platforms = platforms;
             this.entities = entities;
             this.Gravity = gravity;
             particles = new ParticleEffect(autoTrigger: false)
@@ -84,7 +84,7 @@ namespace FantaRPG.src
         internal void DrawPlatforms(SpriteBatch spriteBatch, Matrix transform)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, transformMatrix: transform);
-            foreach (var item in objects)
+            foreach (var item in platforms)
             {
                 item.Draw(spriteBatch);
             }
@@ -92,10 +92,9 @@ namespace FantaRPG.src
         }
         public bool AddObject(Entity entity)
         {
-            objects.Add(entity);
+            platforms.Add(entity);
             return true;
         }
-
         internal void Update(GameTime gameTime)
         {
             foreach (var item in entities.ToList())
@@ -110,6 +109,10 @@ namespace FantaRPG.src
                     }
                     (item as Bullet).Update(gameTime);
                 }
+            }
+            foreach (var item in platforms)
+            {
+                item.Update(gameTime);
             }
             foreach (var item in particles.Emitters.ToList())
             {
@@ -143,17 +146,23 @@ namespace FantaRPG.src
             return PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).First();
         }
 
+        internal bool HasPortalTo(Portal portal)
+        {
+            return platforms.Any(x => x is Portal p && p.TargetPortal == portal);
+        }
         internal bool HasPortalTo(Room room)
         {
-            return objects.Any(x => x is Portal p && p.TargetRoom == room);
+            return platforms.Any(x => x is Portal p && p.TargetPortal?.ContainingRoom == room);
         }
 
-        internal void SetRandomPortalTo(Room room)
+        internal Portal SetRandomPortalTo(Portal portal)
         {
-            List<Portal> portals = objects.Where(x => x is Portal p && p.TargetRoom == null).Cast<Portal>().ToList();
+            List<Portal> portals = platforms.Where(x => x is Portal p && p.TargetPortal == null).Cast<Portal>().ToList();
             if (portals.Count == 0) 
                 throw new Exception("There are no empty portals left!");
-            portals[RNG.Get(portals.Count)].SetPortalTo(room);
+            var randomPortal = portals[RNG.Get(portals.Count)];
+            randomPortal.SetPortalTo(portal);
+            return randomPortal;
         }
     }
 }
