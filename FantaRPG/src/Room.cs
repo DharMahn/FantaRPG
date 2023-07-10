@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FantaRPG.src.Pathfinding;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Particles;
 using System;
@@ -119,6 +120,27 @@ namespace FantaRPG.src
                 }
             }
             player.Update(gameTime);
+        }
+        public List<Node> PathNodes = new List<Node>();
+
+        public Node? GetClosestNode(Vector2 pos, Node excluding = null)
+        {
+            if (PathNodes.Count == 0)
+            {
+                return null;
+            }
+            if (PathNodes.Count == 1)
+            {
+                return PathNodes[0];
+            }
+            if (excluding != null)
+            {
+                if (PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).First() == excluding)
+                {
+                    return PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).ToList()[1];
+                }
+            }
+            return PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).First();
         }
     }
 }

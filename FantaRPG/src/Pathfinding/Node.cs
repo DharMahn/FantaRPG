@@ -11,7 +11,6 @@ namespace FantaRPG.src.Pathfinding
     {
         public Vector2 Position;
         public float Weight = 1;
-        public List<Node> Neighbours = new List<Node>();
         public Node(Vector2 pos)
         {
             Position = pos;
@@ -20,18 +19,6 @@ namespace FantaRPG.src.Pathfinding
         {
             Position = pos;
             Weight = weight;
-        }
-        public Node? GetClosestNode()
-        {
-            if (Neighbours.Count == 0)
-            {
-                return null;
-            }
-            if (Neighbours.Count == 1)
-            {
-                return Neighbours[0];
-            }
-            return Neighbours.OrderBy(x => Vector2.DistanceSquared(Position, x.Position) / Weight).FirstOrDefault();
         }
     }
 }
