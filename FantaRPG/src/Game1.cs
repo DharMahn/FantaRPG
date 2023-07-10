@@ -1,5 +1,4 @@
 ﻿using FantaRPG.src.Animations;
-using FantaRPG.src.HUD;
 using FantaRPG.src.Interfaces;
 using FantaRPG.src.Items;
 using FantaRPG.src.Movement;
@@ -28,7 +27,6 @@ namespace FantaRPG.src
         public float Ratio;
         public Room Room1, Room2;
         private static FastRandom _random = null;
-        HudDisplay display;
         public static FastRandom Random { get { return _random ??= new FastRandom(); } }
         public Game1()
         {
@@ -77,28 +75,28 @@ namespace FantaRPG.src
                 { "Jump", Keys.Space }
             };
             player = new Player(input, 100, -400, EntityConstants.PlayerSize);
-            display = new HudDisplay(player);
+            
             Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), 
                              new List<Entity>(), 
                              new List<Entity>(), 
                              player, 
                              new Point(3840, 2560));
-            ChangeRoom(Room1);
             Room1.AddObject(new Platform(200, -1000, new Vector2(400, 800)));
             Room1.AddObject(new Platform(-20000, 0, new Vector2(40000, 20))); 
             Room1.AddObject(new Platform(-20, -2540, new Vector2(40, 2540)));
-            Room1.AddObject(new Portal(1400, -250, EntityConstants.PortalSize));
-            //Room1.AddEntity(new Enemies.WalkerEnemy(200, -45, EntityConstants.WalkerSize));
-            //Room1.AddEntity(new Enemies.WalkerEnemy(300, -155, EntityConstants.WalkerSize));
-            //Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
+            Room1.AddObject(new Portal(1400, 500, EntityConstants.PortalSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
             Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(), new List<Entity>(), new List<Entity>(), player, new Point(1920, 1080));
             Room2.AddObject(new Platform(200, 400, new Vector2(50, 50)));
             Room2.AddObject(new Platform(-20000, 0, new Vector2(40000, 50)));
-            Room2.AddObject(new Portal(600, -250, EntityConstants.PortalSize));
+            Room2.AddObject(new Portal(300, 500, EntityConstants.PortalSize));
 
-            (Room1.Objects.Last() as Portal).SetAsPortalTo(Room2);
-            (Room2.Objects.Last() as Portal).SetAsPortalTo(Room1);
+            ((Portal)Room1.Objects.Last()).SetAsPortal(Room2);
+            ((Portal)Room2.Objects.Last()).SetAsPortal(Room1);
 
+            ChangeRoom(Room1);
             SetResolution(1600, 900);
         }
         public void SetResolution(int x, int y)
@@ -167,8 +165,8 @@ namespace FantaRPG.src
                 fadeToBlack.Draw(spriteBatch, cam);
             }
             //spriteBatch.Begin();
-            //spriteBatch.Draw(pixel, new Rectangle(Mouse.GetState().Bounds.Position.X - 10 + (int)cam.Offset.X, Mouse.GetState().Bounds.Position.Y - 10 + (int)cam.Offset.Y, 20, 20), Color.Red);
-            //spriteBatch.DrawString(Instance.debugFont, "{" + Mouse.GetState().Bounds.Position.X+cam.Center.X.ToString("0.0") + ";" + Mouse.GetState().Bounds.Position.Y+cam.Center.Y.ToString("0.0") + "}", Mouse.GetState().Bounds.Position.ToVector2(), Color.Black);
+            //spriteBatch.Draw(pixel, new Rectangle(Mouse.GetState().Position.X - 10 + (int)cam.Offset.X, Mouse.GetState().Position.Y - 10 + (int)cam.Offset.Y, 20, 20), Color.Red);
+            //spriteBatch.DrawString(Instance.debugFont, "{" + Mouse.GetState().Position.X+cam.Center.X.ToString("0.0") + ";" + Mouse.GetState().Position.Y+cam.Center.Y.ToString("0.0") + "}", Mouse.GetState().Position.ToVector2(), Color.Black);
 
             //spriteBatch.End();
             base.Draw(gameTime);

@@ -1,7 +1,5 @@
-﻿using FantaRPG.src.Pathfinding;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Particles;
 using System;
 using System.Collections.Generic;
@@ -9,7 +7,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MonoGame.Extended;
 
 namespace FantaRPG.src
 {
@@ -32,9 +29,16 @@ namespace FantaRPG.src
         }
         ParticleEffect particles;
         public float Gravity { get; private set; }
-        public List<Node> PathNodes = new List<Node>();
-        CollisionComponent collisionComponent;
-
+        public void AddEmitter(ParticleEmitter effect)
+        {
+            particles.Emitters.Add(effect);
+        }
+        public Point Bounds { get; protected set; }
+        public bool AddEntity(Entity entity)
+        {
+            entities.Add(entity);
+            return true;
+        }
         public Room(List<BackgroundLayer> bgs, List<Entity> platforms, List<Entity> entities, Player player, Point bounds = new Point(), float gravity = 1f)
         {
             backgrounds = bgs;
@@ -47,19 +51,6 @@ namespace FantaRPG.src
             };
             Player = player;
             Bounds = bounds;
-            //collisionComponent = new CollisionComponent(
-            //    new RectangleF(
-            //        platforms.Min(x => x.Bounds.Position.X),
-            //        platforms.Min(y => y.Bounds.Position.Y),
-            //        platforms.Max(w => w.Bounds.Position.X + ((RectangleF)w.Bounds).Size.Width),
-            //        platforms.Max(h => h.Bounds.Position.Y + ((RectangleF)h.Bounds).Size.Height)
-            //    ));
-            collisionComponent = new CollisionComponent(new RectangleF(0, 0, bounds.X, bounds.Y));
-            collisionComponent.Insert(player);
-            foreach (var item in entities)
-            {
-                collisionComponent.Insert(item);
-            }
         }
         private Player player;
 
@@ -68,36 +59,7 @@ namespace FantaRPG.src
             get { return player; }
             private set { player = value; }
         }
-        public Node? GetClosestNode(Vector2 pos, Node excluding = null)
-        {
-            if (PathNodes.Count == 0)
-            {
-                return null;
-            }
-            if (PathNodes.Count == 1)
-            {
-                return PathNodes[0];
-            }
-            if (excluding != null)
-            {
-                if (PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).First() == excluding)
-                {
-                    return PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).ToList()[1];
-                }
-            }
-            return PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).First();
 
-        }
-        public void AddEmitter(ParticleEmitter effect)
-        {
-            particles.Emitters.Add(effect);
-        }
-        public Point Bounds { get; protected set; }
-        public bool AddEntity(Entity entity)
-        {
-            entities.Add(entity);
-            return true;
-        }
         internal void DrawBackground(SpriteBatch spriteBatch, Matrix transform)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap);
@@ -137,27 +99,26 @@ namespace FantaRPG.src
         {
             foreach (var item in entities.ToList())
             {
-                if (item is Bullet bullet)
+                if (item is Bullet)
                 {
+                    Bullet bullet = item as Bullet;
                     if (!bullet.Alive)
                     {
                         entities.Remove(bullet);
                         continue;
                     }
-                    bullet.Update(gameTime);
+                    (item as Bullet).Update(gameTime);
                 }
             }
-            player.Update(gameTime);
             foreach (var item in particles.Emitters.ToList())
             {
                 Console.WriteLine("asd");
-                if (!item.Update((float)gameTime.GetElapsedSeconds()))
+                if (!item.Update((float)gameTime.ElapsedGameTime.TotalSeconds))
                 {
                     particles.Emitters.Remove(item);
                 }
             }
-            collisionComponent.Update(gameTime);
-            
+            player.Update(gameTime);
         }
     }
 }

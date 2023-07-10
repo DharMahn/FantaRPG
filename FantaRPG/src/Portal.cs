@@ -18,10 +18,10 @@ namespace FantaRPG.src
         }
         public Portal(float x, float y, Vector2 size, Room room) : base(x, y, size)
         {
-            SetAsPortalTo(room);
+            SetAsPortal(room);
             IsCollidable = false;
         }
-        public void SetAsPortalTo(Room target)
+        public void SetAsPortal(Room target)
         {
             targetRoom = target;
         }
@@ -37,7 +37,7 @@ namespace FantaRPG.src
         }
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Texture, Bounds.Position, new Rectangle((int)Bounds.Position.X, (int)Bounds.Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y), Color.Purple);
+            spriteBatch.Draw(Texture, Position, new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y), Color.Purple);
         }
     }
 }
