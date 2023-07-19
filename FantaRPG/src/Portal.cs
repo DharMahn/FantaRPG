@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonoGame.Extended.Tweening;
+using MonoGame.Extended;
 
 namespace FantaRPG.src
 {
@@ -14,10 +16,30 @@ namespace FantaRPG.src
         private Room containingRoom = null;
         private Portal targetPortal = null;
         private bool isWorking = true;
+        private bool IsWorking
+        {
+            get
+            {
+                return isWorking;
+            }
+            set
+            {
+                if (!value)
+                {
+                    tweener.TweenTo(this, x => x.HitboxSize, EntityConstants.PortalSize, (float)maxDisableTime, 0);
+                }
+                else
+                {
+                    tweener.TweenTo(this, x => x.HitboxSize, Vector2.Zero, (float)maxDisableTime, 0);
+
+                }
+            }
+        }
         public Portal TargetPortal { get { return targetPortal; } }
         public Room ContainingRoom { get { return containingRoom; } }
         static double maxDisableTime = 1;
         double disableTime = maxDisableTime;
+        Tweener tweener = new Tweener();
         public Portal(Room parent, float x, float y, Vector2 size) : base(x, y, size)
         {
             IsCollidable = false;
@@ -54,6 +76,7 @@ namespace FantaRPG.src
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+            tweener.Update(gameTime.GetElapsedSeconds());
             if (!isWorking)
             {
                 disableTime -= gameTime.ElapsedGameTime.TotalSeconds;
