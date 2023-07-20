@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FantaRPG.src
 {
-    public static class ReflectionExtensions
+    public static class Extensions
     {
         public static T GetFieldValue<T>(this object obj, string name)
         {

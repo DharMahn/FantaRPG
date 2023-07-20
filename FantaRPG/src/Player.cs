@@ -142,6 +142,16 @@ namespace FantaRPG.src
                 velocity.Y += Acceleration.Y;
             }
             onGround = false;
+            foreach (var portal in Game1.Instance.CurrentRoom.Portals)
+            {
+                if (IsTouchingLeft(portal, gameTime) ||
+                    IsTouchingRight(portal, gameTime)||
+                    IsTouchingTop(portal, gameTime)  ||
+                    IsTouchingBottom(portal, gameTime))
+                {
+                    portal.ChangeRoom();
+                }
+            }
             foreach (var item in Game1.Instance.CurrentRoom.Platforms)
             {
                 if (item.IsCollidable)
@@ -181,19 +191,6 @@ namespace FantaRPG.src
                         onLeftWall = false;
                         canJump = true;
                         onWallPosition = position.X;
-                    }
-                }
-                else
-                {
-                    if (item is Portal portal)
-                    {
-                        if (IsTouchingLeft(item, gameTime) ||
-                            IsTouchingRight(item, gameTime) ||
-                            IsTouchingTop(item, gameTime) ||
-                            IsTouchingBottom(item, gameTime))
-                        {
-                            portal.ChangeRoom();
-                        }
                     }
                 }
             }

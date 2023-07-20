@@ -8,7 +8,7 @@ namespace FantaRPG.src
         public Vector2 Position { get { return position; } set { position = value; } }
         public Vector2 Velocity { get { return velocity; } set { velocity = value; } }
         public Vector2 HitboxSize { get { return hitboxSize; } set { hitboxSize = value; } }
-        public Vector2 Center { get { return position + (hitboxSize / 2); } set { position.X = value.X - hitboxSize.X; position.Y = value.Y - hitboxSize.Y; } }
+        public Vector2 Center { get { return position + (hitboxSize / 2); } set { position.X = value.X - hitboxSize.X/2; position.Y = value.Y - hitboxSize.Y/2; } }
 
         public bool IsTouchingLeft(BasicCollision sprite, GameTime gameTime)
         {

@@ -18,8 +18,8 @@ namespace FantaRPG.src
         {
             get { return backgrounds; }
         }
-        private List<Entity> platforms;
-        public List<Entity> Platforms
+        private List<Platform> platforms;
+        public List<Platform> Platforms
         {
             get { return platforms; }
         }
@@ -29,6 +29,11 @@ namespace FantaRPG.src
             get { return entities; }
         }
         ParticleEffect particles;
+        private List<Portal> portals;
+        public List<Portal> Portals
+        {
+            get { return portals; }
+        }
         public float Gravity { get; private set; }
         public void AddEmitter(ParticleEmitter effect)
         {
@@ -40,11 +45,12 @@ namespace FantaRPG.src
             entities.Add(entity);
             return true;
         }
-        public Room(List<BackgroundLayer> bgs, List<Entity> platforms, List<Entity> entities, Player player, Point bounds = new Point(), float gravity = 1f)
+        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, List<Portal> portals, Player player, Point bounds = new Point(), float gravity = 1f)
         {
             backgrounds = bgs;
             this.platforms = platforms;
             this.entities = entities;
+            this.portals = portals;
             this.Gravity = gravity;
             particles = new ParticleEffect(autoTrigger: false)
             {
@@ -70,9 +76,14 @@ namespace FantaRPG.src
             }
             spriteBatch.End();
         }
-        internal void DrawEntities(SpriteBatch spriteBatch, Matrix matrix)
+        public bool AddPortal(Portal portal)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, transformMatrix: matrix);
+            portals.Add(portal);
+            return true;
+        }
+        internal void DrawEntities(SpriteBatch spriteBatch, Matrix transform)
+        {
+            spriteBatch.Begin(SpriteSortMode.Deferred, blendState: BlendState.AlphaBlend, transformMatrix: transform);
             foreach (var item in entities)
             {
                 item.Draw(spriteBatch);
@@ -81,16 +92,25 @@ namespace FantaRPG.src
             player.Draw(spriteBatch);
             spriteBatch.End();
         }
+        internal void DrawPortals(SpriteBatch spriteBatch,Matrix transform)
+        {
+            spriteBatch.Begin(SpriteSortMode.Deferred,samplerState:SamplerState.PointClamp, transformMatrix: transform);
+            foreach (var item in portals)
+            {
+                item.Draw(spriteBatch);
+            }
+            spriteBatch.End();
+        }
         internal void DrawPlatforms(SpriteBatch spriteBatch, Matrix transform)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred, transformMatrix: transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred,samplerState:SamplerState.PointWrap, transformMatrix: transform);
             foreach (var item in platforms)
             {
                 item.Draw(spriteBatch);
             }
             spriteBatch.End();
         }
-        public bool AddObject(Entity entity)
+        public bool AddPlatform(Platform entity)
         {
             platforms.Add(entity);
             return true;
@@ -111,6 +131,10 @@ namespace FantaRPG.src
                 }
             }
             foreach (var item in platforms)
+            {
+                item.Update(gameTime);
+            }
+            foreach (var item in portals)
             {
                 item.Update(gameTime);
             }
@@ -148,19 +172,19 @@ namespace FantaRPG.src
 
         internal bool HasPortalTo(Portal portal)
         {
-            return platforms.Any(x => x is Portal p && p.TargetPortal == portal);
+            return portals.Any(x => x.TargetPortal == portal);
         }
         internal bool HasPortalTo(Room room)
         {
-            return platforms.Any(x => x is Portal p && p.TargetPortal?.ContainingRoom == room);
+            return portals.Any(x => x.TargetPortal?.ContainingRoom == room);
         }
 
         internal Portal SetRandomPortalTo(Portal portal)
         {
-            List<Portal> portals = platforms.Where(x => x is Portal p && p.TargetPortal == null).Cast<Portal>().ToList();
-            if (portals.Count == 0) 
+            List<Portal> hasNoTarget = portals.Where(x => x.TargetPortal == null).ToList();
+            if (hasNoTarget.Count == 0) 
                 throw new Exception("There are no empty portals left!");
-            var randomPortal = portals[RNG.Get(portals.Count)];
+            var randomPortal = hasNoTarget[RNG.Get(hasNoTarget.Count)];
             randomPortal.SetPortalTo(portal);
             return randomPortal;
         }
