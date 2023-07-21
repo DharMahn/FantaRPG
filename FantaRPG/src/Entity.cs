@@ -17,7 +17,7 @@ namespace FantaRPG.src
         protected bool alive = true;
         private Vector2 lastPos;
         public Vector2 LastPosition { get { return lastPos; } }
-        public bool Alive { get { return alive; } }
+        public bool Alive { get { return alive; } set { alive = value; } }
 
         public Entity(float x, float y, Vector2 size, Texture2D texture = null)
         {

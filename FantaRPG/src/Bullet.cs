@@ -14,7 +14,8 @@ using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.TextureAtlases;
 using System.Diagnostics;
 using System.Reflection;
-using FantaRPG.src.Events;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FantaRPG.src
 {
@@ -27,11 +28,14 @@ namespace FantaRPG.src
         private ParticleEmitter emitter;
         public event EventHandler OnCollision;
         private float damage;
-        public Bullet(float x, float y, Vector2 size, Vector2 velocity, float dmg, Texture2D texture = null) : base(x, y, size, texture)
+        Entity owner;
+        public Entity Owner { get { return owner; } }
+        public Bullet(float x, float y, Vector2 size, Vector2 velocity, float dmg, Entity? owner, Texture2D texture = null) : base(x, y, size, texture)
         {
             damage = dmg;
             Velocity = velocity;
             TextureRegion2D textureRegion = new(Game1.Instance.pixel);
+            this.owner = owner;
             emitter = new ParticleEmitter(textureRegion, 20, TimeSpan.FromSeconds(.5), Profile.Circle(20, Profile.CircleRadiation.Out))
             {
                 AutoTrigger = false,
@@ -123,6 +127,20 @@ namespace FantaRPG.src
                     OnCollision(this, null);
                 }
             }
+        }
+
+        public Bullet Clone()
+        {
+            MemoryStream ms = new MemoryStream();
+            BinaryFormatter bf = new BinaryFormatter();
+
+            bf.Serialize(ms, this);
+
+            ms.Position = 0;
+            object obj = bf.Deserialize(ms);
+            ms.Close();
+
+            return obj as Bullet;
         }
     }
 }

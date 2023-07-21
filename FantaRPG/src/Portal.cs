@@ -136,7 +136,7 @@ namespace FantaRPG.src
                 IsWorking = true;
             }
             rotation -= gameTime.GetElapsedSeconds() * .5f;
-            Debug.WriteLine(position.ToString());
+            //Debug.WriteLine(position.ToString());
         }
         public void Reset()
         {

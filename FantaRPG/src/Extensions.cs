@@ -17,5 +17,16 @@ namespace FantaRPG.src
             var field = obj.GetType().GetField(name, bindingFlags);
             return (T)field?.GetValue(obj);
         }
+        public static Vector2 RotateVector(Vector2 vector, float degrees)
+        {
+            float radians = degrees * MathF.PI / 180;
+            float sin = MathF.Sin(radians);
+            float cos = MathF.Cos(radians);
+
+            float tx = vector.X;
+            float ty = vector.Y;
+
+            return new Vector2(cos * tx - sin * ty, sin * tx + cos * ty);
+        }
     }
 }

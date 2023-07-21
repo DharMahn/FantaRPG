@@ -119,16 +119,12 @@ namespace FantaRPG.src
         {
             foreach (var item in entities.ToList())
             {
-                if (item is Bullet)
-                {
-                    Bullet bullet = item as Bullet;
-                    if (!bullet.Alive)
+                if (!item.Alive)
                     {
-                        entities.Remove(bullet);
+                        entities.Remove(item);
                         continue;
                     }
-                    (item as Bullet).Update(gameTime);
-                }
+                    item.Update(gameTime);
             }
             foreach (var item in platforms)
             {

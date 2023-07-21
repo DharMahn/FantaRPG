@@ -44,7 +44,7 @@ namespace FantaRPG.src
             Input = input;
             Inventory = new Inventory.Inventory();
         }
-        float onWallPosition=0;
+        float onWallPosition = 0;
         public override void Update(GameTime gameTime)
         {
             Vector2 movementVector = Vector2.Zero;
@@ -126,10 +126,10 @@ namespace FantaRPG.src
                 Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 500);
-                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage));
+                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
                 bullet.OnCollision += delegate
                 {
-                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), bullet.Velocity, 10, Game1.Instance.pixel));
+                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), bullet.Velocity, 10, bullet.Owner, Game1.Instance.pixel));
                 };
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
@@ -145,8 +145,8 @@ namespace FantaRPG.src
             foreach (var portal in Game1.Instance.CurrentRoom.Portals)
             {
                 if (IsTouchingLeft(portal, gameTime) ||
-                    IsTouchingRight(portal, gameTime)||
-                    IsTouchingTop(portal, gameTime)  ||
+                    IsTouchingRight(portal, gameTime) ||
+                    IsTouchingTop(portal, gameTime) ||
                     IsTouchingBottom(portal, gameTime))
                 {
                     portal.ChangeRoom();
@@ -220,7 +220,7 @@ namespace FantaRPG.src
                 velocity.Y = 0;
             }
             Acceleration = Vector2.Zero;
-            if (onWallPosition!=position.X)
+            if (onWallPosition != position.X)
             {
                 onWall = false;
                 onLeftWall = false;
