@@ -11,6 +11,7 @@ namespace FantaRPG.src.Modifiers
     internal class DecreaseVelocityOverTimeBehavior : IBulletBehavior
     {
         public List<IBulletBehavior> OnVelocityTriggerBehaviors { get; } = new List<IBulletBehavior>();
+        public bool Passable => true;
 
         public void ActOnCollision(object sender, EventArgs e) { /* ... */ }
 
@@ -33,6 +34,11 @@ namespace FantaRPG.src.Modifiers
         public void Execute(Bullet bullet)
         {
             // Code to execute if this behavior is triggered by another behavior
+        }
+
+        public IBulletBehavior Clone()
+        {
+            return new DecreaseVelocityOverTimeBehavior();
         }
     }
 }

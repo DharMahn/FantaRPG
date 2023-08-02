@@ -13,6 +13,7 @@ namespace FantaRPG.src
 {
     internal class Room
     {
+        public static List<(Room Room, bool IsValid)> Rooms = new List<(Room Room,bool IsValid)>();
         private List<BackgroundLayer> backgrounds;
         public List<BackgroundLayer> Backgrounds
         {
@@ -44,6 +45,21 @@ namespace FantaRPG.src
         {
             entities.Add(entity);
             return true;
+        }
+        public static Room GetRandomValidRoom()
+        {
+            var validRooms = Rooms.Where(x => x.IsValid).ToList();
+            var selectedRoom = validRooms[RNG.Get(validRooms.Count())];
+            selectedRoom.IsValid = false;
+            return selectedRoom.Room;
+        }
+        public static void ResetRoomValidities()
+        {
+            for(int i = 0; i < Rooms.Count;i++)
+            {
+                var room = Rooms[i].Room;
+                Rooms[i] = (room, false);
+            }
         }
         public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, List<Portal> portals, Player player, Point bounds = new Point(), float gravity = 1f)
         {

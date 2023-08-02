@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using FantaRPG.src.Modifiers;
 
 namespace FantaRPG.src
 {
@@ -27,6 +28,7 @@ namespace FantaRPG.src
         bool gravityAffected = false;
         private ParticleEmitter emitter;
         public event EventHandler OnCollision;
+        private List<IBulletBehavior> behaviors = new List<IBulletBehavior>();
         private float damage;
         Entity owner;
         public Entity Owner { get { return owner; } }
@@ -120,6 +122,10 @@ namespace FantaRPG.src
                 {
                     base.Update(gameTime);
                     //Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
+                    foreach (var behavior in behaviors)
+                    {
+                        behavior.Update(this, gameTime);
+                    }
                 }
                 else
                 {
@@ -127,6 +133,10 @@ namespace FantaRPG.src
                     OnCollision(this, null);
                 }
             }
+        }
+        public void AddBehavior(IBulletBehavior behavior)
+        {
+            behaviors.Add(behavior);
         }
 
         public Bullet Clone()

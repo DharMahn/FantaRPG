@@ -74,8 +74,10 @@ namespace FantaRPG.src
                 { "Right", Keys.D },
                 { "Jump", Keys.Space }
             };
-            player = new Player(input, 900, -400, EntityConstants.PlayerSize);
-            player.Center = new Vector2(850, -50);
+            player = new Player(input, 900, -400, EntityConstants.PlayerSize)
+            {
+                Center = new Vector2(850, -50)
+            };
 
             Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(),
                              new List<Platform>(),

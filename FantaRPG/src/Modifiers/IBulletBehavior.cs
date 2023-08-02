@@ -12,5 +12,7 @@ namespace FantaRPG.src.Modifiers
         void ActOnCollision(object sender, EventArgs e);
         void Update(Bullet bullet, GameTime gameTime);
         void Execute(Bullet bullet);
+        bool Passable { get; }
+        IBulletBehavior Clone();
     }
 }
