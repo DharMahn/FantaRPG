@@ -17,9 +17,11 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using FantaRPG.src.Modifiers;
+using Newtonsoft.Json.Linq;
 
 namespace FantaRPG.src
 {
+    [Serializable]
     internal class Bullet : Entity
     {
         private static readonly FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -30,12 +32,15 @@ namespace FantaRPG.src
         public event EventHandler OnCollision;
         private List<IBulletBehavior> behaviors = new List<IBulletBehavior>();
         private float damage;
+        private Vector2 OriginalVelocity;
+        public float Damage { get { return damage; } }
         Entity owner;
         public Entity Owner { get { return owner; } }
         public Bullet(float x, float y, Vector2 size, Vector2 velocity, float dmg, Entity? owner, Texture2D texture = null) : base(x, y, size, texture)
         {
             damage = dmg;
             Velocity = velocity;
+            OriginalVelocity = velocity;
             TextureRegion2D textureRegion = new(Game1.Instance.pixel);
             this.owner = owner;
             emitter = new ParticleEmitter(textureRegion, 20, TimeSpan.FromSeconds(.5), Profile.Circle(20, Profile.CircleRadiation.Out))
@@ -79,6 +84,19 @@ namespace FantaRPG.src
                 //Debug.WriteLine(val);
             };
         }
+
+        public Bullet(Bullet bullet)
+        {
+            position = bullet.position;
+            hitboxSize = bullet.hitboxSize;
+            Velocity = bullet.OriginalVelocity;
+            OriginalVelocity = bullet.OriginalVelocity;
+            
+            damage = bullet.damage;
+            owner = bullet.owner;
+            Texture = bullet.Texture;
+        }
+
         public override void Update(GameTime gameTime)
         {
             if (alive)
@@ -139,18 +157,9 @@ namespace FantaRPG.src
             behaviors.Add(behavior);
         }
 
-        public Bullet Clone()
+        internal void CopyBehaviorsFrom(Bullet bullet)
         {
-            MemoryStream ms = new MemoryStream();
-            BinaryFormatter bf = new BinaryFormatter();
-
-            bf.Serialize(ms, this);
-
-            ms.Position = 0;
-            object obj = bf.Deserialize(ms);
-            ms.Close();
-
-            return obj as Bullet;
+            behaviors = bullet.behaviors;
         }
     }
 }

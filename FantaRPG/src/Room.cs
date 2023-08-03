@@ -13,7 +13,7 @@ namespace FantaRPG.src
 {
     internal class Room
     {
-        public static List<(Room Room, bool IsValid)> Rooms = new List<(Room Room,bool IsValid)>();
+        public static List<(Room Room, bool IsValid)> Rooms = new List<(Room Room, bool IsValid)>();
         private List<BackgroundLayer> backgrounds;
         public List<BackgroundLayer> Backgrounds
         {
@@ -55,7 +55,7 @@ namespace FantaRPG.src
         }
         public static void ResetRoomValidities()
         {
-            for(int i = 0; i < Rooms.Count;i++)
+            for (int i = 0; i < Rooms.Count; i++)
             {
                 var room = Rooms[i].Room;
                 Rooms[i] = (room, false);
@@ -108,9 +108,9 @@ namespace FantaRPG.src
             player.Draw(spriteBatch);
             spriteBatch.End();
         }
-        internal void DrawPortals(SpriteBatch spriteBatch,Matrix transform)
+        internal void DrawPortals(SpriteBatch spriteBatch, Matrix transform)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred,samplerState:SamplerState.PointClamp, transformMatrix: transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, samplerState: SamplerState.PointClamp, transformMatrix: transform);
             foreach (var item in portals)
             {
                 item.Draw(spriteBatch);
@@ -119,7 +119,7 @@ namespace FantaRPG.src
         }
         internal void DrawPlatforms(SpriteBatch spriteBatch, Matrix transform)
         {
-            spriteBatch.Begin(SpriteSortMode.Deferred,samplerState:SamplerState.PointWrap, transformMatrix: transform);
+            spriteBatch.Begin(SpriteSortMode.Deferred, samplerState: SamplerState.PointWrap, transformMatrix: transform);
             foreach (var item in platforms)
             {
                 item.Draw(spriteBatch);
@@ -135,12 +135,12 @@ namespace FantaRPG.src
         {
             foreach (var item in entities.ToList())
             {
+                item.Update(gameTime);
                 if (!item.Alive)
-                    {
-                        entities.Remove(item);
-                        continue;
-                    }
-                    item.Update(gameTime);
+                {
+                    entities.Remove(item);
+                    continue;
+                }
             }
             foreach (var item in platforms)
             {
@@ -152,7 +152,7 @@ namespace FantaRPG.src
             }
             foreach (var item in particles.Emitters.ToList())
             {
-                Console.WriteLine("asd");
+                //Console.WriteLine("asd");
                 if (!item.Update((float)gameTime.ElapsedGameTime.TotalSeconds))
                 {
                     particles.Emitters.Remove(item);
@@ -194,7 +194,7 @@ namespace FantaRPG.src
         internal Portal SetRandomPortalTo(Portal portal)
         {
             List<Portal> hasNoTarget = portals.Where(x => x.TargetPortal == null).ToList();
-            if (hasNoTarget.Count == 0) 
+            if (hasNoTarget.Count == 0)
                 throw new Exception("There are no empty portals left!");
             var randomPortal = hasNoTarget[RNG.Get(hasNoTarget.Count)];
             randomPortal.SetPortalTo(portal);

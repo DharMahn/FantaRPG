@@ -2,6 +2,7 @@
 using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace FantaRPG.src.Modifiers
         public void Update(Bullet bullet, GameTime gameTime)
         {
             // Decrease the velocity
-            bullet.Velocity -= Vector2.One * 5 * gameTime.GetElapsedSeconds(); // Change the calculation as per your requirement
+            bullet.Velocity *= MathF.Pow(0.25f,gameTime.GetElapsedSeconds()); // Change the calculation as per your requirement
 
             if (bullet.Velocity.Length() <= VelocityLengthTrigger)
             {

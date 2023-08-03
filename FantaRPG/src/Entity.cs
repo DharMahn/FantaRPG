@@ -9,6 +9,8 @@ using FantaRPG.src.Items;
 
 namespace FantaRPG.src
 {
+    [Serializable]
+
     internal class Entity : BasicCollision
     {
         public bool IsCollidable { get; protected set; }
@@ -18,7 +20,10 @@ namespace FantaRPG.src
         private Vector2 lastPos;
         public Vector2 LastPosition { get { return lastPos; } }
         public bool Alive { get { return alive; } set { alive = value; } }
+        public Entity()
+        {
 
+        }
         public Entity(float x, float y, Vector2 size, Texture2D texture = null)
         {
             if (texture == null)

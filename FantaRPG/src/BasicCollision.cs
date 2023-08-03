@@ -1,7 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace FantaRPG.src
 {
+    [Serializable]
+
     internal class BasicCollision
     {
         protected Vector2 position, velocity, hitboxSize;

@@ -1,5 +1,6 @@
 ﻿using FantaRPG.src.Interfaces;
 using FantaRPG.src.Items;
+using FantaRPG.src.Modifiers;
 using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
@@ -127,10 +129,13 @@ namespace FantaRPG.src
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 500);
                 Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
-                bullet.OnCollision += delegate
-                {
-                    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), bullet.Velocity, 10, bullet.Owner, Game1.Instance.pixel));
-                };
+                //bullet.OnCollision += delegate
+                //{
+                //    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), bullet.Velocity, 10, bullet.Owner, Game1.Instance.pixel));
+                //};
+                var modifier = new DecreaseVelocityOverTimeBehavior();
+                modifier.OnVelocityTriggerBehaviors.Add(new SplitIntoTwoBehavior());
+                bullet.AddBehavior(modifier);
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
             if (/*onGround*/true)

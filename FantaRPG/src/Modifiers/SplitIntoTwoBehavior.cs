@@ -17,16 +17,18 @@ namespace FantaRPG.src.Modifiers
 
         public void Execute(Bullet bullet)
         {
-            Vector2 originalDirection = bullet.Velocity;
 
-            Bullet bullet1 = bullet.Clone();
-            Bullet bullet2 = bullet.Clone();
+            Bullet bullet1 = new Bullet(bullet);
+            Bullet bullet2 = new Bullet(bullet);
 
-            Vector2 newDirection1 = Extensions.RotateVector(originalDirection, splitAngle);
-            Vector2 newDirection2 = Extensions.RotateVector(originalDirection, -splitAngle);
+            Vector2 newDirection1 = Extensions.RotateVector(bullet1.Velocity, splitAngle);
+            Vector2 newDirection2 = Extensions.RotateVector(bullet2.Velocity, -splitAngle);
 
             bullet1.Velocity = newDirection1;
             bullet2.Velocity = newDirection2;
+
+            bullet1.CopyBehaviorsFrom(bullet);
+            bullet2.CopyBehaviorsFrom(bullet);
 
             Game1.Instance.CurrentRoom.AddEntity(bullet1);
             Game1.Instance.CurrentRoom.AddEntity(bullet2);
