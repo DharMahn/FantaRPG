@@ -10,19 +10,19 @@ namespace FantaRPG.src.Movement
         private static MouseState lastMouseState;
         public static bool KeyDown(Keys key)
         {
-            return Keyboard.GetState().IsKeyDown(key);
+            return Game1.Instance.IsActive && Keyboard.GetState().IsKeyDown(key);
         }
         public static bool KeyUp(Keys key)
         {
-            return Keyboard.GetState().IsKeyUp(key);
+            return Game1.Instance.IsActive && Keyboard.GetState().IsKeyUp(key);
         }
         public static bool KeyJustDown(Keys key)
         {
-            return Keyboard.GetState().IsKeyDown(key) && lastKeyboardState.IsKeyUp(key);
+            return Game1.Instance.IsActive && Keyboard.GetState().IsKeyDown(key) && lastKeyboardState.IsKeyUp(key);
         }
         public static bool KeyJustUp(Keys key)
         {
-            return Keyboard.GetState().IsKeyUp(key) && lastKeyboardState.IsKeyDown(key);
+            return Game1.Instance.IsActive && Keyboard.GetState().IsKeyUp(key) && lastKeyboardState.IsKeyDown(key);
         }
         public static bool MouseLeftDown()
         {
@@ -30,7 +30,7 @@ namespace FantaRPG.src.Movement
         }
         public static bool MouseLeftUp()
         {
-            return Mouse.GetState().LeftButton == ButtonState.Released;
+            return Game1.Instance.IsActive && Mouse.GetState().LeftButton == ButtonState.Released;
         }
         public static bool MouseLeftJustDown()
         {
@@ -38,7 +38,7 @@ namespace FantaRPG.src.Movement
         }
         public static bool MouseLeftJustUp()
         {
-            return Mouse.GetState().LeftButton == ButtonState.Released && lastMouseState.LeftButton == ButtonState.Pressed;
+            return Game1.Instance.IsActive && Mouse.GetState().LeftButton == ButtonState.Released && lastMouseState.LeftButton == ButtonState.Pressed;
         }
         public static Point MousePosition()
         {
@@ -50,7 +50,7 @@ namespace FantaRPG.src.Movement
         }
         public static bool MouseRightUp()
         {
-            return Mouse.GetState().RightButton == ButtonState.Released;
+            return Game1.Instance.IsActive && Mouse.GetState().RightButton == ButtonState.Released;
         }
         public static bool MouseRightJustDown()
         {
@@ -58,7 +58,7 @@ namespace FantaRPG.src.Movement
         }
         public static bool MouseRightJustUp()
         {
-            return Mouse.GetState().RightButton == ButtonState.Released && lastMouseState.RightButton == ButtonState.Pressed;
+            return Game1.Instance.IsActive && Mouse.GetState().RightButton == ButtonState.Released && lastMouseState.RightButton == ButtonState.Pressed;
         }
         public static void Update()
         {

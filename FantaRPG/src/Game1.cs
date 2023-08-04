@@ -49,7 +49,7 @@ namespace FantaRPG.src
         bool isChangingRoom = false;
         protected override void LoadContent()
         {
-            debugFont = Content.Load<SpriteFont>("DebugFont");
+            //debugFont = Content.Load<SpriteFont>("DebugFont");
             pixel = Content.Load<Texture2D>("pixel");
             spriteBatch = new SpriteBatch(GraphicsDevice);
             List<BackgroundLayer> backgrounds = new()
@@ -88,7 +88,7 @@ namespace FantaRPG.src
             Room1.AddPlatform(new Platform(200, -1000, new Vector2(400, 800)));
             Room1.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 20)));
             Room1.AddPlatform(new Platform(-20, -2540, new Vector2(40, 2540)));
-            Room1.AddPortal(new Portal(Room1, 800, -200, EntityConstants.PortalSize));
+            Room1.AddPortal(new Portal(Room1, 1600, -200, EntityConstants.PortalSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
             Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));

@@ -26,7 +26,8 @@ namespace FantaRPG.src
     {
         private static readonly FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
-
+        private static  float maxLifeTime = 5;
+        private float lifeTime = 0;
         bool gravityAffected = false;
         private ParticleEmitter emitter;
         public event EventHandler OnCollision;
@@ -85,22 +86,20 @@ namespace FantaRPG.src
             };
         }
 
-        public Bullet(Bullet bullet)
+        public Bullet(Bullet bullet) : this(bullet.position.X,bullet.position.Y,new Vector2(bullet.HitboxSize.X,bullet.hitboxSize.Y),bullet.OriginalVelocity,bullet.damage,bullet.owner,bullet.Texture)
         {
-            position = bullet.position;
-            hitboxSize = bullet.hitboxSize;
-            Velocity = bullet.OriginalVelocity;
-            OriginalVelocity = bullet.OriginalVelocity;
-            
-            damage = bullet.damage;
-            owner = bullet.owner;
-            Texture = bullet.Texture;
+
         }
 
         public override void Update(GameTime gameTime)
         {
-            if (alive)
+            lifeTime += gameTime.GetElapsedSeconds();
+            if (lifeTime > maxLifeTime)
             {
+                alive = false;
+            }
+            if (alive)
+            {   
                 if (gravityAffected)
                 {
                     velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -147,19 +146,39 @@ namespace FantaRPG.src
                 }
                 else
                 {
-
-                    OnCollision(this, null);
+                    DoDeath();
                 }
             }
+            else
+            {
+                DoDeath();
+            }
+        }
+        private void DoDeath()
+        {
+            OnCollision(this, null);
         }
         public void AddBehavior(IBulletBehavior behavior)
         {
             behaviors.Add(behavior);
         }
 
-        internal void CopyBehaviorsFrom(Bullet bullet)
+        public void CopyBehaviorsFrom(Bullet bullet)
         {
-            behaviors = bullet.behaviors;
+            foreach (var item in bullet.behaviors)
+            {
+                if (item.Passable)
+                {
+                    behaviors.Add(item.Clone());
+                }
+            }
+        }
+        public void CopyAllBehaviorsFrom(Bullet bullet)
+        {
+            foreach (var item in bullet.behaviors)
+            {
+                behaviors.Add(item.Clone());
+            }
         }
     }
 }

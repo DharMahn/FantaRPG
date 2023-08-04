@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using MonoGame.Extended.Tweening;
 namespace FantaRPG.src.Modifiers
 {
     internal class DecreaseVelocityOverTimeBehavior : IBulletBehavior
@@ -17,13 +17,32 @@ namespace FantaRPG.src.Modifiers
         public void ActOnCollision(object sender, EventArgs e) { /* ... */ }
 
         public float VelocityLengthTrigger = 5;
+        private static float epsilon = 0.01f;
+        private float duration;
+        public float Duration { get { return duration; } }
+        Tweener tweener = null;
+        public DecreaseVelocityOverTimeBehavior(float duration)
+        {
+            this.duration = duration;
+        }
 
         public void Update(Bullet bullet, GameTime gameTime)
         {
+            if (tweener == null)
+            {
+                tweener = new Tweener();
+                tweener.TweenTo(
+                    target: bullet, 
+                    expression: b => b.Velocity, 
+                    toValue: Vector2.Normalize(new Vector2(bullet.Velocity.X, bullet.Velocity.Y)) * VelocityLengthTrigger, 
+                    duration: duration, delay: 0)
+                    .Easing(EasingFunctions.CubicIn);
+            }
+            tweener.Update(gameTime.GetElapsedSeconds());
             // Decrease the velocity
-            bullet.Velocity *= MathF.Pow(0.25f,gameTime.GetElapsedSeconds()); // Change the calculation as per your requirement
+            //bullet.Velocity *= MathF.Pow(0.25f, gameTime.GetElapsedSeconds()); // Change the calculation as per your requirement
 
-            if (bullet.Velocity.Length() <= VelocityLengthTrigger)
+            if (bullet.Velocity.Length() <= VelocityLengthTrigger + epsilon)
             {
                 foreach (var behavior in OnVelocityTriggerBehaviors)
                 {
@@ -39,7 +58,7 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            return new DecreaseVelocityOverTimeBehavior();
+            return new DecreaseVelocityOverTimeBehavior(duration);
         }
     }
 }

@@ -133,8 +133,8 @@ namespace FantaRPG.src
                 //{
                 //    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), bullet.Velocity, 10, bullet.Owner, Game1.Instance.pixel));
                 //};
-                var modifier = new DecreaseVelocityOverTimeBehavior();
-                modifier.OnVelocityTriggerBehaviors.Add(new SplitIntoTwoBehavior());
+                var modifier = new DecreaseVelocityOverTimeBehavior(0.5f);
+                modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(3));
                 bullet.AddBehavior(modifier);
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
@@ -256,7 +256,10 @@ namespace FantaRPG.src
         public override void Draw(SpriteBatch spriteBatch)
         {
             base.Draw(spriteBatch);
-            spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonLeftWall: " + onLeftWall + "\nRightWall: " + onRightWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
+            if (Game1.Instance.debugFont != null)
+            {
+                spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonLeftWall: " + onLeftWall + "\nRightWall: " + onRightWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
+            }
         }
     }
 }
