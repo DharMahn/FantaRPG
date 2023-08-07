@@ -10,7 +10,7 @@ namespace FantaRPG.src.Modifiers
     internal class SplitBehavior : IBulletBehavior
     {
         int splitCount;
-        public bool Passable => false;
+        public int PassCount { get; set; } = 0;
 
         public SplitBehavior(int splitCount)
         {

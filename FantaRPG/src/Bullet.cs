@@ -167,7 +167,7 @@ namespace FantaRPG.src
         {
             foreach (var item in bullet.behaviors)
             {
-                if (item.Passable)
+                if (item.PassCount > 0)
                 {
                     behaviors.Add(item.Clone());
                 }

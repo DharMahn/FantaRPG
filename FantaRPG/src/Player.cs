@@ -21,6 +21,7 @@ namespace FantaRPG.src
     {
         private Dictionary<string, Keys> Input;
         private Vector2 Acceleration;
+        private float lastCooldownTime = 0;
         int spellSize = 10;
         bool onGround = false;
         bool canJump = true;
@@ -32,6 +33,7 @@ namespace FantaRPG.src
         List<Modifier> modifiers = new();
         public List<Modifier> Modifiers { get { return modifiers; } }
         public Inventory.Inventory Inventory;
+        private Item selectedItem = new Item("TEST ITEM");
         public List<Item> GetInventory()
         {
             return Inventory.GetItems();
@@ -118,23 +120,25 @@ namespace FantaRPG.src
                     }
                 }
             }
-            if (MovementInput.MouseLeftJustDown())
+            float elapsedSeconds = (float)gameTime.GetElapsedSeconds(); // Gets the time elapsed since the last update
+            lastCooldownTime += elapsedSeconds; // Increment the time since the last bullet
+            if (lastCooldownTime > selectedItem.Cooldown)
             {
-                //Debug.WriteLine("clicked");
-                Vector2 playerCenter = new(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
-                Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
+                lastCooldownTime = selectedItem.Cooldown;
+            }
+            if (MovementInput.MouseLeftDown() && lastCooldownTime >= selectedItem.Cooldown)
+            {
+                lastCooldownTime -= selectedItem.Cooldown; // Reset the timer since a bullet was just fired
 
-                //Debug.WriteLine(cursorPos.X.ToString("0.0") + ";" + cursorPos.Y.ToString("0.0") + " cursorpos, " + Position.X.ToString("0.0") + ";" + Position.Y.ToString("0.0") + " playerpos");
-                Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
+                Vector2 playerCenter = new Vector2(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
+                Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
+
+                Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 500);
-                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
-                //bullet.OnCollision += delegate
-                //{
-                //    Game1.Instance.CurrentRoom.AddEntity(new Bullet(bullet.Position.X, bullet.Position.Y, new Vector2(bullet.HitboxSize.X, bullet.HitboxSize.Y), bullet.Velocity, 10, bullet.Owner, Game1.Instance.pixel));
-                //};
+                Bullet bullet = new Bullet((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
                 var modifier = new DecreaseVelocityOverTimeBehavior(0.5f);
-                modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(3));
+                modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(11));
                 bullet.AddBehavior(modifier);
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }

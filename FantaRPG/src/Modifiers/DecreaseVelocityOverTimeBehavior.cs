@@ -12,8 +12,7 @@ namespace FantaRPG.src.Modifiers
     internal class DecreaseVelocityOverTimeBehavior : IBulletBehavior
     {
         public List<IBulletBehavior> OnVelocityTriggerBehaviors { get; } = new List<IBulletBehavior>();
-        public bool Passable => true;
-
+        public int PassCount { get; set; } = 0;
         public void ActOnCollision(object sender, EventArgs e) { /* ... */ }
 
         public float VelocityLengthTrigger = 5;
@@ -32,9 +31,9 @@ namespace FantaRPG.src.Modifiers
             {
                 tweener = new Tweener();
                 tweener.TweenTo(
-                    target: bullet, 
-                    expression: b => b.Velocity, 
-                    toValue: Vector2.Normalize(new Vector2(bullet.Velocity.X, bullet.Velocity.Y)) * VelocityLengthTrigger, 
+                    target: bullet,
+                    expression: b => b.Velocity,
+                    toValue: Vector2.Normalize(new Vector2(bullet.Velocity.X, bullet.Velocity.Y)) * VelocityLengthTrigger,
                     duration: duration, delay: 0)
                     .Easing(EasingFunctions.CubicIn);
             }
@@ -48,6 +47,7 @@ namespace FantaRPG.src.Modifiers
                 {
                     behavior.Execute(bullet);
                 }
+                bullet.Alive = false;
             }
         }
 
@@ -58,7 +58,15 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            return new DecreaseVelocityOverTimeBehavior(duration);
+            DecreaseVelocityOverTimeBehavior cloned = new DecreaseVelocityOverTimeBehavior(duration);
+            foreach (var item in OnVelocityTriggerBehaviors)
+            {
+                if (item.PassCount > 0)
+                {
+                    cloned.OnVelocityTriggerBehaviors.Add(item);
+                }
+            }
+            return cloned;
         }
     }
 }
