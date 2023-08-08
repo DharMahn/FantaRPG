@@ -20,9 +20,10 @@ namespace FantaRPG.src.Modifiers
         private float duration;
         public float Duration { get { return duration; } }
         Tweener tweener = null;
-        public DecreaseVelocityOverTimeBehavior(float duration)
+        public DecreaseVelocityOverTimeBehavior(float duration, float velocityLengthTrigger)
         {
             this.duration = duration;
+            VelocityLengthTrigger = velocityLengthTrigger;
         }
 
         public void Update(Bullet bullet, GameTime gameTime)
@@ -58,7 +59,7 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            DecreaseVelocityOverTimeBehavior cloned = new DecreaseVelocityOverTimeBehavior(duration);
+            DecreaseVelocityOverTimeBehavior cloned = new DecreaseVelocityOverTimeBehavior(duration,0);
             foreach (var item in OnVelocityTriggerBehaviors)
             {
                 if (item.PassCount > 0)

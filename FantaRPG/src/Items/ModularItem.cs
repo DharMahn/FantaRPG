@@ -14,10 +14,13 @@ namespace FantaRPG.src.Items
         public ModularItem(string name, Texture2D texture = null) : base(name, texture)
         {
         }
-
         public void AddModifier(Modifier modifier)
         {
             modifiers.Add(modifier);
+        }
+        public void RemoveModifier(Modifier modifier)
+        {
+            modifiers.Remove(modifier);
         }
         public Stats GetAllStats()
         {

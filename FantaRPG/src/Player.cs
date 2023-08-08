@@ -139,43 +139,21 @@ namespace FantaRPG.src
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 500);
                 Bullet bullet = new Bullet((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
-                var modifier = new DecreaseVelocityOverTimeBehavior(0.5f);
+                var modifier = new DecreaseVelocityOverTimeBehavior(0.5f, 0);
                 modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(11));
                 bullet.AddBehavior(modifier);
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
-            if (/*onGround*/true)
+            Acceleration += actualMovementVector;
+            if (Math.Abs(velocity.X + Acceleration.X) < Stats.GetStat(Stat.MoveSpeed) * 10 || Math.Sign(Acceleration.X) != Math.Sign(velocity.X))
             {
-                Acceleration += actualMovementVector;
-                if (Math.Abs(velocity.X + Acceleration.X) < Stats.GetStat(Stat.MoveSpeed) * 10 || Math.Sign(Acceleration.X) != Math.Sign(velocity.X))
-                {
-                    velocity.X += Acceleration.X;
-                }
-                //else
-                //{
-                //    if (velocity.X + Acceleration.X > 0)
-                //    {
-                //        velocity.X = Stats.GetStat(Stat.MoveSpeed) * 10;
-                //    }
-                //    else
-                //    {
-                //        velocity.X = -Stats.GetStat(Stat.MoveSpeed) * 10;
-                //    }
-                //}
-                //velocity.X = Math.Sign(velocity.X) == Math.Sign(Acceleration.X) ? Velocity.X + Acceleration.X : (Velocity.X / 2) + Acceleration.X;
-                if (onGround)
-                {
-                    //velocity.X = Math.Clamp(velocity.X, -Stats.GetStat(Stat.MoveSpeed) * 10, Stats.GetStat(Stat.MoveSpeed) * 10);
-                }
-                velocity.Y += Acceleration.Y;
+                velocity.X += Acceleration.X;
             }
+            velocity.Y += Acceleration.Y;
             onGround = false;
             foreach (var portal in Game1.Instance.CurrentRoom.Portals)
             {
-                if (IsTouchingLeft(portal, gameTime) ||
-                    IsTouchingRight(portal, gameTime) ||
-                    IsTouchingTop(portal, gameTime) ||
-                    IsTouchingBottom(portal, gameTime))
+                if (IsTouching(portal,gameTime))
                 {
                     portal.ChangeRoom();
                 }
@@ -254,14 +232,6 @@ namespace FantaRPG.src
                 onLeftWall = false;
                 onRightWall = false;
             }
-        }
-        public void AddModifier(Modifier modifier)
-        {
-            modifiers.Add(modifier);
-        }
-        public void RemoveModifier(Modifier modifier)
-        {
-            modifiers.Remove(modifier);
         }
         public override void ProcessStats()
         {
