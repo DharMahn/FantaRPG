@@ -12,6 +12,16 @@ namespace FantaRPG.src
     }
     internal class Stats
     {
+        public static readonly Dictionary<Stat, float> statValues = new()
+        {
+            {Stat.MoveSpeed,    2},
+            {Stat.JumpStrength, 4},
+            {Stat.Mana,         1},
+            {Stat.Damage,       1},
+            {Stat.Armor,        1},
+            {Stat.Health,       1},
+            {Stat.Stamina,      1},
+        };
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -20,11 +30,11 @@ namespace FantaRPG.src
                 sb.Append(item.Key);
                 sb.Append(": ");
                 sb.Append(item.Value);
-                sb.AppendLine();
+                sb.Append(Environment.NewLine);
             }
             return sb.ToString();
         }
-        public Dictionary<Stat,float> GetAllStats()
+        public Dictionary<Stat, float> GetAllStats()
         {
             return stats;
         }

@@ -9,36 +9,48 @@ namespace FantaRPG.src.Items
     internal class Modifier
     {
         private Stats stats;
-        public int ItemLevel { get; private set; }
+        public int Level { get; private set; }
         public static Modifier GenerateModifier(int ItemLevel)
         {
             Modifier modifier = new(ItemLevel);
-            GenerateStats(ref modifier, ItemLevel);
+            GenerateSecondaryStats(ref modifier, ItemLevel);
             return modifier;
         }
         public override string ToString()
         {
-            return $"ILvl: {ItemLevel}\n" + stats.ToString();
+            return $"ILvl: {Level}" + Environment.NewLine + stats.ToString();
         }
         private static void GeneratePrimaryStats(ref Modifier modifier, int ilvl)
         {
-            int num = Game1.Random.Next(0, Enum.GetValues(typeof(Stat)).Length - 1);
-            modifier.stats.IncrementStat((Stat)num, ilvl);
+            int num = RNG.Get(0, Enum.GetValues(typeof(Stat)).Length - 1);
+            modifier.stats.IncrementStat((Stat)num, ilvl / Stats.statValues[(Stat)num]);
         }
-        private static void GenerateStats(ref Modifier modifier, int ilvl)
+        private static void GenerateSecondaryStats(ref Modifier modifier, int ilvl)
         {
-            int times = Game1.Random.Next(1, 3);
-            int pool = 100;
-            int num;
-            for (int i = 0; i < times - 1; i++)
+            int times = RNG.Get(1, 5);
+            float remainingIlvl = ilvl;
+
+            for (int i = 0; i < times - 1; i++) // Loop until times - 1
             {
-                int removeFromPool = Game1.Random.Next(10, pool - 10);
-                num = Game1.Random.Next(0, Enum.GetValues(typeof(Stat)).Length - 1);
-                modifier.stats.IncrementStat((Stat)num, ilvl * (pool / 100f) / times);
-                pool -= removeFromPool;
+                float minSlice = 10f; // Minimum slice size
+                float maxSlice = remainingIlvl - minSlice * (times - i - 1); // Maximum slice size
+                float slice = ((float)RNG.GetDouble() * (maxSlice - minSlice)) + minSlice; // Get random value between min and max
+
+                remainingIlvl -= slice;
+
+                Stat selectedStat = (Stat)RNG.Get(0, Enum.GetValues(typeof(Stat)).Length - 1);
+                float selectedStatMultiplier = Stats.statValues[selectedStat];
+                float statContribution = slice / selectedStatMultiplier;
+
+                modifier.AddToStats(selectedStat, statContribution);
             }
-            num = Game1.Random.Next(0, Enum.GetValues(typeof(Stat)).Length - 1);
-            modifier.stats.IncrementStat((Stat)num, ilvl * (pool / 100f) / times);
+
+            // Use remaining ilvl for the last stat
+            Stat lastStat = (Stat)RNG.Get(0, Enum.GetValues(typeof(Stat)).Length - 1);
+            float lastStatMultiplier = Stats.statValues[lastStat];
+            float lastStatContribution = remainingIlvl / lastStatMultiplier;
+
+            modifier.AddToStats(lastStat, lastStatContribution);
         }
         public Stats Stats { get { return stats; } }
         public Modifier()
@@ -51,7 +63,7 @@ namespace FantaRPG.src.Items
         }
         public Modifier(int ILvl) : this()
         {
-            ItemLevel = ILvl;
+            Level = ILvl;
         }
 
         public Modifier(Stat moveSpeed, int value) : this()

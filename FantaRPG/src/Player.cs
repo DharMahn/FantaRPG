@@ -19,6 +19,8 @@ namespace FantaRPG.src
 {
     internal class Player : Entity
     {
+        private float wallJumpVelX = 750f;
+        private float wallJumpVelY = 1250f;
         private Dictionary<string, Keys> Input;
         private Vector2 Acceleration;
         private float lastCooldownTime = 0;
@@ -85,21 +87,21 @@ namespace FantaRPG.src
                 actualMovementVector = Vector2.Normalize(movementVector);
                 actualMovementVector.X *= Stats.GetStat(Stat.MoveSpeed) * 100f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            if (MovementInput.KeyJustDown(Input["Jump"]))
+            if (MovementInput.KeyDown(Input["Jump"]))
             {
                 if (onWall && canJump)
                 {
                     if (onLeftWall)
                     {
-                        velocity.X = -500f;
-                        velocity.Y = -1250;
+                        velocity.X = -wallJumpVelX;
+                        velocity.Y = -wallJumpVelY;
                         onLeftWall = false;
                         onWall = false;
                     }
                     else if (onRightWall)
                     {
-                        velocity.X = 500f;
-                        velocity.Y = -1250;
+                        velocity.X = wallJumpVelX;
+                        velocity.Y = -wallJumpVelY;
                         onRightWall = false;
                         onWall = false;
                     }
@@ -145,9 +147,26 @@ namespace FantaRPG.src
             if (/*onGround*/true)
             {
                 Acceleration += actualMovementVector;
-                velocity.X += Acceleration.X;
+                if (Math.Abs(velocity.X + Acceleration.X) < Stats.GetStat(Stat.MoveSpeed) * 10 || Math.Sign(Acceleration.X) != Math.Sign(velocity.X))
+                {
+                    velocity.X += Acceleration.X;
+                }
+                //else
+                //{
+                //    if (velocity.X + Acceleration.X > 0)
+                //    {
+                //        velocity.X = Stats.GetStat(Stat.MoveSpeed) * 10;
+                //    }
+                //    else
+                //    {
+                //        velocity.X = -Stats.GetStat(Stat.MoveSpeed) * 10;
+                //    }
+                //}
                 //velocity.X = Math.Sign(velocity.X) == Math.Sign(Acceleration.X) ? Velocity.X + Acceleration.X : (Velocity.X / 2) + Acceleration.X;
-                velocity.X = Math.Clamp(velocity.X, -Stats.GetStat(Stat.MoveSpeed) * 10, Stats.GetStat(Stat.MoveSpeed) * 10);
+                if (onGround)
+                {
+                    //velocity.X = Math.Clamp(velocity.X, -Stats.GetStat(Stat.MoveSpeed) * 10, Stats.GetStat(Stat.MoveSpeed) * 10);
+                }
                 velocity.Y += Acceleration.Y;
             }
             onGround = false;

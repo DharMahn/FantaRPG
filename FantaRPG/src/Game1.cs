@@ -10,6 +10,7 @@ using MonoGame.Extended.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace FantaRPG.src
@@ -26,18 +27,27 @@ namespace FantaRPG.src
         public Texture2D pixel;
         public float Ratio;
         public Room Room1, Room2;
-        private static FastRandom _random = null;
-        public static FastRandom Random { get { return _random ??= new FastRandom(); } }
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            //for (int i = 0; i < 100; i++)
-            //{
-            //    Modifier modifier = Modifier.GenerateModifier(Random.Next(50, 500));
-            //    Debug.WriteLine(modifier.ToString());
-            //}
+            using StreamWriter sw = new StreamWriter("debugModifier.txt", false);
+            for (int i = 0; i < 100; i++)
+            {
+                Modifier modifier = Modifier.GenerateModifier(RNG.Get(5, 500));
+                float sum = 0;
+                foreach (var item in modifier.Stats.GetAllStats())
+                {
+                    sum += item.Value * Stats.statValues[item.Key];
+                }
+                if (sum < modifier.Level - 5)
+                {
+                    throw new Exception("shits fucked yo");
+                }
+                sw.WriteLine(modifier.ToString());
+                sw.WriteLine("sum: " + sum + Environment.NewLine);
+            }
         }
 
         protected override void Initialize()
@@ -169,7 +179,7 @@ namespace FantaRPG.src
             nextRoom = targetRoom;
             fadeToBlack = new FadeToBlack();
         }
-        static Color bgColor = new Color(16, 0, 32);
+        static Color bgColor = new(16, 0, 32);
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(bgColor);
