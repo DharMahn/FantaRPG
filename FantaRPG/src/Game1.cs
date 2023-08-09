@@ -32,22 +32,22 @@ namespace FantaRPG.src
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            using StreamWriter sw = new StreamWriter("debugModifier.txt", false);
-            for (int i = 0; i < 100; i++)
-            {
-                Modifier modifier = Modifier.GenerateModifier(RNG.Get(5, 500));
-                float sum = 0;
-                foreach (var item in modifier.Stats.GetAllStats())
-                {
-                    sum += item.Value * Stats.statValues[item.Key];
-                }
-                if (sum < modifier.Level - 5)
-                {
-                    throw new Exception("shits fucked yo");
-                }
-                sw.WriteLine(modifier.ToString());
-                sw.WriteLine("sum: " + sum + Environment.NewLine);
-            }
+            //using StreamWriter sw = new StreamWriter("debugModifier.txt", false);
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    Modifier modifier = Modifier.GenerateModifier(RNG.Get(5, 500));
+            //    float sum = 0;
+            //    foreach (var item in modifier.Stats.GetAllStats())
+            //    {
+            //        sum += item.Value * Stats.statValues[item.Key];
+            //    }
+            //    if (sum < modifier.Level - 5)
+            //    {
+            //        throw new Exception("shits fucked yo");
+            //    }
+            //    sw.WriteLine(modifier.ToString());
+            //    sw.WriteLine("sum: " + sum + Environment.NewLine);
+            //}
         }
 
         protected override void Initialize()
