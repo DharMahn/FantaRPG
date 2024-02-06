@@ -14,7 +14,7 @@ namespace FantaRPG.src.Items
         public Texture2D Texture { get; set; }
         public Color Tint;
         public float Cooldown { get; private set; }
-        public Item(string name, Texture2D texture = null, float cooldown = 0.25f)
+        public Item(string name, Texture2D texture = null, float cooldown = 0.05f)
         {
             Name = name;
             if (texture == null)

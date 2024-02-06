@@ -14,9 +14,9 @@ namespace FantaRPG.src
         public Vector2 Center { get { return position + (hitboxSize / 2); } set { position.X = value.X - hitboxSize.X / 2; position.Y = value.Y - hitboxSize.Y / 2; } }
         public bool IsTouching(BasicCollision sprite, GameTime gameTime)
         {
-            return IsTouchingLeft(sprite, gameTime) || IsTouchingRight(sprite, gameTime) || IsTouchingBottom(sprite, gameTime) || IsTouchingTop(sprite, gameTime);
+            return IsTouchingLeftOf(sprite, gameTime) || IsTouchingRightOf(sprite, gameTime) || IsTouchingBottomOf(sprite, gameTime) || IsTouchingTopOf(sprite, gameTime);
         }
-        public bool IsTouchingLeft(BasicCollision sprite, GameTime gameTime)
+        public bool IsTouchingLeftOf(BasicCollision sprite, GameTime gameTime)
         {
             return Position.X + HitboxSize.X + Velocity.X * gameTime.ElapsedGameTime.TotalSeconds > sprite.Position.X &&
                    Position.X < sprite.Position.X &&
@@ -24,7 +24,7 @@ namespace FantaRPG.src
                    Position.Y < sprite.Position.Y + sprite.HitboxSize.Y;
         }
 
-        public bool IsTouchingRight(BasicCollision sprite, GameTime gameTime)
+        public bool IsTouchingRightOf(BasicCollision sprite, GameTime gameTime)
         {
             return Position.X + Velocity.X * gameTime.ElapsedGameTime.TotalSeconds < sprite.Position.X + sprite.HitboxSize.X &&
                    Position.X + HitboxSize.X > sprite.Position.X + sprite.HitboxSize.X &&
@@ -32,7 +32,7 @@ namespace FantaRPG.src
                    Position.Y < sprite.Position.Y + sprite.HitboxSize.Y;
         }
 
-        public bool IsTouchingTop(BasicCollision sprite, GameTime gameTime)
+        public bool IsTouchingTopOf(BasicCollision sprite, GameTime gameTime)
         {
             return Position.Y + HitboxSize.Y + Velocity.Y * gameTime.ElapsedGameTime.TotalSeconds > sprite.Position.Y &&
                    Position.Y < sprite.Position.Y &&
@@ -40,7 +40,7 @@ namespace FantaRPG.src
                    Position.X < sprite.Position.X + sprite.HitboxSize.X;
         }
 
-        public bool IsTouchingBottom(BasicCollision sprite, GameTime gameTime)
+        public bool IsTouchingBottomOf(BasicCollision sprite, GameTime gameTime)
         {
             return Position.Y + Velocity.Y * gameTime.ElapsedGameTime.TotalSeconds < sprite.Position.Y + sprite.HitboxSize.Y &&
                    Position.Y + HitboxSize.Y > sprite.Position.Y + sprite.HitboxSize.Y &&

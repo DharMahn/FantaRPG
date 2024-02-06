@@ -18,37 +18,47 @@ namespace FantaRPG.src.Modifiers
         public float VelocityLengthTrigger = 5;
         private static float epsilon = 0.01f;
         private float duration;
-        public float Duration { get { return duration; } }
-        Tweener tweener = null;
+        //Tweener tweener = null;
         public DecreaseVelocityOverTimeBehavior(float duration, float velocityLengthTrigger)
         {
             this.duration = duration;
             VelocityLengthTrigger = velocityLengthTrigger;
         }
-
+        private bool decelerationInitialized = false;
+        private Vector2 initialVelocity;
+        private float decelerationRatePerSecond;
         public void Update(Bullet bullet, GameTime gameTime)
         {
-            if (tweener == null)
+            if (!decelerationInitialized)
             {
-                tweener = new Tweener();
-                tweener.TweenTo(
-                    target: bullet,
-                    expression: b => b.Velocity,
-                    toValue: Vector2.Normalize(new Vector2(bullet.Velocity.X, bullet.Velocity.Y)) * VelocityLengthTrigger,
-                    duration: duration, delay: 0)
-                    .Easing(EasingFunctions.CubicIn);
+                // Calculate the initial deceleration rate needed
+                initialVelocity = bullet.Velocity;
+                float totalDecelerationNeeded = initialVelocity.Length() - VelocityLengthTrigger;
+                decelerationRatePerSecond = totalDecelerationNeeded / duration;
+                decelerationInitialized = true;
             }
-            tweener.Update(gameTime.GetElapsedSeconds());
-            // Decrease the velocity
-            //bullet.Velocity *= MathF.Pow(0.25f, gameTime.GetElapsedSeconds()); // Change the calculation as per your requirement
 
-            if (bullet.Velocity.Length() <= VelocityLengthTrigger + epsilon)
+            // Calculate the amount to decelerate this frame
+            float decelerationThisFrame = decelerationRatePerSecond * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            // Calculate the new velocity length
+            float newVelocityLength = bullet.Velocity.Length() - decelerationThisFrame;
+
+            if (newVelocityLength <= VelocityLengthTrigger)
             {
+                // If the new velocity is less than the target, set the velocity to the target
+                bullet.Velocity = Vector2.Normalize(bullet.Velocity) * VelocityLengthTrigger;
+                // Optionally, trigger behaviors and mark the bullet for removal
                 foreach (var behavior in OnVelocityTriggerBehaviors)
                 {
                     behavior.Execute(bullet);
                 }
                 bullet.Alive = false;
+            }
+            else
+            {
+                // Update the bullet's velocity to maintain direction but reduce magnitude
+                bullet.Velocity = Vector2.Normalize(bullet.Velocity) * newVelocityLength;
             }
         }
 
@@ -59,7 +69,7 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            DecreaseVelocityOverTimeBehavior cloned = new DecreaseVelocityOverTimeBehavior(duration,0);
+            DecreaseVelocityOverTimeBehavior cloned = new DecreaseVelocityOverTimeBehavior(duration, 0);
             foreach (var item in OnVelocityTriggerBehaviors)
             {
                 if (item.PassCount > 0)

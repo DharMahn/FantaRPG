@@ -59,11 +59,6 @@ namespace FantaRPG.src
                     {
                         Interpolators =
                         {
-                            new ColorInterpolator
-                            {
-                                StartValue = new HslColor(0.0f,1.0f,0.5f),
-                                EndValue = new HslColor(180.0f,1.0f,0.5f)
-                            },
                             new ScaleInterpolator()
                             {
                                 StartValue = new Vector2(hitboxSize.X,hitboxSize.Y),
@@ -80,6 +75,7 @@ namespace FantaRPG.src
                 FastRandom random = (FastRandom)ParticleEmitterInfo.GetValue(emitter);
                 FastRandomInfo.SetValue(random, RNG.Get(100000));
                 emitter.Trigger(Position);
+                //new SplitBehavior(1).Execute(this);
                 //FastRandom random = emitter.GetFieldValue<FastRandom>("_random");
                 //int val = random.GetFieldValue<int>("_state");
                 //Debug.WriteLine(val);
@@ -108,25 +104,25 @@ namespace FantaRPG.src
                 {
                     if (item.IsCollidable)
                     {
-                        if (IsTouchingLeft(item, gameTime))
+                        if (IsTouchingLeftOf(item, gameTime))
                         {
                             position.X = item.Position.X - HitboxSize.X;
                             velocity.X *= -1;
                             alive = false;
                         }
-                        else if (IsTouchingRight(item, gameTime))
+                        else if (IsTouchingRightOf(item, gameTime))
                         {
                             position.X = item.Position.X + item.HitboxSize.X;
                             velocity.X *= -1;
                             alive = false;
                         }
-                        if (IsTouchingTop(item, gameTime))
+                        if (IsTouchingTopOf(item, gameTime))
                         {
                             position.Y = item.Position.Y - HitboxSize.Y;
                             velocity.Y *= -1;
                             alive = false;
                         }
-                        else if (IsTouchingBottom(item, gameTime))
+                        else if (IsTouchingBottomOf(item, gameTime))
                         {
                             position.Y = item.Position.Y + item.HitboxSize.Y;
                             alive = false;

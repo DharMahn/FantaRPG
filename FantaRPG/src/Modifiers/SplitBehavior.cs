@@ -17,9 +17,15 @@ namespace FantaRPG.src.Modifiers
             this.splitCount = splitCount;
         }
 
-        public void ActOnCollision(object sender, EventArgs e) { /* ... */ }
+        public void ActOnCollision(object sender, EventArgs e)
+        {
 
-        public void Update(Bullet bullet, GameTime gameTime) { /* ... */ }
+        }
+
+        public void Update(Bullet bullet, GameTime gameTime)
+        {
+
+        }
 
         public void Execute(Bullet bullet)
         {
@@ -29,7 +35,7 @@ namespace FantaRPG.src.Modifiers
             for (int i = 0; i < splitCount; i++)
             {
                 Bullet newBullet = new Bullet(bullet);
-                Vector2 newDirection = Extensions.RotateVector(newBullet.Velocity, (splitAngle * i)+offset);
+                Vector2 newDirection = Extensions.RotateVector(newBullet.Velocity, (splitAngle * i) + offset);
                 newBullet.Velocity = newDirection;
                 newBullet.CopyBehaviorsFrom(bullet);
                 Game1.Instance.CurrentRoom.AddEntity(newBullet);
@@ -40,7 +46,8 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            return new SplitBehavior(splitCount);
+            var toreturn = new SplitBehavior(splitCount);
+            return toreturn;
         }
     }
 }

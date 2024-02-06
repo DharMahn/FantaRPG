@@ -59,7 +59,7 @@ namespace FantaRPG.src
         bool isChangingRoom = false;
         protected override void LoadContent()
         {
-            //debugFont = Content.Load<SpriteFont>("DebugFont");
+            debugFont = Content.Load<SpriteFont>("DebugFont");
             pixel = Content.Load<Texture2D>("pixel");
             spriteBatch = new SpriteBatch(GraphicsDevice);
             List<BackgroundLayer> backgrounds = new()
