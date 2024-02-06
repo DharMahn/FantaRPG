@@ -9,7 +9,7 @@ namespace FantaRPG.src.Inventory
 {
     internal class Inventory
     {
-        List<Item> slots = new();
+        readonly List<Item> slots = new();
         public List<Item>? GetItem(Item item)
         {
             return slots.Where(x=>x.GetType() == item.GetType())?.ToList();

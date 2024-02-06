@@ -8,7 +8,7 @@ namespace FantaRPG.src
 {
     internal static class RNG
     {
-        private static Random random = new Random();
+        private static readonly Random random = new();
         public static int Get(int fromInclusive, int toExclusive) => random.Next(fromInclusive, toExclusive);
         public static int Get(int toExclusive) => random.Next(0, toExclusive);
         public static double GetDouble() => random.NextDouble();

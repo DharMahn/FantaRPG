@@ -23,7 +23,7 @@ namespace FantaRPG.src.Animations
         //private Tweener tweener = new Tweener();
         //private Tween tween;
         public bool IsReverse { get; }
-        float interval;
+        readonly float interval;
         public FadeToBlack(bool reverse = false, float interval = .07f)
         {
             IsReverse = reverse;

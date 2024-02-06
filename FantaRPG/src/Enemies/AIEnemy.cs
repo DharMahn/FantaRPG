@@ -11,7 +11,7 @@ namespace FantaRPG.src.Enemies
 {
     internal class AIEnemy : Entity
     {
-        float nodeCloseThreshold;
+        readonly float nodeCloseThreshold;
         Node NextNode = null;
         Node PrevNode = null;
 

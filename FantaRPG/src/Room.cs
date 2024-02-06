@@ -13,24 +13,24 @@ namespace FantaRPG.src
 {
     internal class Room
     {
-        public static List<(Room Room, bool IsValid)> Rooms = new List<(Room Room, bool IsValid)>();
-        private List<BackgroundLayer> backgrounds;
+        public static List<(Room Room, bool IsValid)> Rooms = new();
+        private readonly List<BackgroundLayer> backgrounds;
         public List<BackgroundLayer> Backgrounds
         {
             get { return backgrounds; }
         }
-        private List<Platform> platforms;
+        private readonly List<Platform> platforms;
         public List<Platform> Platforms
         {
             get { return platforms; }
         }
-        private List<Entity> entities;
+        private readonly List<Entity> entities;
         public List<Entity> Entities
         {
             get { return entities; }
         }
-        ParticleEffect particles;
-        private List<Portal> portals;
+        readonly ParticleEffect particles;
+        private readonly List<Portal> portals;
         public List<Portal> Portals
         {
             get { return portals; }
@@ -160,7 +160,7 @@ namespace FantaRPG.src
             }
             player.Update(gameTime);
         }
-        public List<Node> PathNodes = new List<Node>();
+        public List<Node> PathNodes = new();
 
         public Node? GetClosestNode(Vector2 pos, Node excluding = null)
         {

@@ -26,7 +26,7 @@ namespace FantaRPG
         }
         public static DifficultyManager GetNewDifficultyManager(GameTime startTime)
         {
-            DifficultyManager difficultyManager = new DifficultyManager(startTime);
+            DifficultyManager difficultyManager = new(startTime);
             return difficultyManager;
         }
         public void Update(GameTime gameTime)

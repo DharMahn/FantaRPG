@@ -8,7 +8,7 @@ namespace FantaRPG.src.Items
 {
     internal class Modifier
     {
-        private Stats stats;
+        private readonly Stats stats;
         public int Level { get; private set; }
         public static Modifier GenerateModifier(int ItemLevel)
         {

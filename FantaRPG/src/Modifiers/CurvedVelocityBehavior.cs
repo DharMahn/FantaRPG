@@ -9,7 +9,7 @@ namespace FantaRPG.src.Modifiers
 {
     internal class CurvedVelocityBehavior : IBulletBehavior
     {
-        private float rotationSpeed; // Degrees per second
+        private readonly float rotationSpeed; // Degrees per second
         public int PassCount { get; set; } = 0;
 
         // Constructor to set rotation speed

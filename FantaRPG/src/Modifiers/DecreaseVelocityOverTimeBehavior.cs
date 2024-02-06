@@ -16,8 +16,8 @@ namespace FantaRPG.src.Modifiers
         public void ActOnCollision(object sender, EventArgs e) { /* ... */ }
 
         public float VelocityLengthTrigger = 5;
-        private static float epsilon = 0.01f;
-        private float duration;
+        private static readonly float epsilon = 0.01f;
+        private readonly float duration;
         //Tweener tweener = null;
         public DecreaseVelocityOverTimeBehavior(float duration, float velocityLengthTrigger)
         {
@@ -69,7 +69,7 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            DecreaseVelocityOverTimeBehavior cloned = new DecreaseVelocityOverTimeBehavior(duration, 0);
+            DecreaseVelocityOverTimeBehavior cloned = new(duration, 0);
             foreach (var item in OnVelocityTriggerBehaviors)
             {
                 if (item.PassCount > 0)

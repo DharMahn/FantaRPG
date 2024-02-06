@@ -9,7 +9,7 @@ namespace FantaRPG.src.Items
 {
     internal class ModularItem : Item
     {
-        List<Modifier> modifiers = new List<Modifier>();
+        readonly List<Modifier> modifiers = new();
 
         public ModularItem(string name, Texture2D texture = null) : base(name, texture)
         {
@@ -24,7 +24,7 @@ namespace FantaRPG.src.Items
         }
         public Stats GetAllStats()
         {
-            Stats returnStats = new Stats();
+            Stats returnStats = new();
             foreach (Modifier item in modifiers)
             {
                 foreach (KeyValuePair<Stat,float> stat in item.Stats.GetAllStats())

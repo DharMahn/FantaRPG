@@ -13,7 +13,7 @@ namespace FantaRPG.src
 {
     internal class Portal : Platform
     {
-        private Room containingRoom = null;
+        private readonly Room containingRoom = null;
         private Portal targetPortal = null;
         private bool isWorking = true;
         private static readonly Vector3 InactiveColor = Color.Red.ToVector3();
@@ -44,9 +44,9 @@ namespace FantaRPG.src
 
         public Portal TargetPortal { get { return targetPortal; } }
         public Room ContainingRoom { get { return containingRoom; } }
-        static float maxDisableTime = 0.75f;
+        static readonly float maxDisableTime = 0.75f;
         float disableTime = maxDisableTime;
-        Tweener tweener = new Tweener();
+        readonly Tweener tweener = new();
         public Portal(Room parent, float x, float y, Vector2 size) : base(x, y, size)
         {
             IsCollidable = false;
@@ -76,7 +76,7 @@ namespace FantaRPG.src
         }
         public void FadeOutNow()
         {
-            Vector2 tempCenter = new Vector2(position.X + (hitboxSize.X / 2), position.Y + (hitboxSize.Y / 2));
+            Vector2 tempCenter = new(position.X + (hitboxSize.X / 2), position.Y + (hitboxSize.Y / 2));
             hitboxSize = Vector2.Zero;
             Center = tempCenter;
             disableTime = maxDisableTime;
@@ -84,7 +84,7 @@ namespace FantaRPG.src
         }
         public void FadeInNow()
         {
-            Vector2 tempCenter = new Vector2(Center.X, Center.Y);
+            Vector2 tempCenter = new(Center.X, Center.Y);
             hitboxSize = EntityConstants.PortalSize;
             Center = tempCenter;
             currentColor = ActiveColor;
@@ -151,7 +151,7 @@ namespace FantaRPG.src
             //    (int)(Position.Y + (1/((EntityConstants.PortalSize.X / 2) * disableTime))),
             //    Math.Max(0, (int)(HitboxSize.X - (1/((EntityConstants.PortalSize.X / 2) * disableTime)))),
             //    Math.Max(0, (int)(HitboxSize.Y - (1/((EntityConstants.PortalSize.X / 2) * disableTime)))));
-            Rectangle destinationRectangle = new Rectangle((int)(Position.X-(hitboxSize.X/2f)), (int)(Position.Y - (hitboxSize.Y / 2f)), (int)HitboxSize.X, (int)HitboxSize.Y);
+            Rectangle destinationRectangle = new((int)(Position.X-(hitboxSize.X/2f)), (int)(Position.Y - (hitboxSize.Y / 2f)), (int)HitboxSize.X, (int)HitboxSize.Y);
             //spriteBatch.DrawRectangle(destinationRectangle, Color.Blue);
             destinationRectangle.X += (int)hitboxSize.X;
             destinationRectangle.Y += (int)hitboxSize.Y;

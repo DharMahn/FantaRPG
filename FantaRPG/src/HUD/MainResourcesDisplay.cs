@@ -9,7 +9,7 @@ namespace FantaRPG.src.HUD
 {
     internal class MainResourcesDisplay
     {
-        private Player player;
+        private readonly Player player;
 
         public MainResourcesDisplay(Player player)
         {

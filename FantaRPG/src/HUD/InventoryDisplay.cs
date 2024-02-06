@@ -11,7 +11,7 @@ namespace FantaRPG.src.HUD
 {
     internal class InventoryDisplay
     {
-        private Player player;
+        private readonly Player player;
         private Rectangle destRect;
         public InventoryDisplay(Player player)
         {

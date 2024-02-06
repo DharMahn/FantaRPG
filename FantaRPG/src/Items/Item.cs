@@ -17,14 +17,8 @@ namespace FantaRPG.src.Items
         public Item(string name, Texture2D texture = null, float cooldown = 0.05f)
         {
             Name = name;
-            if (texture == null)
-            {
-                texture = Game1.Instance.pixel;
-            }
-            else
-            {
-                Texture = texture;
-            }
+            texture ??= Game1.Instance.pixel;
+            Texture = texture;
             Tint = Color.White;
             Cooldown = cooldown;
         }

@@ -54,8 +54,8 @@ namespace FantaRPG.src
         {
             if (alive)
             {
-                Rectangle sourceRectangle = new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y);
-                Rectangle destinationRectangle = new Rectangle((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y);
+                Rectangle sourceRectangle = new((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y);
+                Rectangle destinationRectangle = new((int)Position.X, (int)Position.Y, (int)HitboxSize.X, (int)HitboxSize.Y);
                 spriteBatch.Draw(Texture, destinationRectangle, sourceRectangle, Color.White);
             }
             if (Game1.Instance.debugFont != null)

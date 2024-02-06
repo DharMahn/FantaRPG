@@ -10,8 +10,8 @@ namespace FantaRPG.src
 {
     internal static class EntityConstants
     {
-        public static readonly Vector2 PlayerSize = new Vector2(20, 20);
-        public static readonly Vector2 WalkerSize = new Vector2(20, 20);
-        public static readonly Vector2 PortalSize = new Vector2(100, 100);
+        public static readonly Vector2 PlayerSize = new(20, 20);
+        public static readonly Vector2 WalkerSize = new(20, 20);
+        public static readonly Vector2 PortalSize = new(100, 100);
     }
 }

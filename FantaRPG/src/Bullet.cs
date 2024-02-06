@@ -26,16 +26,16 @@ namespace FantaRPG.src
     {
         private static readonly FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
         private static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static  float maxLifeTime = 5;
+        private static readonly float maxLifeTime = 5;
         private float lifeTime = 0;
-        bool gravityAffected = false;
-        private ParticleEmitter emitter;
+        readonly bool gravityAffected = false;
+        private readonly ParticleEmitter emitter;
         public event EventHandler OnCollision;
-        private List<IBulletBehavior> behaviors = new List<IBulletBehavior>();
-        private float damage;
+        private readonly List<IBulletBehavior> behaviors = new();
+        private readonly float damage;
         private Vector2 OriginalVelocity;
         public float Damage { get { return damage; } }
-        Entity owner;
+        readonly Entity owner;
         public Entity Owner { get { return owner; } }
         public Bullet(float x, float y, Vector2 size, Vector2 velocity, float dmg, Entity? owner, Texture2D texture = null) : base(x, y, size, texture)
         {

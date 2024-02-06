@@ -19,25 +19,25 @@ namespace FantaRPG.src
 {
     internal class Player : Entity
     {
-        private float wallJumpVelX = 750f;
-        private float wallJumpVelY = 1250f;
-        private Dictionary<string, Keys> Input;
+        private readonly float wallJumpVelX = 750f;
+        private readonly float wallJumpVelY = 1250f;
+        private readonly Dictionary<string, Keys> Input;
         private Vector2 Acceleration;
         private float lastCooldownTime = 0;
-        int spellSize = 10;
+        readonly int spellSize = 10;
         bool onGround = false;
         bool canJump = true;
         int jumpCount = 1;
-        int jumpCountMax = 1;
+        readonly int jumpCountMax = 1;
         bool onWall = false;
         bool onLeftWall;
         bool onRightWall;
-        List<Modifier> modifiers = new();
+        readonly List<Modifier> modifiers = new();
         public List<Modifier> Modifiers { get { return modifiers; } }
         public Inventory.Inventory Inventory;
-        private Item selectedItem = new Item("TEST ITEM");
-        private BasicCollision leftSideTrigger;
-        private BasicCollision rightSideTrigger;
+        private readonly Item selectedItem = new("TEST ITEM");
+        private readonly BasicCollision leftSideTrigger;
+        private readonly BasicCollision rightSideTrigger;
         public List<Item> GetInventory()
         {
             return Inventory.GetItems();
@@ -62,7 +62,7 @@ namespace FantaRPG.src
                 Position = new Vector2(x + size.X - 1, y + 1),
             };
         }
-        float onWallPosition = 0;
+        readonly float onWallPosition = 0;
         public override void Update(GameTime gameTime)
         {
             Vector2 movementVector = Vector2.Zero;
@@ -151,19 +151,18 @@ namespace FantaRPG.src
             {
                 lastCooldownTime -= selectedItem.Cooldown; // Reset the timer since a bullet was just fired
 
-                Vector2 playerCenter = new Vector2(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
-                Vector2 cursorPos = new Vector2(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
+                Vector2 playerCenter = new(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
+                Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
 
-                Vector2 spellVel = new Vector2(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
+                Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
-                spellVel = Vector2.Multiply(spellVel, 750);
-                Bullet bullet = new Bullet((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
-                var modifier = new DecreaseVelocityOverTimeBehavior(4f, 0);
+                spellVel = Vector2.Multiply(spellVel, 1000+Velocity.Length());
+                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
+                var modifier = new DecreaseVelocityOverTimeBehavior(1f, 200);
                 modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(7));
                 bullet.AddBehavior(modifier);
-                float curve = 90f * (((float)RNG.GetDouble() * 2) - 1);
+                float curve = 120f * (((float)RNG.GetDouble() * 2) - 1);
                 bullet.AddBehavior(new CurvedVelocityBehavior(curve));
-                Trace.WriteLine(curve);
 
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
@@ -219,21 +218,11 @@ namespace FantaRPG.src
                 {
                     position.X = platform.Position.X - HitboxSize.X;
                     velocity.X = 0;
-                    //onWall = true;
-                    //onLeftWall = true;
-                    //onRightWall = false;
-                    //canJump = true;
-                    //onWallPosition = position.X;
                 }
                 else if (IsTouchingRightOf(platform, gameTime))
                 {
                     position.X = platform.Position.X + platform.HitboxSize.X;
                     velocity.X = 0;
-                    //onWall = true;
-                    //onRightWall = true;
-                    //onLeftWall = false;
-                    //canJump = true;
-                    //onWallPosition = position.X;
                 }
             }
             if (Math.Sign(actualMovementVector.X) == 0 && onGround)

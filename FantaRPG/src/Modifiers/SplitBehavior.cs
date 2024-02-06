@@ -9,7 +9,7 @@ namespace FantaRPG.src.Modifiers
 {
     internal class SplitBehavior : IBulletBehavior
     {
-        int splitCount;
+        readonly int splitCount;
         public int PassCount { get; set; } = 0;
 
         public SplitBehavior(int splitCount)
@@ -34,7 +34,7 @@ namespace FantaRPG.src.Modifiers
 
             for (int i = 0; i < splitCount; i++)
             {
-                Bullet newBullet = new Bullet(bullet);
+                Bullet newBullet = new(bullet);
                 Vector2 newDirection = Extensions.RotateVector(newBullet.Velocity, (splitAngle * i) + offset);
                 newBullet.Velocity = newDirection;
                 newBullet.CopyBehaviorsFrom(bullet);

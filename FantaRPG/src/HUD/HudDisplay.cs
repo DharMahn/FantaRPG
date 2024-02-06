@@ -9,8 +9,8 @@ namespace FantaRPG.src.HUD
 {
     internal class HudDisplay
     {
-        private InventoryDisplay invDisplay;
-        private MainResourcesDisplay mResDisplay;
+        private readonly InventoryDisplay invDisplay;
+        private readonly MainResourcesDisplay mResDisplay;
         public HudDisplay(Player player)
         {
             invDisplay = new(player);
