@@ -157,7 +157,7 @@ namespace FantaRPG.src
                 Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 1000+Velocity.Length());
-                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), null);
+                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), this);
                 var modifier = new DecreaseVelocityOverTimeBehavior(1f, 200);
                 modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(7));
                 bullet.AddBehavior(modifier);

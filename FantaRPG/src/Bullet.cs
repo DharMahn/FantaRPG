@@ -24,19 +24,19 @@ namespace FantaRPG.src
     [Serializable]
     internal class Bullet : Entity
     {
-        private static readonly FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
-        private static readonly float maxLifeTime = 5;
-        private float lifeTime = 0;
+        protected static readonly FieldInfo ParticleEmitterInfo = typeof(ParticleEmitter).GetField("_random", BindingFlags.NonPublic | BindingFlags.Instance);
+        protected static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
+        protected static readonly float maxLifeTime = 5;
+        protected float lifeTime = 0;
         readonly bool gravityAffected = false;
         private readonly ParticleEmitter emitter;
-        public event EventHandler OnCollision;
-        private readonly List<IBulletBehavior> behaviors = new();
-        private readonly float damage;
-        private Vector2 OriginalVelocity;
+        public event EventHandler OnDeath;
+        protected readonly List<IBulletBehavior> behaviors = new();
+        protected readonly float damage;
+        protected Vector2 OriginalVelocity;
         public float Damage { get { return damage; } }
-        readonly Entity owner;
-        public Entity Owner { get { return owner; } }
+        protected Entity? owner;
+        public Entity? Owner { get { return owner; } }
         public Bullet(float x, float y, Vector2 size, Vector2 velocity, float dmg, Entity? owner, Texture2D texture = null) : base(x, y, size, texture)
         {
             damage = dmg;
@@ -68,7 +68,7 @@ namespace FantaRPG.src
                     }
                 }
             };
-            OnCollision += delegate
+            OnDeath += delegate
             {
                 Game1.Instance.CurrentRoom.AddEmitter(emitter);
 
@@ -82,7 +82,7 @@ namespace FantaRPG.src
             };
         }
 
-        public Bullet(Bullet bullet) : this(bullet.position.X,bullet.position.Y,new Vector2(bullet.HitboxSize.X,bullet.hitboxSize.Y),bullet.OriginalVelocity,bullet.damage,bullet.owner,bullet.Texture)
+        public Bullet(Bullet bullet) : this(bullet.position.X, bullet.position.Y, new Vector2(bullet.HitboxSize.X, bullet.hitboxSize.Y), bullet.OriginalVelocity, bullet.damage, bullet.owner, bullet.Texture)
         {
 
         }
@@ -95,7 +95,7 @@ namespace FantaRPG.src
                 alive = false;
             }
             if (alive)
-            {   
+            {
                 if (gravityAffected)
                 {
                     velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -152,7 +152,7 @@ namespace FantaRPG.src
         }
         private void DoDeath()
         {
-            OnCollision(this, null);
+            OnDeath(this, null);
         }
         public void AddBehavior(IBulletBehavior behavior)
         {

@@ -20,6 +20,7 @@ namespace FantaRPG.src
         private Vector2 lastPos;
         public Vector2 LastPosition { get { return lastPos; } }
         public bool Alive { get { return alive; } set { alive = value; } }
+        protected bool freeFall=false;
         public Entity()
         {
 
