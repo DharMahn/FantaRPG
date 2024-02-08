@@ -1,23 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FantaRPG.src.Modifiers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MonoGame.Extended;
 using MonoGame.Extended.Particles;
 using MonoGame.Extended.Particles.Modifiers;
-using MonoGame.Extended.Particles.Modifiers.Containers;
 using MonoGame.Extended.Particles.Modifiers.Interpolators;
 using MonoGame.Extended.Particles.Profiles;
 using MonoGame.Extended.TextureAtlases;
-using System.Diagnostics;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using FantaRPG.src.Modifiers;
-using Newtonsoft.Json.Linq;
 
 namespace FantaRPG.src
 {
@@ -28,15 +20,15 @@ namespace FantaRPG.src
         protected static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
         protected static readonly float maxLifeTime = 5;
         protected float lifeTime = 0;
-        readonly bool gravityAffected = false;
+        private readonly bool gravityAffected = false;
         private readonly ParticleEmitter emitter;
         public event EventHandler OnDeath;
-        protected readonly List<IBulletBehavior> behaviors = new();
+        protected readonly List<IBulletBehavior> behaviors = [];
         protected readonly float damage;
         protected Vector2 OriginalVelocity;
-        public float Damage { get { return damage; } }
+        public float Damage => damage;
         protected Entity? owner;
-        public Entity? Owner { get { return owner; } }
+        public Entity? Owner => owner;
         public Bullet(float x, float y, Vector2 size, Vector2 velocity, float dmg, Entity? owner, Texture2D texture = null) : base(x, y, size, texture)
         {
             damage = dmg;
@@ -100,7 +92,7 @@ namespace FantaRPG.src
                 {
                     velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                 }
-                foreach (var item in Game1.Instance.CurrentRoom.Platforms)
+                foreach (Platform item in Game1.Instance.CurrentRoom.Platforms)
                 {
                     if (item.IsCollidable)
                     {
@@ -135,7 +127,7 @@ namespace FantaRPG.src
                 {
                     base.Update(gameTime);
                     //Position += Vector2.Multiply(Velocity, (float)gameTime.ElapsedGameTime.TotalSeconds);
-                    foreach (var behavior in behaviors)
+                    foreach (IBulletBehavior behavior in behaviors)
                     {
                         behavior.Update(this, gameTime);
                     }
@@ -161,7 +153,7 @@ namespace FantaRPG.src
 
         public void CopyBehaviorsFrom(Bullet bullet)
         {
-            foreach (var item in bullet.behaviors)
+            foreach (IBulletBehavior item in bullet.behaviors)
             {
                 if (item.PassCount > 0)
                 {
@@ -171,7 +163,7 @@ namespace FantaRPG.src
         }
         public void CopyAllBehaviorsFrom(Bullet bullet)
         {
-            foreach (var item in bullet.behaviors)
+            foreach (IBulletBehavior item in bullet.behaviors)
             {
                 behaviors.Add(item.Clone());
             }

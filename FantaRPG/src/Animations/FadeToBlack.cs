@@ -1,42 +1,25 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using FantaRPG.src.Interfaces;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Sprites;
-using MonoGame.Extended.Tweening;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FantaRPG.src.Interfaces;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace FantaRPG.src.Animations
 {
     internal class FadeToBlack : IAnimation
     {
         private Color col = Color.Black;
-        private float alpha;
-        public float Alpha
-        {
-            get { return alpha; }
-            set { alpha = value; }
-        }
+
+        public float Alpha { get; set; }
         //private Tweener tweener = new Tweener();
         //private Tween tween;
         public bool IsReverse { get; }
-        readonly float interval;
+
+        private readonly float interval;
         public FadeToBlack(bool reverse = false, float interval = .07f)
         {
             IsReverse = reverse;
             this.interval = interval;
-            if (reverse)
-            {
-                alpha = 255;
-            }
-            else
-            {
-                alpha = 0;
-            }
-            col.A = (byte)alpha;
+            Alpha = reverse ? 255 : 0;
+            col.A = (byte)Alpha;
         }
         public void Draw(SpriteBatch spriteBatch, Camera cam)
         {
@@ -47,15 +30,9 @@ namespace FantaRPG.src.Animations
         public bool IsFinished { get; private set; }
         public void Update(GameTime gameTime)
         {
-            float next;
-            if (IsReverse)
-            {
-                next = alpha - (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
-            }
-            else
-            {
-                next = alpha + (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
-            }
+            float next = IsReverse
+                ? Alpha - (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval))
+                : Alpha + (255f * ((float)gameTime.ElapsedGameTime.TotalSeconds / interval));
             if (next >= 255)
             {
                 next = 255;
@@ -66,9 +43,9 @@ namespace FantaRPG.src.Animations
                 next = 0;
                 IsFinished = true;
             }
-            alpha = next;
+            Alpha = next;
             //tweener.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            col.A = (byte)alpha;
+            col.A = (byte)Alpha;
         }
     }
 }

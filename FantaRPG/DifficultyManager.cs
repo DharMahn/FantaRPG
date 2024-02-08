@@ -1,28 +1,17 @@
-﻿using FantaRPG.src;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using MonoGame.Extended;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG
 {
     internal class DifficultyManager
     {
-        private static DifficultyManager instance;
-        public static DifficultyManager Instance
-        {
-            get { return instance; }
-            set { instance = value; }
-        }
+        public static DifficultyManager Instance { get; set; }
         public readonly GameTime startTime;
-        double difficulty = 0;
+        private double difficulty = 0;
         private DifficultyManager(GameTime startTime)
         {
             this.startTime = startTime;
-            this.difficulty = 0;
+            difficulty = 0;
         }
         public static DifficultyManager GetNewDifficultyManager(GameTime startTime)
         {

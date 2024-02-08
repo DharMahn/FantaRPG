@@ -1,22 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src
 {
-    internal class BackgroundLayer
+    internal class BackgroundLayer(Texture2D texture, int layerid)
     {
-        public Texture2D Texture;
-        public int LayerID;
-        public BackgroundLayer(Texture2D texture, int layerid)
-        {
-            Texture = texture;
-            LayerID = layerid;
-        }
+        public Texture2D Texture = texture;
+        public int LayerID = layerid;
+
         public void Draw(SpriteBatch spriteBatch, Matrix transform)
         {
 

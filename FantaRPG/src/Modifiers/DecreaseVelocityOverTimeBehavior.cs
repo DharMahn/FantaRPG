@@ -1,29 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MonoGame.Extended.Tweening;
 namespace FantaRPG.src.Modifiers
 {
-    internal class DecreaseVelocityOverTimeBehavior : IBulletBehavior
+    internal class DecreaseVelocityOverTimeBehavior(float duration, float velocityLengthTrigger) : IBulletBehavior
     {
-        public List<IBulletBehavior> OnVelocityTriggerBehaviors { get; } = new List<IBulletBehavior>();
+        public List<IBulletBehavior> OnVelocityTriggerBehaviors { get; } = [];
         public int PassCount { get; set; } = 0;
         public void ActOnCollision(object sender, EventArgs e) { /* ... */ }
 
-        public float VelocityLengthTrigger = 5;
+        public float VelocityLengthTrigger = velocityLengthTrigger;
         private static readonly float epsilon = 0.01f;
-        private readonly float duration;
-        //Tweener tweener = null;
-        public DecreaseVelocityOverTimeBehavior(float duration, float velocityLengthTrigger)
-        {
-            this.duration = duration;
-            VelocityLengthTrigger = velocityLengthTrigger;
-        }
+        private readonly float duration = duration;
         private bool decelerationInitialized = false;
         private Vector2 initialVelocity;
         private float decelerationRatePerSecond;
@@ -49,7 +37,7 @@ namespace FantaRPG.src.Modifiers
                 // If the new velocity is less than the target, set the velocity to the target
                 bullet.Velocity = Vector2.Normalize(bullet.Velocity) * VelocityLengthTrigger;
                 // Optionally, trigger behaviors and mark the bullet for removal
-                foreach (var behavior in OnVelocityTriggerBehaviors)
+                foreach (IBulletBehavior behavior in OnVelocityTriggerBehaviors)
                 {
                     behavior.Execute(bullet);
                 }
@@ -70,7 +58,7 @@ namespace FantaRPG.src.Modifiers
         public IBulletBehavior Clone()
         {
             DecreaseVelocityOverTimeBehavior cloned = new(duration, 0);
-            foreach (var item in OnVelocityTriggerBehaviors)
+            foreach (IBulletBehavior item in OnVelocityTriggerBehaviors)
             {
                 if (item.PassCount > 0)
                 {

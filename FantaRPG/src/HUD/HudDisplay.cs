@@ -1,21 +1,12 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src.HUD
 {
-    internal class HudDisplay
+    internal class HudDisplay(Player player)
     {
-        private readonly InventoryDisplay invDisplay;
-        private readonly MainResourcesDisplay mResDisplay;
-        public HudDisplay(Player player)
-        {
-            invDisplay = new(player);
-            mResDisplay = new(player);
-        }
+        private readonly InventoryDisplay invDisplay = new(player);
+        private readonly MainResourcesDisplay mResDisplay = new(player);
+
         public void Draw(SpriteBatch spriteBatch)
         {
             invDisplay.Draw(spriteBatch);

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src.Items
 {
     internal class Modifier
     {
-        private readonly Stats stats;
         public int Level { get; private set; }
         public static Modifier GenerateModifier(int ItemLevel)
         {
@@ -18,12 +13,12 @@ namespace FantaRPG.src.Items
         }
         public override string ToString()
         {
-            return $"ILvl: {Level}" + Environment.NewLine + stats.ToString();
+            return $"ILvl: {Level}" + Environment.NewLine + Stats.ToString();
         }
         private static void GeneratePrimaryStats(ref Modifier modifier, int ilvl)
         {
             int num = RNG.Get(0, Enum.GetValues(typeof(Stat)).Length - 1);
-            modifier.stats.IncrementStat((Stat)num, ilvl / Stats.statValues[(Stat)num]);
+            modifier.Stats.IncrementStat((Stat)num, ilvl / Stats.statValues[(Stat)num]);
         }
         private static void GenerateSecondaryStats(ref Modifier modifier, int ilvl)
         {
@@ -33,7 +28,7 @@ namespace FantaRPG.src.Items
             for (int i = 0; i < times - 1; i++) // Loop until times - 1
             {
                 float minSlice = 10f; // Minimum slice size
-                float maxSlice = remainingIlvl - minSlice * (times - i - 1); // Maximum slice size
+                float maxSlice = remainingIlvl - (minSlice * (times - i - 1)); // Maximum slice size
                 float slice = ((float)RNG.GetDouble() * (maxSlice - minSlice)) + minSlice; // Get random value between min and max
 
                 remainingIlvl -= slice;
@@ -52,14 +47,14 @@ namespace FantaRPG.src.Items
 
             modifier.AddToStats(lastStat, lastStatContribution);
         }
-        public Stats Stats { get { return stats; } }
+        public Stats Stats { get; }
         public Modifier()
         {
-            stats = new Stats();
+            Stats = new Stats();
         }
         public Modifier(Stats stats)
         {
-            this.stats = stats;
+            Stats = stats;
         }
         public Modifier(int ILvl) : this()
         {
@@ -72,16 +67,16 @@ namespace FantaRPG.src.Items
         }
         public void AddToStats(Stat stat, float value)
         {
-            if (stats.GetStat(stat) == 0)
+            if (Stats.GetStat(stat) == 0)
             {
-                stats.SetStat(stat, value);
+                Stats.SetStat(stat, value);
                 return;
             }
-            stats.IncrementStat(stat, value);
+            Stats.IncrementStat(stat, value);
         }
         public void SetStat(Stat stat, float value)
         {
-            stats.SetStat(stat, value);
+            Stats.SetStat(stat, value);
         }
     }
 }

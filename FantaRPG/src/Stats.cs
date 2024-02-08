@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src
 {
@@ -25,12 +23,12 @@ namespace FantaRPG.src
         public override string ToString()
         {
             StringBuilder sb = new();
-            foreach (var item in stats)
+            foreach (KeyValuePair<Stat, float> item in stats)
             {
-                sb.Append(item.Key);
-                sb.Append(": ");
-                sb.Append(item.Value);
-                sb.Append(Environment.NewLine);
+                _ = sb.Append(item.Key);
+                _ = sb.Append(": ");
+                _ = sb.Append(item.Value);
+                _ = sb.Append(Environment.NewLine);
             }
             return sb.ToString();
         }
@@ -41,7 +39,7 @@ namespace FantaRPG.src
         private readonly Dictionary<Stat, float> stats;
         public Stats()
         {
-            stats = new Dictionary<Stat, float>();
+            stats = [];
         }
         public Stats(Dictionary<Stat, float> stats)
         {

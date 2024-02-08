@@ -1,16 +1,9 @@
 ﻿using FantaRPG.src.Animations;
-using FantaRPG.src.Interfaces;
-using FantaRPG.src.Items;
 using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended;
-using MonoGame.Extended.Tweening;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace FantaRPG.src
@@ -18,7 +11,7 @@ namespace FantaRPG.src
     internal class Game1 : Game
     {
         private static Game1 _instance = null;
-        public static Game1 Instance { get { return _instance ??= new Game1(); } }
+        public static Game1 Instance => _instance ??= new Game1();
         public GraphicsDeviceManager _graphics;
         private SpriteBatch spriteBatch;
         public Room CurrentRoom;
@@ -55,21 +48,22 @@ namespace FantaRPG.src
             IsFixedTimeStep = true;
             base.Initialize();
         }
-        Player player;
-        bool isChangingRoom = false;
+
+        private Player player;
+        private bool isChangingRoom = false;
         protected override void LoadContent()
         {
             debugFont = Content.Load<SpriteFont>("DebugFont");
             pixel = Content.Load<Texture2D>("pixel");
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            List<BackgroundLayer> backgrounds = new()
-            {
+            List<BackgroundLayer> backgrounds =
+            [
                 new BackgroundLayer(Content.Load<Texture2D>("bg5"), 5),
                 new BackgroundLayer(Content.Load<Texture2D>("bg4"), 7),
                 new BackgroundLayer(Content.Load<Texture2D>("bg3"), 9),
                 new BackgroundLayer(Content.Load<Texture2D>("bg2"), 11),
                 new BackgroundLayer(Content.Load<Texture2D>("bg1"), 13)
-            };
+            ];
             /*for (int i = 0; i < 200; i++)
             {
                 entities.Add(new Entity(pixel, r.Next(-20000, 20001), 20, 20, 20));
@@ -89,28 +83,28 @@ namespace FantaRPG.src
                 Center = new Vector2(850, -50)
             };
 
-            Room1 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(),
-                             new List<Platform>(),
-                             new List<Entity>(),
-                             new List<Portal>(),
+            Room1 = new Room([.. backgrounds.OrderByDescending(x => x.LayerID)],
+                             [],
+                             [],
+                             [],
                              player,
                              new Point(3840, 2560));
-            Room1.AddPlatform(new Platform(200, -1000, new Vector2(400, 800)));
-            Room1.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 20)));
-            Room1.AddPlatform(new Platform(-20, -2540, new Vector2(40, 2540)));
-            Room1.AddPortal(new Portal(Room1, 1600, -200, EntityConstants.PortalSize));
-            Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
-            Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
-            Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
-            Room2 = new Room(backgrounds.OrderByDescending(x => x.LayerID).ToList(),
-                             new List<Platform>(),
-                             new List<Entity>(),
-                             new List<Portal>(),
+            _ = Room1.AddPlatform(new Platform(200, -1000, new Vector2(400, 800)));
+            _ = Room1.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 20)));
+            _ = Room1.AddPlatform(new Platform(-20, -2540, new Vector2(40, 2540)));
+            _ = Room1.AddPortal(new Portal(Room1, 1600, -200, EntityConstants.PortalSize));
+            _ = Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
+            _ = Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
+            _ = Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
+            Room2 = new Room([.. backgrounds.OrderByDescending(x => x.LayerID)],
+                             [],
+                             [],
+                             [],
                              player,
                              new Point(1920, 1080));
-            Room2.AddPlatform(new Platform(200, 400, new Vector2(50, 50)));
-            Room2.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 50)));
-            Room2.AddPortal(new Portal(Room2, 800, -200, EntityConstants.PortalSize));
+            _ = Room2.AddPlatform(new Platform(200, 400, new Vector2(50, 50)));
+            _ = Room2.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 50)));
+            _ = Room2.AddPortal(new Portal(Room2, 800, -200, EntityConstants.PortalSize));
 
             Room1.Portals.Last().SetPortalTo(Room2);
 
@@ -124,11 +118,15 @@ namespace FantaRPG.src
             _graphics.ApplyChanges();
             Ratio = (float)_graphics.PreferredBackBufferHeight / CurrentRoom.Backgrounds.First().Texture.Height;
         }
-        FadeToBlack fadeToBlack;
+
+        private FadeToBlack fadeToBlack;
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
+
             if (isChangingRoom)
             {
                 if (!fadeToBlack.IsFinished)
@@ -153,7 +151,7 @@ namespace FantaRPG.src
                             exitPortal.TargetPortal.FadeOutNow();
                             exitPortal.IsWorking = false;
                             exitPortal.FadeOutNow();
-                            exitPortal.FadeIn();
+                            _ = exitPortal.FadeIn();
                         }
                     }
                     else
@@ -179,7 +177,8 @@ namespace FantaRPG.src
             nextRoom = targetRoom;
             fadeToBlack = new FadeToBlack();
         }
-        static Color bgColor = new(16, 0, 32);
+
+        private static Color bgColor = new(16, 0, 32);
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(bgColor);
@@ -200,7 +199,7 @@ namespace FantaRPG.src
             base.Draw(gameTime);
         }
 
-        Portal exitPortal = null;
+        private Portal exitPortal = null;
         internal void UsePortal(Portal portal)
         {
             TransitionToRoom(portal.TargetPortal.ContainingRoom);

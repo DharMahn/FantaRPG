@@ -1,5 +1,4 @@
-﻿using FantaRPG.src.Interfaces;
-using FantaRPG.src.Items;
+﻿using FantaRPG.src.Items;
 using FantaRPG.src.Modifiers;
 using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
@@ -8,12 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src
 {
@@ -24,16 +17,16 @@ namespace FantaRPG.src
         private readonly Dictionary<string, Keys> Input;
         private Vector2 Acceleration;
         private float lastCooldownTime = 0;
-        readonly int spellSize = 10;
-        bool onGround = false;
-        bool canJump = true;
-        int jumpCount = 1;
-        readonly int jumpCountMax = 1;
-        bool onWall = false;
-        bool onLeftWall;
-        bool onRightWall;
-        readonly List<Modifier> modifiers = new();
-        public List<Modifier> Modifiers { get { return modifiers; } }
+        private readonly int spellSize = 10;
+        private bool onGround = false;
+        private bool canJump = true;
+        private int jumpCount = 1;
+        private readonly int jumpCountMax = 1;
+        private bool onWall = false;
+        private bool onLeftWall;
+        private bool onRightWall;
+
+        public List<Modifier> Modifiers { get; } = [];
         public Inventory.Inventory Inventory;
         private readonly Item selectedItem = new("TEST ITEM");
         private readonly BasicCollision leftSideTrigger;
@@ -62,7 +55,6 @@ namespace FantaRPG.src
                 Position = new Vector2(x + size.X - 1, y + 1),
             };
         }
-        readonly float onWallPosition = 0;
         public override void Update(GameTime gameTime)
         {
             Vector2 movementVector = Vector2.Zero;
@@ -151,20 +143,20 @@ namespace FantaRPG.src
             {
                 lastCooldownTime -= selectedItem.Cooldown; // Reset the timer since a bullet was just fired
 
-                Vector2 playerCenter = new(Position.X + HitboxSize.X / 2, Position.Y + HitboxSize.Y / 2);
+                Vector2 playerCenter = new(Position.X + (HitboxSize.X / 2), Position.Y + (HitboxSize.Y / 2));
                 Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
 
                 Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
-                spellVel = Vector2.Multiply(spellVel, 1000+Velocity.Length());
-                Bullet bullet = new((int)(playerCenter.X - spellSize / 2), (int)(playerCenter.Y - spellSize / 2), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), this);
-                var modifier = new DecreaseVelocityOverTimeBehavior(1f, 200);
+                spellVel = Vector2.Multiply(spellVel, 1000 + Velocity.Length());
+                Bullet bullet = new((int)(playerCenter.X - (spellSize / 2)), (int)(playerCenter.Y - (spellSize / 2)), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), this);
+                DecreaseVelocityOverTimeBehavior modifier = new(1f, 200);
                 modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(7));
                 bullet.AddBehavior(modifier);
                 float curve = 120f * (((float)RNG.GetDouble() * 2) - 1);
                 bullet.AddBehavior(new CurvedVelocityBehavior(curve));
 
-                Game1.Instance.CurrentRoom.AddEntity(bullet);
+                _ = Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
             Acceleration += actualMovementVector;
             if (Math.Abs(velocity.X + Acceleration.X) < Stats.GetStat(Stat.MoveSpeed) * 10 || Math.Sign(Acceleration.X) != Math.Sign(velocity.X))
@@ -173,7 +165,7 @@ namespace FantaRPG.src
             }
             velocity.Y += Acceleration.Y;
             onGround = false;
-            foreach (var portal in Game1.Instance.CurrentRoom.Portals)
+            foreach (Portal portal in Game1.Instance.CurrentRoom.Portals)
             {
                 if (IsTouching(portal, gameTime))
                 {
@@ -183,9 +175,13 @@ namespace FantaRPG.src
             onLeftWall = false;
             onRightWall = false;
             onWall = false;
-            foreach (var platform in Game1.Instance.CurrentRoom.Platforms)
+            foreach (Platform platform in Game1.Instance.CurrentRoom.Platforms)
             {
-                if (!platform.IsCollidable) continue;
+                if (!platform.IsCollidable)
+                {
+                    continue;
+                }
+
                 if (rightSideTrigger.IsTouchingLeftOf(platform, gameTime))
                 {
                     onLeftWall = true;
@@ -269,9 +265,9 @@ namespace FantaRPG.src
             base.ProcessStats();
             Stats.SetStat(Stat.MoveSpeed, 40);
             Stats.SetStat(Stat.JumpStrength, 20);
-            foreach (var modifier in Modifiers)
+            foreach (Modifier modifier in Modifiers)
             {
-                foreach (var stat in modifier.Stats.GetAllStats())
+                foreach (KeyValuePair<Stat, float> stat in modifier.Stats.GetAllStats())
                 {
                     Stats.IncrementStat(stat.Key, stat.Value);
                 }

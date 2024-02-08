@@ -1,11 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FantaRPG.src.Items;
 
 namespace FantaRPG.src
 {
@@ -18,23 +13,16 @@ namespace FantaRPG.src
         public Stats Stats;
         protected bool alive = true;
         private Vector2 lastPos;
-        public Vector2 LastPosition { get { return lastPos; } }
-        public bool Alive { get { return alive; } set { alive = value; } }
-        protected bool freeFall=false;
+        public Vector2 LastPosition => lastPos;
+        public bool Alive { get => alive; set => alive = value; }
+        protected bool freeFall = false;
         public Entity()
         {
 
         }
         public Entity(float x, float y, Vector2 size, Texture2D texture = null)
         {
-            if (texture == null)
-            {
-                Texture = Game1.Instance.pixel;
-            }
-            else
-            {
-                Texture = texture;
-            }
+            Texture = texture ?? Game1.Instance.pixel;
 
             Position = new Vector2(x, y);
             lastPos = new Vector2(x, y);

@@ -1,21 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src.Modifiers
 {
-    internal class SplitBehavior : IBulletBehavior
+    internal class SplitBehavior(int splitCount) : IBulletBehavior
     {
-        readonly int splitCount;
+        private readonly int splitCount = splitCount;
         public int PassCount { get; set; } = 0;
-
-        public SplitBehavior(int splitCount)
-        {
-            this.splitCount = splitCount;
-        }
 
         public void ActOnCollision(object sender, EventArgs e)
         {
@@ -38,7 +29,7 @@ namespace FantaRPG.src.Modifiers
                 Vector2 newDirection = Extensions.RotateVector(newBullet.Velocity, (splitAngle * i) + offset);
                 newBullet.Velocity = newDirection;
                 newBullet.CopyBehaviorsFrom(bullet);
-                Game1.Instance.CurrentRoom.AddEntity(newBullet);
+                _ = Game1.Instance.CurrentRoom.AddEntity(newBullet);
             }
 
             bullet.Alive = false;
@@ -46,7 +37,7 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            var toreturn = new SplitBehavior(splitCount);
+            SplitBehavior toreturn = new(splitCount);
             return toreturn;
         }
     }

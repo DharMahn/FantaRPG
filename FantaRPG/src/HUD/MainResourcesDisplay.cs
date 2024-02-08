@@ -1,20 +1,10 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 namespace FantaRPG.src.HUD
 {
-    internal class MainResourcesDisplay
+    internal class MainResourcesDisplay(Player player)
     {
-        private readonly Player player;
-
-        public MainResourcesDisplay(Player player)
-        {
-            this.player = player;
-        }
+        private readonly Player player = player;
 
         internal void Draw(SpriteBatch spriteBatch)
         {

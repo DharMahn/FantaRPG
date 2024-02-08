@@ -1,22 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src.Modifiers
 {
-    internal class CurvedVelocityBehavior : IBulletBehavior
+    internal class CurvedVelocityBehavior(float rotationSpeed) : IBulletBehavior
     {
-        private readonly float rotationSpeed; // Degrees per second
+        private readonly float rotationSpeed = rotationSpeed; // Degrees per second
         public int PassCount { get; set; } = 0;
-
-        // Constructor to set rotation speed
-        public CurvedVelocityBehavior(float rotationSpeed)
-        {
-            this.rotationSpeed = rotationSpeed;
-        }
 
         public void ActOnCollision(object sender, EventArgs e)
         {
@@ -39,7 +29,7 @@ namespace FantaRPG.src.Modifiers
 
         public IBulletBehavior Clone()
         {
-            var toreturn = new CurvedVelocityBehavior(rotationSpeed);
+            CurvedVelocityBehavior toreturn = new(rotationSpeed);
             return toreturn;
         }
 
@@ -50,8 +40,8 @@ namespace FantaRPG.src.Modifiers
             float cos = MathF.Cos(radians);
             float sin = MathF.Sin(radians);
             return new Vector2(
-                vector.X * cos - vector.Y * sin,
-                vector.X * sin + vector.Y * cos
+                (vector.X * cos) - (vector.Y * sin),
+                (vector.X * sin) + (vector.Y * cos)
             );
         }
     }

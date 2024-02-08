@@ -1,19 +1,14 @@
 ﻿using FantaRPG.src.Pathfinding;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FantaRPG.src.Enemies
 {
     internal class AIEnemy : Entity
     {
-        readonly float nodeCloseThreshold;
-        Node NextNode = null;
-        Node PrevNode = null;
+        private readonly float nodeCloseThreshold;
+        private Node NextNode = null;
+        private Node PrevNode = null;
 
         public AIEnemy(float x, float y, Vector2 size, Texture2D texture = null) : base(x, y, size, texture)
         {
