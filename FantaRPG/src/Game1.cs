@@ -22,7 +22,11 @@ namespace FantaRPG.src
         public Room Room1, Room2;
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            _graphics = new(this)
+            {
+                SynchronizeWithVerticalRetrace = true
+            };
+            IsFixedTimeStep = false;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             //using StreamWriter sw = new StreamWriter("debugModifier.txt", false);
@@ -45,7 +49,6 @@ namespace FantaRPG.src
 
         protected override void Initialize()
         {
-            IsFixedTimeStep = true;
             base.Initialize();
         }
 
@@ -89,22 +92,22 @@ namespace FantaRPG.src
                              [],
                              player,
                              new Point(3840, 2560));
-            _ = Room1.AddPlatform(new Platform(200, -1000, new Vector2(400, 800)));
-            _ = Room1.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 20)));
-            _ = Room1.AddPlatform(new Platform(-20, -2540, new Vector2(40, 2540)));
-            _ = Room1.AddPortal(new Portal(Room1, 1600, -200, EntityConstants.PortalSize));
-            _ = Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
-            _ = Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
-            _ = Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
+            Room1.AddPlatform(new Platform(200, -1000, new Vector2(400, 800)));
+            Room1.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 20)));
+            Room1.AddPlatform(new Platform(-20, -2540, new Vector2(40, 2540)));
+            Room1.AddPortal(new Portal(Room1, 1600, -200, EntityConstants.PortalSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
+            Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
             Room2 = new Room([.. backgrounds.OrderByDescending(x => x.LayerID)],
                              [],
                              [],
                              [],
                              player,
                              new Point(1920, 1080));
-            _ = Room2.AddPlatform(new Platform(200, 400, new Vector2(50, 50)));
-            _ = Room2.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 50)));
-            _ = Room2.AddPortal(new Portal(Room2, 800, -200, EntityConstants.PortalSize));
+            Room2.AddPlatform(new Platform(200, 400, new Vector2(50, 50)));
+            Room2.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 50)));
+            Room2.AddPortal(new Portal(Room2, 800, -200, EntityConstants.PortalSize));
 
             Room1.Portals.Last().SetPortalTo(Room2);
 
@@ -139,7 +142,7 @@ namespace FantaRPG.src
                     {
                         fadeToBlack = new FadeToBlack(reverse: true);
                         CurrentRoom = nextRoom;
-                        foreach (Portal item in CurrentRoom.Platforms.Where(x => x is Portal p && p != exitPortal))
+                        foreach (Portal item in CurrentRoom.Platforms.OfType<Portal>().Where(p => p != exitPortal))
                         {
                             item.Reset();
                         }
@@ -151,7 +154,7 @@ namespace FantaRPG.src
                             exitPortal.TargetPortal.FadeOutNow();
                             exitPortal.IsWorking = false;
                             exitPortal.FadeOutNow();
-                            _ = exitPortal.FadeIn();
+                            exitPortal.FadeIn();
                         }
                     }
                     else

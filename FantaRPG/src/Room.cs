@@ -118,7 +118,7 @@ namespace FantaRPG.src
                 item.Update(gameTime);
                 if (!item.Alive)
                 {
-                    _ = Entities.Remove(item);
+                    Entities.Remove(item);
                     continue;
                 }
             }
@@ -135,7 +135,7 @@ namespace FantaRPG.src
                 //Console.WriteLine("asd");
                 if (!item.Update((float)gameTime.ElapsedGameTime.TotalSeconds))
                 {
-                    _ = particles.Emitters.Remove(item);
+                    particles.Emitters.Remove(item);
                 }
             }
             Player.Update(gameTime);

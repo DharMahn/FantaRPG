@@ -76,10 +76,10 @@ namespace FantaRPG.src
         {
 
             Vector2 initialCenter = Center;
-            _ = tweener.TweenTo(this, x => x.HitboxSize, EntityConstants.PortalSize, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
-            _ = tweener.TweenTo(this, x => x.Center, initialCenter, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
-            _ = tweener.TweenTo(this, x => x.CurrentColor, ActiveColor, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
-            _ = tweener.TweenTo(this, x => x.Rotation, Rotation - 6, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
+            tweener.TweenTo(this, x => x.HitboxSize, EntityConstants.PortalSize, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
+            tweener.TweenTo(this, x => x.Center, initialCenter, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
+            tweener.TweenTo(this, x => x.CurrentColor, ActiveColor, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
+            tweener.TweenTo(this, x => x.Rotation, Rotation - 16, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
 
             return true;
         }
@@ -87,10 +87,10 @@ namespace FantaRPG.src
         {
 
             Vector2 initialCenter = Center;
-            _ = tweener.TweenTo(this, x => x.HitboxSize, Vector2.Zero, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
-            _ = tweener.TweenTo(this, x => x.Center, initialCenter, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
-            _ = tweener.TweenTo(this, x => x.CurrentColor, InactiveColor, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
-            _ = tweener.TweenTo(this, x => x.Rotation, Rotation - 6, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
+            tweener.TweenTo(this, x => x.HitboxSize, Vector2.Zero, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
+            tweener.TweenTo(this, x => x.Center, initialCenter, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
+            tweener.TweenTo(this, x => x.CurrentColor, InactiveColor, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
+            tweener.TweenTo(this, x => x.Rotation, Rotation - 16, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.SineOut);
 
 
             return true;
@@ -104,7 +104,7 @@ namespace FantaRPG.src
 
             if (!TargetPortal.ContainingRoom.HasPortalTo(this))
             {
-                _ = TargetPortal.ContainingRoom.SetRandomPortalTo(this);
+                TargetPortal.ContainingRoom.SetRandomPortalTo(this);
             }
             Game1.Instance.UsePortal(this);
             IsWorking = false;

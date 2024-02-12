@@ -29,7 +29,7 @@ namespace FantaRPG.src.Modifiers
                 Vector2 newDirection = Extensions.RotateVector(newBullet.Velocity, (splitAngle * i) + offset);
                 newBullet.Velocity = newDirection;
                 newBullet.CopyBehaviorsFrom(bullet);
-                _ = Game1.Instance.CurrentRoom.AddEntity(newBullet);
+                Game1.Instance.CurrentRoom.AddEntity(newBullet);
             }
 
             bullet.Alive = false;

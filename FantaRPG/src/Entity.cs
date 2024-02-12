@@ -16,6 +16,7 @@ namespace FantaRPG.src
         public Vector2 LastPosition => lastPos;
         public bool Alive { get => alive; set => alive = value; }
         protected bool freeFall = false;
+        protected bool gravityAffected = false;
         public Entity()
         {
 
@@ -37,6 +38,10 @@ namespace FantaRPG.src
         public virtual void Update(GameTime gameTime)
         {
             lastPos = position;
+            if (gravityAffected)
+            {
+                velocity.Y += Game1.Instance.CurrentRoom.Gravity*2000 * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
             Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
         public virtual void Draw(SpriteBatch spriteBatch)

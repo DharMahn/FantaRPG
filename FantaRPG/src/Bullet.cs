@@ -20,7 +20,6 @@ namespace FantaRPG.src
         protected static readonly FieldInfo FastRandomInfo = typeof(FastRandom).GetField("_state", BindingFlags.NonPublic | BindingFlags.Instance);
         protected static readonly float maxLifeTime = 5;
         protected float lifeTime = 0;
-        private readonly bool gravityAffected = false;
         private readonly ParticleEmitter emitter;
         public event EventHandler OnDeath;
         protected readonly List<IBulletBehavior> behaviors = [];
@@ -88,10 +87,7 @@ namespace FantaRPG.src
             }
             if (alive)
             {
-                if (gravityAffected)
-                {
-                    velocity.Y += Game1.Instance.CurrentRoom.Gravity * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                }
+                
                 foreach (Platform item in Game1.Instance.CurrentRoom.Platforms)
                 {
                     if (item.IsCollidable)

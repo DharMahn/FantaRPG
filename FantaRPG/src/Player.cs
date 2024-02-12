@@ -13,7 +13,6 @@ namespace FantaRPG.src
     internal class Player : Entity
     {
         private readonly float wallJumpVelX = 750f;
-        private readonly float wallJumpVelY = 1250f;
         private readonly Dictionary<string, Keys> Input;
         private Vector2 Acceleration;
         private float lastCooldownTime = 0;
@@ -54,11 +53,15 @@ namespace FantaRPG.src
                 HitboxSize = new Vector2(3, size.Y - 2),
                 Position = new Vector2(x + size.X - 1, y + 1),
             };
+            gravityAffected = true;
         }
         public override void Update(GameTime gameTime)
         {
             Vector2 movementVector = Vector2.Zero;
-            Acceleration.Y += 2000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (gravityAffected)
+            {
+                Acceleration.Y += Game1.Instance.CurrentRoom.Gravity * 2000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
             if (MovementInput.KeyDown(Input["Up"]))
             {
                 //movementVector -= Vector2.UnitY;
@@ -104,15 +107,15 @@ namespace FantaRPG.src
                 {
                     if (onLeftWall)
                     {
-                        velocity.X = -wallJumpVelX;
-                        velocity.Y = -wallJumpVelY;
+                        velocity.X = (-35 * Stats.GetStat(Stat.JumpStrength));
+                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
                         onLeftWall = false;
                         onWall = false;
                     }
                     else if (onRightWall)
                     {
-                        velocity.X = wallJumpVelX;
-                        velocity.Y = -wallJumpVelY;
+                        velocity.X = -(-35 * Stats.GetStat(Stat.JumpStrength));
+                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
                         onRightWall = false;
                         onWall = false;
                     }
@@ -156,7 +159,7 @@ namespace FantaRPG.src
                 float curve = 120f * (((float)RNG.GetDouble() * 2) - 1);
                 bullet.AddBehavior(new CurvedVelocityBehavior(curve));
 
-                _ = Game1.Instance.CurrentRoom.AddEntity(bullet);
+                Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
             Acceleration += actualMovementVector;
             if (Math.Abs(velocity.X + Acceleration.X) < Stats.GetStat(Stat.MoveSpeed) * 10 || Math.Sign(Acceleration.X) != Math.Sign(velocity.X))

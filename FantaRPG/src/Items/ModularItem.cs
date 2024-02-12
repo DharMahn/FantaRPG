@@ -13,7 +13,7 @@ namespace FantaRPG.src.Items
         }
         public void RemoveModifier(Modifier modifier)
         {
-            _ = modifiers.Remove(modifier);
+            modifiers.Remove(modifier);
         }
         public Stats GetAllStats()
         {

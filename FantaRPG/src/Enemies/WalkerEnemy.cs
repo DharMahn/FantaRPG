@@ -5,5 +5,9 @@ namespace FantaRPG.src.Enemies
 {
     internal class WalkerEnemy(float x, float y, Vector2 size, Texture2D texture = null) : Entity(x, y, size, texture)
     {
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+        }
     }
 }

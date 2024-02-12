@@ -25,10 +25,10 @@ namespace FantaRPG.src
             StringBuilder sb = new();
             foreach (KeyValuePair<Stat, float> item in stats)
             {
-                _ = sb.Append(item.Key);
-                _ = sb.Append(": ");
-                _ = sb.Append(item.Value);
-                _ = sb.Append(Environment.NewLine);
+                sb.Append(item.Key);
+                sb.Append(": ");
+                sb.Append(item.Value);
+                sb.Append(Environment.NewLine);
             }
             return sb.ToString();
         }
