@@ -22,7 +22,7 @@ namespace FantaRPG.src.Items
             {
                 foreach (KeyValuePair<Stat, float> stat in item.Stats.GetAllStats())
                 {
-                    returnStats.IncrementStat(stat.Key, stat.Value);
+                    returnStats[stat.Key] += stat.Value;
                 }
             }
             return returnStats;

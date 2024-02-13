@@ -8,7 +8,7 @@ namespace FantaRPG.src.HUD
 
         internal void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.DrawString(Game1.Instance.debugFont, player.Stats.GetStat(Stat.Health).ToString(), new Vector2(), Color.Black);
+            spriteBatch.DrawString(Game1.Instance.debugFont, player.Stats[Stat.Health].ToString(), new Vector2(), Color.Black);
         }
     }
 }

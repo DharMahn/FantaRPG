@@ -18,7 +18,7 @@ namespace FantaRPG.src.Items
         private static void GeneratePrimaryStats(ref Modifier modifier, int ilvl)
         {
             int num = RNG.Get(0, Enum.GetValues(typeof(Stat)).Length - 1);
-            modifier.Stats.IncrementStat((Stat)num, ilvl / Stats.statValues[(Stat)num]);
+            modifier.Stats[(Stat)num] += ilvl / Stats.statValues[(Stat)num];
         }
         private static void GenerateSecondaryStats(ref Modifier modifier, int ilvl)
         {
@@ -67,16 +67,12 @@ namespace FantaRPG.src.Items
         }
         public void AddToStats(Stat stat, float value)
         {
-            if (Stats.GetStat(stat) == 0)
+            if (Stats[stat] == 0)
             {
-                Stats.SetStat(stat, value);
+                Stats[stat] = value;
                 return;
             }
-            Stats.IncrementStat(stat, value);
-        }
-        public void SetStat(Stat stat, float value)
-        {
-            Stats.SetStat(stat, value);
+            Stats[stat] = value;
         }
     }
 }

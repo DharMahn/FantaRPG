@@ -37,6 +37,8 @@ namespace FantaRPG.src
             IsWorking = true;
             CurrentColor = isWorking ? ActiveColor : InactiveColor;
             Texture = Game1.Instance.Content.Load<Texture2D>("portal0");
+            collisionAffected = false;
+            gravityAffected = false;
             //FadeOutNow();
             //FadeIn();
         }

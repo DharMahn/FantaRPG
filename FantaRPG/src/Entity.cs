@@ -17,6 +17,9 @@ namespace FantaRPG.src
         public bool Alive { get => alive; set => alive = value; }
         protected bool freeFall = false;
         protected bool gravityAffected = false;
+        protected bool collisionAffected = true;
+        protected Vector2 acceleration;
+
         public Entity()
         {
 
@@ -40,9 +43,43 @@ namespace FantaRPG.src
             lastPos = position;
             if (gravityAffected)
             {
-                velocity.Y += Game1.Instance.CurrentRoom.Gravity*2000 * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+                acceleration.Y += Game1.Instance.CurrentRoom.Gravity * 2000 * (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            }
+            
+            Velocity += acceleration;
+            if (collisionAffected)
+            {
+                foreach (Platform platform in Game1.Instance.CurrentRoom.Platforms)
+                {
+                    if (!platform.IsCollidable) continue;
+                    if (IsTouchingTopOf(platform, gameTime))
+                    {
+                        position.Y = platform.Position.Y - HitboxSize.Y;
+                        velocity.Y = 0;
+                        acceleration.Y = 0;
+                    }
+                    else if (IsTouchingBottomOf(platform, gameTime))
+                    {
+                        position.Y = platform.Position.Y + platform.HitboxSize.Y;
+                        velocity.Y = 0;
+                        acceleration.Y = 0;
+                    }
+                    if (IsTouchingLeftOf(platform, gameTime))
+                    {
+                        position.X = platform.Position.X - HitboxSize.X;
+                        velocity.X = 0;
+                        acceleration.X = 0;
+                    }
+                    else if (IsTouchingRightOf(platform, gameTime))
+                    {
+                        position.X = platform.Position.X + platform.HitboxSize.X;
+                        velocity.X = 0;
+                        acceleration.X = 0;
+                    }
+                }
             }
             Position += Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            acceleration = Vector2.Zero;
         }
         public virtual void Draw(SpriteBatch spriteBatch)
         {

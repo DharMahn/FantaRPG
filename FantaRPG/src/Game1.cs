@@ -1,4 +1,5 @@
 ﻿using FantaRPG.src.Animations;
+using FantaRPG.src.Enemies;
 using FantaRPG.src.Movement;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -96,9 +97,13 @@ namespace FantaRPG.src
             Room1.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 20)));
             Room1.AddPlatform(new Platform(-20, -2540, new Vector2(40, 2540)));
             Room1.AddPortal(new Portal(Room1, 1600, -200, EntityConstants.PortalSize));
-            Room1.AddEntity(new Enemies.WalkerEnemy(200, -20, EntityConstants.WalkerSize));
-            Room1.AddEntity(new Enemies.WalkerEnemy(200, -200, EntityConstants.WalkerSize));
-            Room1.AddEntity(new Enemies.WalkerEnemy(400, -100, EntityConstants.WalkerSize));
+            Room1.AddEntity(new WalkerEnemy(200, -20, EntityConstants.WalkerSize));
+            Room1.AddEntity(new WalkerEnemy(220, -200, EntityConstants.WalkerSize));
+            Room1.AddEntity(new WalkerEnemy(400, -100, EntityConstants.WalkerSize));
+            foreach (var item in Room1.Entities.OfType<WalkerEnemy>())
+            {
+                item.Target = player;
+            }
             Room2 = new Room([.. backgrounds.OrderByDescending(x => x.LayerID)],
                              [],
                              [],

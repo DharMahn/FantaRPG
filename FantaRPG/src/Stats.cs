@@ -45,23 +45,16 @@ namespace FantaRPG.src
         {
             this.stats = stats;
         }
-        public float GetStat(Stat stat)
+        public float this[Stat stat]
         {
-            return stats.TryGetValue(stat, out float value) ? value : 0;
-        }
-        public void SetStat(Stat name, float value)
-        {
-            stats[name] = value;
-        }
-
-        internal void IncrementStat(Stat stat, float value)
-        {
-            if (stats.ContainsKey(stat))
+            get
             {
-                stats[stat] += value;
-                return;
+                return stats.TryGetValue(stat, out float value) ? value : 0;
             }
-            stats[stat] = value;
+            set
+            {
+                stats[stat] = value;
+            }
         }
     }
 }

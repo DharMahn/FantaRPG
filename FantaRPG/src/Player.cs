@@ -14,7 +14,6 @@ namespace FantaRPG.src
     {
         private readonly float wallJumpVelX = 750f;
         private readonly Dictionary<string, Keys> Input;
-        private Vector2 Acceleration;
         private float lastCooldownTime = 0;
         private readonly int spellSize = 10;
         private bool onGround = false;
@@ -60,7 +59,7 @@ namespace FantaRPG.src
             Vector2 movementVector = Vector2.Zero;
             if (gravityAffected)
             {
-                Acceleration.Y += Game1.Instance.CurrentRoom.Gravity * 2000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                acceleration.Y += Game1.Instance.CurrentRoom.Gravity * 2000 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (MovementInput.KeyDown(Input["Up"]))
             {
@@ -92,7 +91,7 @@ namespace FantaRPG.src
             if (movementVector != Vector2.Zero)
             {
                 actualMovementVector = Vector2.Normalize(movementVector);
-                actualMovementVector.X *= Stats.GetStat(Stat.MoveSpeed) * 100f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                actualMovementVector.X *= Stats[Stat.MoveSpeed] * 100f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             #region No Wall Slide
             //if (onWall)
@@ -107,21 +106,21 @@ namespace FantaRPG.src
                 {
                     if (onLeftWall)
                     {
-                        velocity.X = (-35 * Stats.GetStat(Stat.JumpStrength));
-                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
+                        velocity.X = (-35 * Stats[Stat.JumpStrength]);
+                        velocity.Y = -50 * Stats[Stat.JumpStrength];
                         onLeftWall = false;
                         onWall = false;
                     }
                     else if (onRightWall)
                     {
-                        velocity.X = -(-35 * Stats.GetStat(Stat.JumpStrength));
-                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
+                        velocity.X = -(-35 * Stats[Stat.JumpStrength]);
+                        velocity.Y = -50 * Stats[Stat.JumpStrength];
                         onRightWall = false;
                         onWall = false;
                     }
                     else
                     {
-                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
+                        velocity.Y = -50 * Stats[Stat.JumpStrength];
                     }
                     canJump = false;
                     jumpCount = 0;
@@ -131,7 +130,7 @@ namespace FantaRPG.src
                     if (jumpCount > 0)
                     {
                         jumpCount--;
-                        velocity.Y = -50 * Stats.GetStat(Stat.JumpStrength);
+                        velocity.Y = -50 * Stats[Stat.JumpStrength];
                         onGround = false;
                     }
                 }
@@ -142,17 +141,20 @@ namespace FantaRPG.src
             {
                 lastCooldownTime = selectedItem.Cooldown;
             }
+
+            //spawn a bullet if enough time has been spent and we are shooting
             if (MovementInput.MouseLeftDown() && lastCooldownTime >= selectedItem.Cooldown)
             {
                 lastCooldownTime -= selectedItem.Cooldown; // Reset the timer since a bullet was just fired
-
                 Vector2 playerCenter = new(Position.X + (HitboxSize.X / 2), Position.Y + (HitboxSize.Y / 2));
                 Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
-
+                
+                //placeholder initialization until i make the items have stats and bullets
                 Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
                 spellVel.Normalize();
-                spellVel = Vector2.Multiply(spellVel, 1000 + Velocity.Length());
-                Bullet bullet = new((int)(playerCenter.X - (spellSize / 2)), (int)(playerCenter.Y - (spellSize / 2)), new Vector2(spellSize), spellVel, Stats.GetStat(Stat.Damage), this);
+                spellVel = Vector2.Multiply(spellVel, 1000);
+                spellVel += Velocity;
+                Bullet bullet = new((int)(playerCenter.X - (spellSize / 2)), (int)(playerCenter.Y - (spellSize / 2)), new Vector2(spellSize), spellVel, Stats[Stat.Damage], this);
                 DecreaseVelocityOverTimeBehavior modifier = new(1f, 200);
                 modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(7));
                 bullet.AddBehavior(modifier);
@@ -161,12 +163,21 @@ namespace FantaRPG.src
 
                 Game1.Instance.CurrentRoom.AddEntity(bullet);
             }
-            Acceleration += actualMovementVector;
-            if (Math.Abs(velocity.X + Acceleration.X) < Stats.GetStat(Stat.MoveSpeed) * 10 || Math.Sign(Acceleration.X) != Math.Sign(velocity.X))
+            acceleration += actualMovementVector;
+
+            //the first part is a condition to check against overacceleration,
+            //but it doesn't outright limit the velocity, it just limits further acceleration
+            //but what the second part does is
+            //let's say our velocity is 100, our movespeed is 1, so multiply that by 10, it becomes 10,
+            //even if the acceleration is -10, it would only decrease the velocity to 90,
+            //which would be larger than 10, therefore not applied, that's why we need the second condition,
+            //so we can counteract a heavy external force's effect on the player, so you don't get slammed against a wall
+            //without being able to do anything(although it sounds like a fun thing now that i wrote it down)
+            if (Math.Abs(velocity.X + acceleration.X) < Stats[Stat.MoveSpeed] * 10 || Math.Sign(acceleration.X) != Math.Sign(velocity.X))
             {
-                velocity.X += Acceleration.X;
+                velocity.X += acceleration.X;
             }
-            velocity.Y += Acceleration.Y;
+            velocity.Y += acceleration.Y;
             onGround = false;
             foreach (Portal portal in Game1.Instance.CurrentRoom.Portals)
             {
@@ -226,7 +237,7 @@ namespace FantaRPG.src
             }
             if (Math.Sign(actualMovementVector.X) == 0 && onGround)
             {
-                float drag = 50 * Stats.GetStat(Stat.MoveSpeed) * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                float drag = 50 * Stats[Stat.MoveSpeed] * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (Velocity.X - drag >= 0)
                 {
                     velocity.X -= drag;
@@ -255,24 +266,18 @@ namespace FantaRPG.src
             {
                 velocity.Y = 0;
             }
-            Acceleration = Vector2.Zero;
-            //if (onWallPosition != position.X)
-            //{
-            //    onWall = false;
-            //    onLeftWall = false;
-            //    onRightWall = false;
-            //}
+            acceleration = Vector2.Zero;
         }
         public override void ProcessStats()
         {
             base.ProcessStats();
-            Stats.SetStat(Stat.MoveSpeed, 40);
-            Stats.SetStat(Stat.JumpStrength, 20);
+            Stats[Stat.MoveSpeed] = 40;
+            Stats[Stat.JumpStrength] = 20;
             foreach (Modifier modifier in Modifiers)
             {
                 foreach (KeyValuePair<Stat, float> stat in modifier.Stats.GetAllStats())
                 {
-                    Stats.IncrementStat(stat.Key, stat.Value);
+                    Stats[stat.Key] += stat.Value;
                 }
             }
         }
