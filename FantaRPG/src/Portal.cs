@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Tweening;
+using System;
 
 namespace FantaRPG.src
 {
@@ -103,7 +104,7 @@ namespace FantaRPG.src
             {
                 return;
             }
-
+            if (TargetPortal == null) throw new InvalidOperationException("TargetPortal was null, add one during construction, or use the SetPortalTo method");
             if (!TargetPortal.ContainingRoom.HasPortalTo(this))
             {
                 TargetPortal.ContainingRoom.SetRandomPortalTo(this);
