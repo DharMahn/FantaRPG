@@ -15,7 +15,7 @@ namespace FantaRPG.src
         private Vector2 lastPos;
         public Vector2 LastPosition => lastPos;
         public bool Alive { get => alive; set => alive = value; }
-        protected bool freeFall = false;
+        protected bool controllable = true;
         protected bool gravityAffected = false;
         protected bool collisionAffected = true;
         protected Vector2 acceleration;

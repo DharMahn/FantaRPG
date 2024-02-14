@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace FantaRPG.src
 {
@@ -26,6 +27,7 @@ namespace FantaRPG.src
 
         public List<Modifier> Modifiers { get; } = [];
         public Inventory.Inventory Inventory;
+        private float notControllableWallBounceMultiplier = 0.25f;
         private readonly Item selectedItem = new("TEST ITEM");
         private readonly BasicCollision leftSideTrigger;
         private readonly BasicCollision rightSideTrigger;
@@ -99,39 +101,52 @@ namespace FantaRPG.src
             //    velocity.Y = 0;
             //    Acceleration.Y = 0;
             //}
-            #endregion
-            if (MovementInput.KeyDown(Input["Jump"]))
+
+            //placeholder high speed impact stun testing
+            if (MovementInput.KeyJustDown(Keys.T))
             {
-                if (onWall && canJump)
+                controllable = false;
+                Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
+                Vector2 playerNewDir = new(cursorPos.X - Center.X, cursorPos.Y - Center.Y);
+                playerNewDir.Normalize();
+                velocity = playerNewDir * Stats[Stat.MoveSpeed] * 100;
+            }
+            #endregion
+            if (controllable)
+            {
+                if (MovementInput.KeyDown(Input["Jump"]))
                 {
-                    if (onLeftWall)
+                    if (onWall && canJump)
                     {
-                        velocity.X = (-35 * Stats[Stat.JumpStrength]);
-                        velocity.Y = -50 * Stats[Stat.JumpStrength];
-                        onLeftWall = false;
-                        onWall = false;
-                    }
-                    else if (onRightWall)
-                    {
-                        velocity.X = -(-35 * Stats[Stat.JumpStrength]);
-                        velocity.Y = -50 * Stats[Stat.JumpStrength];
-                        onRightWall = false;
-                        onWall = false;
+                        if (onLeftWall)
+                        {
+                            velocity.X = -35 * Stats[Stat.JumpStrength];
+                            velocity.Y = -50 * Stats[Stat.JumpStrength];
+                            onLeftWall = false;
+                            onWall = false;
+                        }
+                        else if (onRightWall)
+                        {
+                            velocity.X = 35 * Stats[Stat.JumpStrength];
+                            velocity.Y = -50 * Stats[Stat.JumpStrength];
+                            onRightWall = false;
+                            onWall = false;
+                        }
+                        else
+                        {
+                            velocity.Y = -50 * Stats[Stat.JumpStrength];
+                        }
+                        canJump = false;
+                        jumpCount = 0;
                     }
                     else
                     {
-                        velocity.Y = -50 * Stats[Stat.JumpStrength];
-                    }
-                    canJump = false;
-                    jumpCount = 0;
-                }
-                else
-                {
-                    if (jumpCount > 0)
-                    {
-                        jumpCount--;
-                        velocity.Y = -50 * Stats[Stat.JumpStrength];
-                        onGround = false;
+                        if (jumpCount > 0)
+                        {
+                            jumpCount--;
+                            velocity.Y = -50 * Stats[Stat.JumpStrength];
+                            onGround = false;
+                        }
                     }
                 }
             }
@@ -143,18 +158,17 @@ namespace FantaRPG.src
             }
 
             //spawn a bullet if enough time has been spent and we are shooting
-            if (MovementInput.MouseLeftDown() && lastCooldownTime >= selectedItem.Cooldown)
+            if (controllable && MovementInput.MouseLeftDown() && lastCooldownTime >= selectedItem.Cooldown)
             {
                 lastCooldownTime -= selectedItem.Cooldown; // Reset the timer since a bullet was just fired
-                Vector2 playerCenter = new(Position.X + (HitboxSize.X / 2), Position.Y + (HitboxSize.Y / 2));
                 Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
-                
+
                 //placeholder initialization until i make the items have stats and bullets
-                Vector2 spellVel = new(cursorPos.X - playerCenter.X, cursorPos.Y - playerCenter.Y);
+                Vector2 spellVel = new(cursorPos.X - Center.X, cursorPos.Y - Center.Y);
                 spellVel.Normalize();
                 spellVel = Vector2.Multiply(spellVel, 1000);
                 spellVel += Velocity;
-                Bullet bullet = new((int)(playerCenter.X - (spellSize / 2)), (int)(playerCenter.Y - (spellSize / 2)), new Vector2(spellSize), spellVel, Stats[Stat.Damage], this);
+                Bullet bullet = new((int)(Center.X - (spellSize / 2)), (int)(Center.Y - (spellSize / 2)), new Vector2(spellSize), spellVel, Stats[Stat.Damage], this);
                 DecreaseVelocityOverTimeBehavior modifier = new(1f, 200);
                 modifier.OnVelocityTriggerBehaviors.Add(new SplitBehavior(7));
                 bullet.AddBehavior(modifier);
@@ -172,8 +186,9 @@ namespace FantaRPG.src
             //even if the acceleration is -10, it would only decrease the velocity to 90,
             //which would be larger than 10, therefore not applied, that's why we need the second condition,
             //so we can counteract a heavy external force's effect on the player, so you don't get slammed against a wall
-            //without being able to do anything(although it sounds like a fun thing now that i wrote it down)
-            if (Math.Abs(velocity.X + acceleration.X) < Stats[Stat.MoveSpeed] * 10 || Math.Sign(acceleration.X) != Math.Sign(velocity.X))
+            //without being able to do anything (although it sounds like a fun thing now that i wrote it down)
+            //EDIT: right now, the stun thing is implemented with the 'controllable' boolean, yay
+            if (controllable && (Math.Abs(velocity.X + acceleration.X) < Stats[Stat.MoveSpeed] * 10 || Math.Sign(acceleration.X) != Math.Sign(velocity.X)))
             {
                 velocity.X += acceleration.X;
             }
@@ -218,21 +233,43 @@ namespace FantaRPG.src
                     onLeftWall = false;
                     onRightWall = false;
                     onWall = false;
+                    controllable = true;
                 }
                 else if (IsTouchingBottomOf(platform, gameTime))
                 {
                     position.Y = platform.Position.Y + platform.HitboxSize.Y;
-                    velocity.Y = 0;
+                    if (controllable)
+                    {
+                        velocity.Y = 0;
+                    }
+                    else
+                    {
+                        velocity.Y *= -notControllableWallBounceMultiplier;
+                    }
                 }
                 if (IsTouchingLeftOf(platform, gameTime))
                 {
                     position.X = platform.Position.X - HitboxSize.X;
-                    velocity.X = 0;
+                    if (controllable)
+                    {
+                        velocity.X = 0;
+                    }
+                    else
+                    {
+                        velocity.X *= -notControllableWallBounceMultiplier;
+                    }
                 }
                 else if (IsTouchingRightOf(platform, gameTime))
                 {
                     position.X = platform.Position.X + platform.HitboxSize.X;
-                    velocity.X = 0;
+                    if (controllable)
+                    {
+                        velocity.X = 0;
+                    }
+                    else
+                    {
+                        velocity.X *= -notControllableWallBounceMultiplier;
+                    }
                 }
             }
             if (Math.Sign(actualMovementVector.X) == 0 && onGround)
@@ -288,7 +325,20 @@ namespace FantaRPG.src
             spriteBatch.Draw(Texture, new Rectangle((int)rightSideTrigger.Position.X, (int)rightSideTrigger.Position.Y, (int)rightSideTrigger.HitboxSize.X, (int)rightSideTrigger.HitboxSize.Y), Color.Blue);
             if (Game1.Instance.debugFont != null)
             {
-                spriteBatch.DrawString(Game1.Instance.debugFont, "onWall: " + onWall + "\nonLeftWall: " + onLeftWall + "\nonRightWall: " + onRightWall + "\nonGround: " + onGround + "\njumps remaining: " + jumpCount, Position + new Vector2(0, 40), Color.Red);
+                // Create a new StringBuilder for building the debug text
+                StringBuilder debugText = new StringBuilder();
+
+                // Append each piece of debug information on a new line
+                debugText.AppendLine($"onWall: {onWall}");
+                debugText.AppendLine($"onLeftWall: {onLeftWall}");
+                debugText.AppendLine($"onRightWall: {onRightWall}");
+                debugText.AppendLine($"onGround: {onGround}");
+                debugText.AppendLine($"jumps remaining: {jumpCount}");
+                debugText.AppendLine($"controllable: {controllable}");
+
+                // Draw the debug text with an offset from the position
+                Vector2 debugTextPosition = Position + new Vector2(0, 40);
+                spriteBatch.DrawString(Game1.Instance.debugFont, debugText.ToString(), debugTextPosition, Color.Red);
             }
         }
     }
