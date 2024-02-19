@@ -13,14 +13,13 @@ namespace FantaRPG.src
 {
     internal class Player : Entity
     {
-        private readonly float wallJumpVelX = 750f;
         private readonly Dictionary<string, Keys> Input;
         private float lastCooldownTime = 0;
         private readonly int spellSize = 10;
         private bool onGround = false;
         private bool canJump = true;
-        private int jumpCount = 1;
-        private readonly int jumpCountMax = 1;
+        private readonly int jumpCountMax = 4;
+        private int jumpCount;
         private bool onWall = false;
         private bool onLeftWall;
         private bool onRightWall;
@@ -44,6 +43,7 @@ namespace FantaRPG.src
         {
             Input = input;
             Inventory = new Inventory.Inventory();
+            jumpCount = jumpCountMax;
             leftSideTrigger = new BasicCollision
             {
                 HitboxSize = new Vector2(3, size.Y - 2),
@@ -106,7 +106,7 @@ namespace FantaRPG.src
             if (MovementInput.KeyJustDown(Keys.T))
             {
                 controllable = false;
-                Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
+                Vector2 cursorPos = new(MovementInput.MousePosition().X - Game1.Instance.cam.Transform.Translation.X, MovementInput.MousePosition().Y - Game1.Instance.cam.Transform.Translation.Y);
                 Vector2 playerNewDir = new(cursorPos.X - Center.X, cursorPos.Y - Center.Y);
                 playerNewDir.Normalize();
                 velocity = playerNewDir * Stats[Stat.MoveSpeed] * 100;
@@ -114,7 +114,7 @@ namespace FantaRPG.src
             #endregion
             if (controllable)
             {
-                if (MovementInput.KeyDown(Input["Jump"]))
+                if (MovementInput.KeyJustDown(Input["Jump"]))
                 {
                     if (onWall && canJump)
                     {
@@ -137,7 +137,7 @@ namespace FantaRPG.src
                             velocity.Y = -50 * Stats[Stat.JumpStrength];
                         }
                         canJump = false;
-                        jumpCount = 0;
+                        //jumpCount = 0;
                     }
                     else
                     {
@@ -157,11 +157,11 @@ namespace FantaRPG.src
                 lastCooldownTime = selectedItem.Cooldown;
             }
 
-            //spawn a bullet if enough time has been spent and we are shooting
+            //spawn a bullet if enough time has elapsed and we are shooting
             if (controllable && MovementInput.MouseLeftDown() && lastCooldownTime >= selectedItem.Cooldown)
             {
                 lastCooldownTime -= selectedItem.Cooldown; // Reset the timer since a bullet was just fired
-                Vector2 cursorPos = new(Mouse.GetState().Position.X - Game1.Instance.cam.Transform.Translation.X, Mouse.GetState().Position.Y - Game1.Instance.cam.Transform.Translation.Y);
+                Vector2 cursorPos = new(MovementInput.MousePosition().X - Game1.Instance.cam.Transform.Translation.X, MovementInput.MousePosition().Y - Game1.Instance.cam.Transform.Translation.Y);
 
                 //placeholder initialization until i make the items have stats and bullets
                 Vector2 spellVel = new(cursorPos.X - Center.X, cursorPos.Y - Center.Y);
@@ -187,7 +187,7 @@ namespace FantaRPG.src
             //which would be larger than 10, therefore not applied, that's why we need the second condition,
             //so we can counteract a heavy external force's effect on the player, so you don't get slammed against a wall
             //without being able to do anything (although it sounds like a fun thing now that i wrote it down)
-            //EDIT: right now, the stun thing is implemented with the 'controllable' boolean, yay
+            //EDIT: right now, the stun thing is implemented with the 'controllable' boolean, yay!
             if (controllable && (Math.Abs(velocity.X + acceleration.X) < Stats[Stat.MoveSpeed] * 10 || Math.Sign(acceleration.X) != Math.Sign(velocity.X)))
             {
                 velocity.X += acceleration.X;

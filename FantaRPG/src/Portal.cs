@@ -50,6 +50,7 @@ namespace FantaRPG.src
         public void SetPortalTo(Portal target)
         {
             TargetPortal = target;
+            target.TargetPortal = this;
             IsWorking = false;
         }
         public void SetPortalTo(Room room)
@@ -77,7 +78,6 @@ namespace FantaRPG.src
         }
         public bool FadeIn()
         {
-
             Vector2 initialCenter = Center;
             tweener.TweenTo(this, x => x.HitboxSize, EntityConstants.PortalSize, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
             tweener.TweenTo(this, x => x.Center, initialCenter, 0.5f, maxDisableTime - 0.75f).Easing(EasingFunctions.ElasticOut);
@@ -104,14 +104,32 @@ namespace FantaRPG.src
             {
                 return;
             }
-            if (TargetPortal == null) throw new InvalidOperationException("TargetPortal was null, add one during construction, or use the SetPortalTo method");
-            if (!TargetPortal.ContainingRoom.HasPortalTo(this))
+
+            // If TargetPortal is null, try to get a new target room and portal from the RoomManager
+            if (TargetPortal == null)
             {
+                Room newRoom;
+                do
+                {
+                    newRoom = RoomManager.Instance.GetRandomRoom();
+                } while (newRoom == ContainingRoom);
+                Portal randomPortalInNewRoom = newRoom.GetRandomEmptyPortal() ?? throw new InvalidOperationException("Failed to find an empty portal in the new room.");
+
+                // Use the found portal as the target portal
+                SetPortalTo(randomPortalInNewRoom);
+            }
+            else if (!TargetPortal.ContainingRoom.HasPortalTo(this))
+            {
+                // If the TargetPortal is not null but the target room does not have a portal leading back to this one,
+                // attempt to set a random portal in the target room to point back to this portal.
                 TargetPortal.ContainingRoom.SetRandomPortalTo(this);
             }
+
+            // Use the portal
             Game1.Instance.UsePortal(this);
             IsWorking = false;
         }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);

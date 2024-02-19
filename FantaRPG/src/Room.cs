@@ -10,41 +10,21 @@ namespace FantaRPG.src
 {
     internal class Room
     {
-        public static List<(Room Room, bool IsValid)> Rooms = [];
-
         public List<BackgroundLayer> Backgrounds { get; }
         public List<Platform> Platforms { get; }
-
         public List<Entity> Entities { get; }
-
         private readonly ParticleEffect particles;
-
         public List<Portal> Portals { get; }
         public float Gravity { get; private set; }
+        public Point Bounds { get; protected set; }
         public void AddEmitter(ParticleEmitter effect)
         {
             particles.Emitters.Add(effect);
         }
-        public Point Bounds { get; protected set; }
         public bool AddEntity(Entity entity)
         {
             Entities.Add(entity);
             return true;
-        }
-        public static Room GetRandomValidRoom()
-        {
-            List<(Room Room, bool IsValid)> validRooms = Rooms.Where(x => x.IsValid).ToList();
-            (Room Room, bool IsValid) selectedRoom = validRooms[RNG.Get(validRooms.Count())];
-            selectedRoom.IsValid = false;
-            return selectedRoom.Room;
-        }
-        public static void ResetRoomValidities()
-        {
-            for (int i = 0; i < Rooms.Count; i++)
-            {
-                Room room = Rooms[i].Room;
-                Rooms[i] = (room, false);
-            }
         }
         public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, List<Portal> portals, Player player, Point bounds = new Point(), float gravity = 1f)
         {
@@ -60,9 +40,7 @@ namespace FantaRPG.src
             Player = player;
             Bounds = bounds;
         }
-
         public Player Player { get; private set; }
-
         internal void DrawBackground(SpriteBatch spriteBatch, Matrix transform)
         {
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap);
@@ -141,7 +119,6 @@ namespace FantaRPG.src
             Player.Update(gameTime);
         }
         public List<Node> PathNodes = [];
-
         public Node? GetClosestNode(Vector2 pos, Node excluding = null)
         {
             if (PathNodes.Count == 0)
@@ -161,7 +138,6 @@ namespace FantaRPG.src
             }
             return PathNodes.OrderBy(x => Vector2.DistanceSquared(pos, x.Position) / x.Weight).First();
         }
-
         internal bool HasPortalTo(Portal portal)
         {
             return Portals.Any(x => x.TargetPortal == portal);
@@ -170,7 +146,6 @@ namespace FantaRPG.src
         {
             return Portals.Any(x => x.TargetPortal?.ContainingRoom == room);
         }
-
         internal Portal SetRandomPortalTo(Portal portal)
         {
             List<Portal> hasNoTarget = Portals.Where(x => x.TargetPortal == null).ToList();
@@ -182,6 +157,39 @@ namespace FantaRPG.src
             Portal randomPortal = hasNoTarget[RNG.Get(hasNoTarget.Count)];
             randomPortal.SetPortalTo(portal);
             return randomPortal;
+        }
+        internal Portal GetRandomEmptyPortal()
+        {
+            // Filter for portals that do not have a target
+            List<Portal> availablePortals = Portals.Where(portal => portal.TargetPortal == null).ToList();
+
+            if (availablePortals.Count == 0)
+            {
+                throw new Exception("There are no empty portals available.");
+            }
+
+            // Select and return a random empty portal
+            return availablePortals[RNG.Get(availablePortals.Count)];
+        }
+
+        internal Portal SetRandomPortalTo(Room targetRoom)
+        {
+            // Find all empty portals in the current room
+            List<Portal> availablePortals = Portals.Where(x => x.TargetPortal == null).ToList();
+            if (availablePortals.Count == 0)
+            {
+                throw new Exception("There are no empty portals left in the current room!");
+            }
+
+            // Select a random empty portal from the current room
+            Portal randomPortalInCurrentRoom = availablePortals[RNG.Get(availablePortals.Count)];
+
+            // Attempt to set this portal to connect to a portal in the target room.
+            // This action will attempt to find an empty portal in the target room to link back to this portal,
+            // thereby potentially creating a two-way connection.
+            randomPortalInCurrentRoom.SetPortalTo(targetRoom);
+
+            return randomPortalInCurrentRoom;
         }
     }
 }
