@@ -18,7 +18,7 @@ namespace FantaRPG.src
         private readonly int spellSize = 10;
         private bool onGround = false;
         private bool canJump = true;
-        private readonly int jumpCountMax = 4;
+        private readonly int jumpCountMax = 1;
         private int jumpCount;
         private bool onWall = false;
         private bool onLeftWall;
@@ -114,7 +114,7 @@ namespace FantaRPG.src
             #endregion
             if (controllable)
             {
-                if (MovementInput.KeyJustDown(Input["Jump"]))
+                if (MovementInput.KeyDown(Input["Jump"]))
                 {
                     if (onWall && canJump)
                     {
@@ -132,7 +132,7 @@ namespace FantaRPG.src
                             onRightWall = false;
                             onWall = false;
                         }
-                        else
+                        else if (MovementInput.KeyJustDown(Input["Jump"]))
                         {
                             velocity.Y = -50 * Stats[Stat.JumpStrength];
                         }
