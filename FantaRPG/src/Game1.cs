@@ -56,7 +56,7 @@ namespace FantaRPG.src
             base.Initialize();
         }
 
-        private Player player;
+        public Player player;
         private bool isChangingRoom = false;
         protected override void LoadContent()
         {
@@ -97,7 +97,7 @@ namespace FantaRPG.src
                                  [],
                                  [],
                                  player,
-                                 new Point(3840, 2560));
+                                 new Vector2(3840, 2560));
                 Room1.AddPlatform(new Platform(200, -1000, new Vector2(400, 400)));
                 Room1.AddPlatform(new Platform(200, -600, new Vector2(400, 400)));
                 Room1.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 20)));
@@ -115,7 +115,7 @@ namespace FantaRPG.src
                                  [],
                                  [],
                                  player,
-                                 new Point(1920, 1080));
+                                 new Vector2(1920, 1080));
                 Room2.AddPlatform(new Platform(200, -200, new Vector2(50, 50)));
                 Room2.AddPlatform(new Platform(-20000, 0, new Vector2(40000, 50)));
                 Room2.AddPortal(new Portal(Room2, 800, -200, EntityConstants.PortalSize));

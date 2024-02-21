@@ -11,10 +11,8 @@ namespace FantaRPG.src
         private static RoomManager _instance;
         public static RoomManager Instance => _instance ??= new RoomManager();
 
-        // Changed to an instance variable
         private List<(Room Room, int SelectionCount)> rooms;
 
-        // Constructor is private to enforce singleton pattern
         private RoomManager()
         {
             rooms = [];

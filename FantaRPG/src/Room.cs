@@ -1,6 +1,7 @@
 ﻿using FantaRPG.src.Pathfinding;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using MonoGame.Extended.Particles;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace FantaRPG.src
         private readonly ParticleEffect particles;
         public List<Portal> Portals { get; }
         public float Gravity { get; private set; }
-        public Point Bounds { get; protected set; }
+        public Vector2 Bounds { get; protected set; }
         public void AddEmitter(ParticleEmitter effect)
         {
             particles.Emitters.Add(effect);
@@ -26,7 +27,21 @@ namespace FantaRPG.src
             Entities.Add(entity);
             return true;
         }
-        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, List<Portal> portals, Player player, Point bounds = new Point(), float gravity = 1f)
+        public Room()
+        {
+            Backgrounds = [];
+            Platforms = [];
+            Entities = [];
+            Portals = [];
+            Gravity = 1f;
+            particles = new ParticleEffect(autoTrigger: false)
+            {
+                Position = Vector2.Zero
+            };
+            Player = Game1.Instance.player;
+            Bounds = Vector2.Zero;
+        }
+        public Room(List<BackgroundLayer> bgs, List<Platform> platforms, List<Entity> entities, List<Portal> portals, Player player, Vector2 bounds = new Vector2(), float gravity = 1f)
         {
             Backgrounds = bgs;
             Platforms = platforms;
@@ -171,7 +186,6 @@ namespace FantaRPG.src
             // Select and return a random empty portal
             return availablePortals[RNG.Get(availablePortals.Count)];
         }
-
         internal Portal SetRandomPortalTo(Room targetRoom)
         {
             // Find all empty portals in the current room
@@ -190,6 +204,42 @@ namespace FantaRPG.src
             randomPortalInCurrentRoom.SetPortalTo(targetRoom);
 
             return randomPortalInCurrentRoom;
+        }
+        public static Room CreateRoomFromMetatiles(MetaTile[,] roomLayout, Texture2D defaultPlatformTexture)
+        {
+            int tileSize = 100; // Size of each tile in pixels
+            int metaTileSize = MetaTile.META_TILE_SIZE; // Assuming this is defined in your MetaTile class
+            Room room = new Room(); // Assuming Room has a parameterless constructor
+
+            for (int mx = 0; mx < roomLayout.GetLength(0); mx++)
+            {
+                for (int my = 0; my < roomLayout.GetLength(1); my++)
+                {
+                    MetaTile metaTile = roomLayout[mx, my];
+                    for (int tx = 0; tx < metaTileSize; tx++)
+                    {
+                        for (int ty = 0; ty < metaTileSize; ty++)
+                        {
+                            if (metaTile[tx, ty] == TileType.Platform)
+                            {
+                                // Calculate the position of the platform based on its tile and metatile position
+                                float x = (mx * metaTileSize + tx) * tileSize;
+                                float y = (my * metaTileSize + ty) * tileSize;
+
+                                // Create a new platform at this position
+                                Platform platform = new Platform(x, y, new Vector2(tileSize, tileSize), defaultPlatformTexture);
+                                room.Platforms.Add(platform);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Set room bounds based on the metatile array dimensions
+            room.Bounds = new Vector2(roomLayout.GetLength(0) * metaTileSize * tileSize,
+                                    roomLayout.GetLength(1) * metaTileSize * tileSize);
+
+            return room;
         }
     }
 }
